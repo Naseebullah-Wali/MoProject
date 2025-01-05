@@ -1,0 +1,171 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "nickname": "johnd",
+      "userType": "admin",
+      "email": "john@example.com",
+      "phone": "1234567890",
+      "telegram": "@john",
+      "companyId": 1,
+      "notifyOnProjects": true,
+      "notifyOnUpdates": true
+    },
+    {
+      "id": 2,
+      "name": "Jane Smith",
+      "nickname": "janes",
+      "userType": "employee",
+      "email": "jane@example.com",
+      "phone": "0987654321",
+      "telegram": "@jane",
+      "companyId": 2,
+      "notifyOnProjects": false,
+      "notifyOnUpdates": true
+    }
+  ],
+  "companies": [
+    {
+      "id": 1,
+      "name": "TechCorp",
+      "website": "https://techcorp.com",
+      "picture": "techcorp.png",
+      "about": "Innovative tech solutions",
+      "countryId": 1
+    },
+    {
+      "id": 2,
+      "name": "BuildCorp",
+      "website": "https://buildcorp.com",
+      "picture": "buildcorp.png",
+      "about": "Building the future",
+      "countryId": 2
+    }
+  ],
+  "countries": [
+    { "id": 1, "name": "USA", "regionId": 1 },
+    { "id": 2, "name": "Canada", "regionId": 1 }
+  ],
+  "regions": [
+    { "id": 1, "name": "North America" }
+  ],
+  "topics": [
+    { "id": 1, "name": "Technology" },
+    { "id": 2, "name": "Construction" }
+  ],
+  "projects": [
+    {
+      "id": 1,
+      "title": "AI Research",
+      "createdDate": "2025-01-01",
+      "countryId": 1,
+      "topicId": 1,
+      "priority": "High",
+      "character": "Required",
+      "status": "Ongoing",
+      "developer": "TechCorp",
+      "projectDate": "2025-02-01",
+      "projectNumber": "TC-202501",
+      "levelOfImportance": "Critical",
+      "documentType": "Research Paper",
+      "richText": "Detailed AI Research Document",
+      "tookEffectDate": "2025-03-01",
+      "noLongerValidDate": null,
+      "wordFile": "ai_research.docx"
+    },
+    {
+      "id": 2,
+      "title": "AI Building",
+      "createdDate": "2025-01-01",
+      "countryId": 1,
+      "topicId": 1,
+      "priority": "High",
+      "character": "Required",
+      "status": "Ongoing",
+      "developer": "TechCorp",
+      "projectDate": "2025-02-01",
+      "projectNumber": "TC-202501",
+      "levelOfImportance": "Critical",
+      "documentType": "Research Paper",
+      "richText": "Detailed AI Research Document",
+      "tookEffectDate": "2025-03-01",
+      "noLongerValidDate": null,
+      "wordFile": "ai_research.docx"
+    },
+    {
+      "id": 3,
+      "title": "JS Research",
+      "createdDate": "2025-01-01",
+      "countryId": 1,
+      "topicId": 1,
+      "priority": "High",
+      "character": "Required",
+      "status": "Ongoing",
+      "developer": "TechCorp",
+      "projectDate": "2025-02-01",
+      "projectNumber": "TC-202501",
+      "levelOfImportance": "Critical",
+      "documentType": "Research Paper",
+      "richText": "Detailed AI Research Document",
+      "tookEffectDate": "2025-03-01",
+      "noLongerValidDate": null,
+      "wordFile": "ai_research.docx"
+    }
+  ],
+  "projectUpdates": [
+    {
+      "id": 1,
+      "date": "2025-01-15",
+      "richText": "Updated AI methodology",
+      "projectId": 1,
+      "wordFile": "ai_update.docx"
+    },
+    {
+      "id": 2,
+      "date": "2025-02-10",
+      "richText": "AI research paper peer-reviewed and approved.",
+      "projectId": 1,
+      "wordFile": "info.txt"
+    }
+  ],
+  "reviews": [
+    {
+      "id": 1,
+      "projectId": 1,
+      "userId": 2,
+      "createdDate": "2025-01-20",
+      "text": "This project is insightful and detailed."
+    }
+  ],
+  "news": [
+    {
+      "id": 1,
+      "title": "Tech Breakthrough",
+      "image": "breakthrough.png",
+      "text": "New AI algorithm surpasses expectations.",
+      "topicId": 1,
+      "source": "TechNews"
+    }
+  ],
+  "scientificReviews": [
+    {
+      "id": 1,
+      "title": "AI in Medicine",
+      "image": "ai_medicine.png",
+      "text": "How AI is revolutionizing healthcare.",
+      "topicId": 1,
+      "source": "HealthJournal"
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "objectType": "project",
+      "objectId": 1,
+      "createdDate": "2025-01-22",
+      "userId": 1,
+      "text": "Excited to see the outcomes of this project."
+    }
+  ]
+}
