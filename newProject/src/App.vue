@@ -55,6 +55,7 @@ nav a.router-link-exact-active {
   <br>
   <br>
     <router-view/>
+    <Footer></Footer>
 
   </section>
   
@@ -63,6 +64,7 @@ nav a.router-link-exact-active {
 <script lang="ts">
 import { defineComponent } from 'vue';
 import Navbar from './components/Navbar.vue';
+import Footer from './components/Footer.vue';
 export default defineComponent({
   data() {
     return {
@@ -71,6 +73,7 @@ export default defineComponent({
   },
   components: {
     Navbar,
+    Footer
   },
   methods: {
     showAlert() {

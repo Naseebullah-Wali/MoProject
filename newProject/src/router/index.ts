@@ -21,7 +21,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/about',
     name: 'about',
-    component: AboutView // Lazy-loading example can still be used here
+    component: AboutView 
   },
   {
     path: '/projects',
