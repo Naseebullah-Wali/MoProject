@@ -12,13 +12,13 @@
             <router-link class="nav-link" to="/projects">Projects</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/about">About</router-link>
+            <router-link class="nav-link" to="/about">Reports</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/topics">Topics</router-link>
+            <router-link class="nav-link" to="/topics">News</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/companies">Companies</router-link>
+            <router-link class="nav-link" to="/companies">Scientific reviews</router-link>
             
           </li>
         </ul>
@@ -51,6 +51,7 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
               <li><router-link class="dropdown-item" to="/edit-profile">Edit Profile</router-link></li>
+              <li><router-link class="dropdown-item" to="/logout">Bookmarks</router-link></li>
               <li><router-link class="dropdown-item" to="/logout">Logout</router-link></li>
             </ul>
           </li>
