@@ -1,6 +1,12 @@
 import { Sequelize } from 'sequelize-typescript';
 import User from '../models/user';
 import Region from '../models/Region';
+import Country from '../models/Countries';
+import Company from '../models/Companies';
+import Topic from '../models/Topics';
+import Project from '../models/Projects';
+
+import { setupAssociations } from '../models/associations';
 const sequelize: Sequelize = new Sequelize({
     database: 'postgres', 
     dialect: 'postgres', 
@@ -18,8 +24,9 @@ const sequelize: Sequelize = new Sequelize({
 });
 
 
-sequelize.addModels([User,Region]);
+sequelize.addModels([User,Region,Country,Company,Topic,Project]);
 
+setupAssociations();
 
 sequelize.sync()
     .then(() => {

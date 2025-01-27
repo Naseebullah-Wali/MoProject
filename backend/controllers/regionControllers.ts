@@ -1,8 +1,7 @@
 import express from 'express';
-import Region from '../models/Region'; // Import the Region model
+import Region from '../models/Region'; 
 
 export class regionControllers {
-  // POST: Create a new region
   public static CreateRegion = async (req: express.Request, res: express.Response) => {
     const { Region_Name } = req.body;
 
@@ -22,7 +21,6 @@ export class regionControllers {
     }
   };
 
-  // GET: Show all regions
   public static ShowRegions = async (req: express.Request, res: express.Response) => {
     try {
       const allRegions = await Region.findAll();
@@ -33,7 +31,6 @@ export class regionControllers {
     }
   };
 
-  // GET: Find region by ID
   public static FindRegionById = async (req: express.Request, res: express.Response) => {
     const { id } = req.params;
 
@@ -49,7 +46,6 @@ export class regionControllers {
     }
   };
 
-  // PUT: Update a region
   public static UpdateRegion = async (req: express.Request, res: express.Response) => {
     const { id } = req.params;
     const { Region_Name } = req.body;
@@ -73,7 +69,6 @@ export class regionControllers {
     }
   };
 
-  // DELETE: Delete a region
   public static DeleteRegion = async (req: express.Request, res: express.Response) => {
     const { id } = req.params;
 

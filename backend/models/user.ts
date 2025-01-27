@@ -47,9 +47,6 @@ class User extends Model {
             instance.password = hashPassword(password)
         }
     }
-  static associate(models: any) {
-    // define association here
-  }
 }
 
 export default User;

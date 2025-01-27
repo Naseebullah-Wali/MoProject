@@ -6,9 +6,7 @@ import checkPassword from '../utils/checkPassword';
 export class userControllers{
     
 
-//Register
 public static UserPost = async (req:express.Request,res:express.Response)=>{
-    // await User.create(req.body)
     const {firstName,lastName,email,password} = req.body;
     const alreadyExist = await User.findOne({where:{
         email
@@ -28,7 +26,6 @@ public static UserPost = async (req:express.Request,res:express.Response)=>{
     
 }
 
-//Get: request for showing all users
 public static ShowUsers = async (req:express.Request,res:express.Response)=>{
     const allUsers:object = await User.findAll()
     res.send(allUsers);
@@ -36,14 +33,12 @@ public static ShowUsers = async (req:express.Request,res:express.Response)=>{
     
 }
 
-//Get: find by ID
 public static FindById = async (req:express.Request,res:express.Response)=>{
     const ByIdUser:object | null = await User.findOne({where: {id: req.params.id}})
     res.send(ByIdUser);
 
 }
 
-//PUT REQ: Update User
 public static UpdateUser = async (req:express.Request,res:express.Response)=>{
     // const requestedId = req.params.id;
     const requestedUser:any = await User.findOne({where: {id: req.params.id} })
@@ -57,7 +52,6 @@ public static UpdateUser = async (req:express.Request,res:express.Response)=>{
 }
 
 
-//DELETE REQ: Delete User
 public static DeleteUser= async (req:express.Request,res:express.Response)=>{
     const requestedId:string = req.params.id;
     const requestedUser = await User.destroy({where: {id: requestedId} })

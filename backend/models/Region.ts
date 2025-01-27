@@ -1,5 +1,6 @@
 'use strict';
-import { Model, Column, DataType, Table } from 'sequelize-typescript';
+import { Model, Column, DataType, Table, HasMany } from 'sequelize-typescript';
+import Country from './Countries';
 
 @Table({
   tableName: 'Regions', 
@@ -19,6 +20,8 @@ class Region extends Model {
     allowNull: false,
   })
   Region_Name!: string; 
+  @HasMany(() => Country)
+  countries!: Country[];
 }
 
 export default Region;
