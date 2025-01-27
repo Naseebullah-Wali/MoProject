@@ -72,17 +72,16 @@ export default {
   data() {
     return {
       // Simulating role-based access (admin check)
-      isAdmin: false, // You can later update this based on user role (e.g., from auth store or state)
-      isLoggedIn: true, // Simulate login state
-      profilePicture: '1.jpg', // Placeholder for profile picture
-      notificationCount: 5, // Simulated notification count
+      isAdmin: false, 
+      isLoggedIn: true, 
+      profilePicture: '1.jpg', 
+      notificationCount: 5, 
     };
   },
 };
 </script>
 
 <style scoped>
-/* Add custom styles here if needed */
 .badge {
   font-size: 0.8rem;
   padding: 5px 8px;

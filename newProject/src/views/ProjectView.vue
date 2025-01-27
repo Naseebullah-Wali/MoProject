@@ -70,27 +70,29 @@
         v-for="project in visibleProjects"
         :key="project.id"
       >
-        <div class="card">
+        <div class="card" @click="goToDetailPage(project.id)" style="cursor: pointer;">
           <div class="card-header d-flex justify-content-between align-items-center">
             <div>
               <img
-                :src="getCountryFlag(project.country)"
+                :src="getCountryFlag(project.Country.Country_Name)"
                 alt="Country Flag"
                 class="me-2"
                 style="width: 20px; height: 15px;"
               />
-              <strong>{{ project.title }}</strong>
+              <strong>{{ project.Title }}</strong>
             </div>
             <span class="text-muted" style="font-size: 0.9rem;">
-              {{ formatDate(project.createdDate) }}
+              {{ formatDate(project.createdAt) }}
             </span>
           </div>
           <div class="card-body">
-            <p class="card-text">{{ project.richText }}</p>
+            <p class="card-text">
+              {{ truncateText(project.Body, 5) }}
+            </p>
           </div>
           <div class="card-footer">
             <small class="text-muted">
-              {{ project.country }} | {{ project.topic }} | {{ project.status }} | Took effect: {{ formatDate(project.tookEffectDate) }} | No longer valid: {{ formatDate(project.noLongerValidDate) }}
+              {{ project.Country.Country_Name }} | {{ project.Topic.Topic }} | {{ project.Status }} | Took effect: {{ formatDate(project.Took_affect_date) }} | No longer valid: {{ formatDate(project.No_longer_valid_date) }}
             </small>
           </div>
         </div>
@@ -130,16 +132,16 @@ export default {
   },
   computed: {
     uniqueCountries() {
-      return [...new Set(this.projects.map((p) => p.country))];
+      return [...new Set(this.projects.map((p) => p.Country.Country_Name))];
     },
     uniqueTopics() {
-      return [...new Set(this.projects.map((p) => p.topic))];
+      return [...new Set(this.projects.map((p) => p.Topic.Topic))];
     },
     uniqueStatuses() {
-      return [...new Set(this.projects.map((p) => p.status))];
+      return [...new Set(this.projects.map((p) => p.Status))];
     },
     uniqueCharacters() {
-      return [...new Set(this.projects.map((p) => p.character))];
+      return [...new Set(this.projects.map((p) => p.Charachter))];
     },
     isFilterApplied() {
       return (
@@ -159,7 +161,7 @@ export default {
   methods: {
     async fetchProjects() {
       try {
-        const response = await fetch("http://localhost:3000/projects");
+        const response = await fetch("http://localhost:900/projects");
         this.projects = await response.json();
         this.filteredProjects = this.projects;
         this.updateVisibleProjects();
@@ -170,10 +172,10 @@ export default {
     applyFilters() {
       this.filteredProjects = this.projects.filter((project) => {
         return (
-          (!this.filters.country || project.country === this.filters.country) &&
-          (!this.filters.topic || project.topic === this.filters.topic) &&
-          (!this.filters.status || project.status === this.filters.status) &&
-          (!this.filters.character || project.character === this.filters.character)
+          (!this.filters.country || project.Country.Country_Name === this.filters.country) &&
+          (!this.filters.topic || project.Topic.Topic === this.filters.topic) &&
+          (!this.filters.status || project.Status === this.filters.status) &&
+          (!this.filters.character || project.Charachter === this.filters.character)
         );
       });
       this.updateVisibleProjects();
@@ -200,7 +202,14 @@ export default {
       return new Date(date).toLocaleDateString(undefined, options);
     },
     getCountryFlag(country) {
-      return `https://flagcdn.com/32x24/${country.toLowerCase()}.png`; // Replace with your preferred flag source
+      return `https://flagcdn.com/32x24/kz.png`;
+    },
+    truncateText(text, lines) {
+      const words = text.split(/\s+/);
+      return words.slice(0, lines * 10).join(" ") + (words.length > lines * 10 ? " ..." : "");
+    },
+    goToDetailPage(id) {
+      this.$router.push({ name: "ProjectDetails", params: { id } });
     },
   },
 };

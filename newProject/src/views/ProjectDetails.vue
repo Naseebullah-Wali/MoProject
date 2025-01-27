@@ -1,106 +1,158 @@
 <template>
     <div class="container mt-5">
-      <div v-if="project">
-        <h2 class="text-center mb-4">{{ project.title }}</h2>
+      <!-- Project Title -->
+      <div class="text-center mb-4">
+        <h1><strong>{{ project.Title }}</strong></h1>
+      </div>
   
-        <div class="card shadow-sm p-4 mb-4">
-          <h4 class="mb-3">Project Details</h4>
-          <ul class="list-group">
-            <li class="list-group-item"><strong>Priority:</strong> {{ project.priority }}</li>
-            <li class="list-group-item"><strong>Status:</strong> {{ project.status }}</li>
-            <li class="list-group-item"><strong>Developer:</strong> {{ project.developer }}</li>
-            <li class="list-group-item"><strong>Created Date:</strong> {{ project.createdDate }}</li>
-            <li class="list-group-item"><strong>Project Date:</strong> {{ project.projectDate }}</li>
-            <li class="list-group-item"><strong>Level of Importance:</strong> {{ project.levelOfImportance }}</li>
-            <li class="list-group-item"><strong>Character:</strong> {{ project.character }}</li>
-            <li class="list-group-item"><strong>Document Type:</strong> {{ project.documentType }}</li>
-          </ul>
+      <!-- Project Body -->
+      <div class="border p-3 mb-4">
+        <p>{{ project.Body }}</p>
+      </div>
+  
+      <!-- Additional Info: Two-column layout -->
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <div><strong>Status:</strong> {{ project.Status }}</div>
+          <div><strong>Priority:</strong> {{ project.Priority }}</div>
+          <div><strong>Developer:</strong> {{ project.Developer }}</div>
         </div>
-  
-        <div class="card shadow-sm p-4 mb-4">
-          <h4 class="mb-3">Rich Text Content</h4>
-          <p>{{ project.richText }}</p>
-        </div>
-  
-        <div class="card shadow-sm p-4">
-          <h4 class="mb-3">Project Updates</h4>
-          <div v-if="updates.length">
-            <ul class="list-group">
-              <li
-                v-for="update in updates"
-                :key="update.id"
-                class="list-group-item d-flex justify-content-between align-items-center"
-              >
-                <span>{{ update.date }}</span>
-                <button
-                  class="btn btn-sm btn-primary"
-                  @click="viewUpdate(update.id)"
-                >
-                  View Update
-                </button>
-              </li>
-            </ul>
-          </div>
-          <div v-else>
-            <p class="text-muted">No updates available for this project.</p>
-          </div>
+        <div class="col-md-6">
+          <div><strong>Project Number:</strong> {{ project.Project_number }}</div>
+          <div><strong>Level of Importance:</strong> {{ project.Level_of_importance }}</div>
+          <div><strong>Project Date:</strong> {{ formatDate(project.Project_date) }}</div>
         </div>
       </div>
   
-      <div v-else>
-        <p class="text-center text-muted">Loading project details...</p>
+      <!-- Project Updates Section -->
+      <div class="mb-4">
+        <h4>Project Updates</h4>
+  
+        <!-- Check if there are updates -->
+        <div v-if="updates && updates.length > 0" class="row">
+          <div v-for="update in updates" :key="update.id" class="col-md-4 mb-3">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">{{ update.Title }}</h5>
+                <p class="card-text">{{ truncateText(update.Body) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- If no updates -->
+        <div v-else>
+          <p>No updates available for this project.</p>
+        </div>
+      </div>
+  
+      <!-- Comments Section -->
+      <div>
+        <h4>Comments</h4>
+        <textarea
+          class="form-control mb-3"
+          v-model="newComment"
+          placeholder="Write your comment..."
+          rows="4"
+        ></textarea>
+        <button class="btn btn-primary" @click="sendComment">Send Comment</button>
       </div>
     </div>
   </template>
   
   <script>
   export default {
-    name: "ProjectDetails",
     data() {
       return {
-        project: null, // The project details
-        updates: [], // Updates related to the project
+        project: {},
+        updates: [], // To hold project updates
+        newComment: "", // New comment text
       };
     },
     created() {
       this.fetchProjectDetails();
+      this.fetchProjectUpdates();
     },
     methods: {
       async fetchProjectDetails() {
-        const projectId = this.$route.params.id; // Get project ID from route params
         try {
-          // Fetch project details
-          const projectResponse = await fetch(
-            `http://localhost:3000/projects/${projectId}`
-          );
-          this.project = await projectResponse.json();
-  
-          // Fetch related updates
-          const updatesResponse = await fetch(
-            `http://localhost:3000/projectUpdates?projectId=${projectId}`
-          );
-          this.updates = await updatesResponse.json();
+          const projectId = this.$route.params.id;
+          const response = await fetch(`http://localhost:900/projects/${projectId}`);
+          const data = await response.json();
+          this.project = data; // Assign project data to 'project' property
         } catch (error) {
           console.error("Error fetching project details:", error);
         }
       },
-      viewUpdate(updateId) {
-        this.$router.push({ name: "UpdateDetail", params: { id: updateId } });
-        // alert(`View details for update ID: ${updateId}`);
+  
+      async fetchProjectUpdates() {
+        try {
+          const projectId = this.$route.params.id;
+          const response = await fetch(`http://localhost:900/projects/${projectId}/updates`);
+          const data = await response.json();
+          this.updates = Array.isArray(data) ? data : []; // Ensure updates is an array
+        } catch (error) {
+          console.error("Error fetching project updates:", error);
+        }
+      },
+  
+      formatDate(date) {
+        return new Date(date).toLocaleDateString("en-US");
+      },
+  
+      truncateText(text, maxLength = 100) {
+        return text && text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+      },
+  
+      async sendComment() {
+        if (this.newComment.trim() === "") {
+          alert("Please enter a comment before submitting.");
+          return;
+        }
+  
+        try {
+          const projectId = this.$route.params.id;
+          const response = await fetch(`http://localhost:900/projects/${projectId}/comments`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ comment: this.newComment }),
+          });
+  
+          if (response.ok) {
+            this.newComment = ""; // Clear the comment input after submitting
+            alert("Comment sent successfully!");
+          } else {
+            alert("Failed to send comment.");
+          }
+        } catch (error) {
+          console.error("Error sending comment:", error);
+        }
       },
     },
   };
   </script>
   
   <style scoped>
-  .container {
-    max-width: 800px;
-  }
+  /* Styles for the project details page */
   .card {
-    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
-  .list-group-item {
-    font-size: 16px;
+  
+  .card-body {
+    background-color: #f9f9f9;
+  }
+  
+  textarea.form-control {
+    resize: none;
+  }
+  
+  button.btn-primary {
+    display: inline-flex;
+    align-items: center;
   }
   </style>
   

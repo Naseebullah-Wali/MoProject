@@ -59,15 +59,20 @@ const routes: Array<RouteRecordRaw> = [
     component: RegisterView
   },
   {
-    path: '/projects/:id',
-    name: 'projectDetails',
+    path: '/projects1/:id',
+    name: 'projectDetails1',
     component: ProjectDetails,
   },
   {
     path: "/updates/:id",
     name: "UpdateDetail",
     component: UpdateDetail,
-  }
+  },
+  {
+    path: '/projects/:id',
+    name: 'ProjectDetails',
+    component: ProjectDetails,
+  },
   
 ];
 
