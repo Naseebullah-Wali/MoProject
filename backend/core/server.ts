@@ -25,9 +25,8 @@ class App {
     private createApp(): express.Application {
         const app = express();
 
-        // Configure CORS middleware first
         app.use(cors({
-            origin: 'http://localhost:8080', // Your frontend origin
+            origin: 'http://localhost:8080', //frontend origin
             methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
             allowedHeaders: ['Content-Type', 'Authorization'],
             credentials: true // Enable if using cookies or authentication headers
@@ -36,7 +35,6 @@ class App {
         app.use(cookieParser());
         app.use(express.json());
 
-        // Add your routes after CORS configuration
         app.use('/', rout);
 
         return app;

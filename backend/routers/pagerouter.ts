@@ -52,7 +52,8 @@ rout.get('/projects/:id', projectController.getProjectById);
 rout.put('/projects/:id', projectController.updateProject);
 rout.delete('/projects/:id', projectController.deleteProject);
 
-// 📌 New Endpoint: Get Project Topics by Project ID (Supabase Function)
+
+//function get project by user id
 rout.get('/project-topics/:id', ProjectTopicController.getProjectTopicsByProjectId);
 
 export default rout;

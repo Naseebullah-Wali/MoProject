@@ -30,7 +30,6 @@ const sequelize = new Sequelize({
   logging: false,
 });
 
-// Add Models
 sequelize.addModels([User, Region, Country, Company, Topic, Project]);
 
 // Set up Model Associations
