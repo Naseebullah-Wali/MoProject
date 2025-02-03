@@ -58,8 +58,8 @@
     name: "ProjectDetails",
     data() {
       return {
-        project: null, // The project details
-        updates: [], // Updates related to the project
+        project: null, 
+        updates: [], 
       };
     },
     created() {
@@ -67,7 +67,7 @@
     },
     methods: {
       async fetchProjectDetails() {
-        const projectId = this.$route.params.id; // Get project ID from route params
+        const projectId = this.$route.params.id; 
         try {
           // Fetch project details
           const projectResponse = await fetch(

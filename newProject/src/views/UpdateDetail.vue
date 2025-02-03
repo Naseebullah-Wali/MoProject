@@ -49,7 +49,7 @@
     name: "UpdateDetail",
     data() {
       return {
-        update: null, // The update details
+        update: null, 
       };
     },
     created() {
@@ -57,7 +57,7 @@
     },
     methods: {
       async fetchUpdateDetails() {
-        const updateId = this.$route.params.id; // Get update ID from route params
+        const updateId = this.$route.params.id;
         try {
           const response = await fetch(
             `http://localhost:3000/projectUpdates/${updateId}`

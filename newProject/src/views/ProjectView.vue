@@ -1,98 +1,98 @@
 <template>
   <div class="container mt-5">
-    <!-- Filters Section -->
-    <div class="row mb-4">
+    <!-- Search Bar -->
+    <div class="row mb-3">
+      <div class="col">
+        <input
+          type="text"
+          class="form-control"
+          v-model="searchQuery"
+          placeholder="Search projects..."
+          @input="applyFilters"
+        />
+      </div>
+    </div>
+
+    <!-- Filters and Sorting Section -->
+    <div class="row mb-3 align-items-end">
+      <!-- Filters -->
       <div class="col-md-3">
-        <label for="countryFilter" class="form-label">Country</label>
-        <select
-          id="countryFilter"
-          class="form-select"
-          v-model="filters.country"
-          @change="applyFilters"
-        >
+        <label class="form-label">Country</label>
+        <select class="form-select" v-model="filters.country" @change="applyFilters">
           <option value="">All Countries</option>
-          <option v-for="country in uniqueCountries" :key="country" :value="country">
-            {{ country }}
-          </option>
+          <option v-for="country in uniqueCountries" :key="country" :value="country">{{ country }}</option>
         </select>
       </div>
       <div class="col-md-3">
-        <label for="topicFilter" class="form-label">Topic</label>
-        <select
-          id="topicFilter"
-          class="form-select"
-          v-model="filters.topic"
-          @change="applyFilters"
-        >
+        <label class="form-label">Topic</label>
+        <select class="form-select" v-model="filters.topic" @change="applyFilters">
           <option value="">All Topics</option>
-          <option v-for="topic in uniqueTopics" :key="topic" :value="topic">
-            {{ topic }}
-          </option>
+          <option v-for="topic in uniqueTopics" :key="topic" :value="topic">{{ topic }}</option>
         </select>
       </div>
       <div class="col-md-3">
-        <label for="statusFilter" class="form-label">Status</label>
-        <select
-          id="statusFilter"
-          class="form-select"
-          v-model="filters.status"
-          @change="applyFilters"
-        >
+        <label class="form-label">Status</label>
+        <select class="form-select" v-model="filters.status" @change="applyFilters">
           <option value="">All Statuses</option>
-          <option v-for="status in uniqueStatuses" :key="status" :value="status">
-            {{ status }}
-          </option>
+          <option v-for="status in uniqueStatuses" :key="status" :value="status">{{ status }}</option>
         </select>
       </div>
       <div class="col-md-3">
-        <label for="characterFilter" class="form-label">Character</label>
-        <select
-          id="characterFilter"
-          class="form-select"
-          v-model="filters.character"
-          @change="applyFilters"
-        >
+        <label class="form-label">Character</label>
+        <select class="form-select" v-model="filters.character" @change="applyFilters">
           <option value="">All Characters</option>
-          <option v-for="character in uniqueCharacters" :key="character" :value="character">
-            {{ character }}
-          </option>
+          <option v-for="character in uniqueCharacters" :key="character" :value="character">{{ character }}</option>
         </select>
       </div>
     </div>
+
+    <!-- Sorting and Clear Sorting -->
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Sort By</label>
+        <select class="form-select" v-model="sortBy" @change="sortProjects">
+          <option value="CreatedAt">Date</option>
+          <option value="Country_Name">Country</option>
+          <option value="all_topics">Topic</option>
+        </select>
+      </div>
+      <div class="col-md-4 align-self-end" v-if="sortBy !== 'CreatedAt'">
+        <button class="btn btn-danger" @click="clearSorting">Clear Sorting</button>
+      </div>
+    </div>
+
+    <!-- Clear Filters Button -->
     <div class="text-end mb-4" v-if="isFilterApplied">
       <button class="btn btn-danger" @click="resetFilters">Clear Filters</button>
     </div>
 
     <!-- Projects Cards -->
     <div class="row">
-      <div
-        class="col-12 mb-4"
-        v-for="project in visibleProjects"
-        :key="project.id"
-      >
-        <div class="card" @click="goToDetailPage(project.id)" style="cursor: pointer;">
+      <div class="col-12 mb-4" v-for="project in visibleProjects" :key="project.ID">
+        <div class="card" @click="goToDetailPage(project.ID)" style="cursor: pointer;">
           <div class="card-header d-flex justify-content-between align-items-center">
             <div>
               <img
-                :src="getCountryFlag(project.Country.Country_Name)"
+                :src="getCountryFlag(project.Country_Name)"
                 alt="Country Flag"
                 class="me-2"
                 style="width: 20px; height: 15px;"
               />
-              <strong>{{ project.Title }}</strong>
+              <strong>{{ project.Post_Title }}</strong>
             </div>
             <span class="text-muted" style="font-size: 0.9rem;">
-              {{ formatDate(project.createdAt) }}
+              {{ formatDate(project.CreatedAt) }}
             </span>
           </div>
           <div class="card-body">
-            <p class="card-text">
-              {{ truncateText(project.Body, 5) }}
-            </p>
+            <!-- Render Post_Content as HTML -->
+            <p class="card-text" v-html="truncateText(project.Post_Content,200)"></p>
           </div>
           <div class="card-footer">
             <small class="text-muted">
-              {{ project.Country.Country_Name }} | {{ project.Topic.Topic }} | {{ project.Status }} | Took effect: {{ formatDate(project.Took_affect_date) }} | No longer valid: {{ formatDate(project.No_longer_valid_date) }}
+              {{ project.Country_Name }} | {{ project.all_topics }} | {{ project.Status_Name }} |
+              Took effect: {{ formatDate(project.Took_Affect_Date) }} |
+              No longer valid: {{ formatDate(project.No_Longer_Valid_Date) }}
             </small>
           </div>
         </div>
@@ -118,10 +118,12 @@ export default {
   name: "Projects",
   data() {
     return {
-      projects: [], // List of all projects
-      filteredProjects: [], // Filtered list after applying filters
-      visibleProjects: [], // Projects currently visible on screen
-      projectsToShow: 2, // Number of projects to show at a time
+      projects: [],
+      filteredProjects: [],
+      visibleProjects: [],
+      projectsToShow: 5,
+      searchQuery: "",
+      sortBy: "CreatedAt",
       filters: {
         country: "",
         topic: "",
@@ -132,39 +134,33 @@ export default {
   },
   computed: {
     uniqueCountries() {
-      return [...new Set(this.projects.map((p) => p.Country.Country_Name))];
+      return [...new Set(this.projects.map((p) => p.Country_Name))];
     },
     uniqueTopics() {
-      return [...new Set(this.projects.map((p) => p.Topic.Topic))];
+      return [...new Set(this.projects.map((p) => p.all_topics))];
     },
     uniqueStatuses() {
-      return [...new Set(this.projects.map((p) => p.Status))];
+      return [...new Set(this.projects.map((p) => p.Status_Name))];
     },
     uniqueCharacters() {
-      return [...new Set(this.projects.map((p) => p.Charachter))];
+      return [...new Set(this.projects.map((p) => p.Character_name))];
     },
     isFilterApplied() {
-      return (
-        this.filters.country ||
-        this.filters.topic ||
-        this.filters.status ||
-        this.filters.character
-      );
+      return this.filters.country || this.filters.topic || this.filters.status || this.filters.character || this.searchQuery;
     },
     canLoadMore() {
       return this.visibleProjects.length < this.filteredProjects.length;
     },
   },
   created() {
-    this.fetchProjects(); // Load projects on component creation
+    this.fetchProjects();
   },
   methods: {
     async fetchProjects() {
       try {
-        const response = await fetch("http://localhost:900/projects");
+        const response = await fetch("http://localhost:900/project-topics/1");
         this.projects = await response.json();
-        this.filteredProjects = this.projects;
-        this.updateVisibleProjects();
+        this.applyFilters();
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
@@ -172,21 +168,31 @@ export default {
     applyFilters() {
       this.filteredProjects = this.projects.filter((project) => {
         return (
-          (!this.filters.country || project.Country.Country_Name === this.filters.country) &&
-          (!this.filters.topic || project.Topic.Topic === this.filters.topic) &&
-          (!this.filters.status || project.Status === this.filters.status) &&
-          (!this.filters.character || project.Charachter === this.filters.character)
+          (!this.filters.country || project.Country_Name === this.filters.country) &&
+          (!this.filters.topic || project.all_topics.includes(this.filters.topic)) &&
+          (!this.filters.status || project.Status_Name === this.filters.status) &&
+          (!this.filters.character || project.Character_name === this.filters.character) &&
+          (!this.searchQuery ||
+            project.Post_Title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+            project.Post_Content.toLowerCase().includes(this.searchQuery.toLowerCase()))
         );
+      });
+      this.sortProjects();
+    },
+    sortProjects() {
+      this.filteredProjects.sort((a, b) => {
+        if (this.sortBy === "CreatedAt") return new Date(b.CreatedAt) - new Date(a.CreatedAt);
+        return a[this.sortBy].localeCompare(b[this.sortBy]);
       });
       this.updateVisibleProjects();
     },
+    clearSorting() {
+      this.sortBy = "CreatedAt";
+      this.sortProjects();
+    },
     resetFilters() {
-      this.filters = {
-        country: "",
-        topic: "",
-        status: "",
-        character: "",
-      };
+      this.filters = { country: "", topic: "", status: "", character: "" };
+      this.searchQuery = "";
       this.applyFilters();
     },
     updateVisibleProjects() {
@@ -198,18 +204,21 @@ export default {
     },
     formatDate(date) {
       if (!date) return "N/A";
-      const options = { year: "numeric", month: "short", day: "numeric" };
-      return new Date(date).toLocaleDateString(undefined, options);
+      return new Date(date).toLocaleDateString();
     },
     getCountryFlag(country) {
-      return `https://flagcdn.com/32x24/kz.png`;
-    },
-    truncateText(text, lines) {
-      const words = text.split(/\s+/);
-      return words.slice(0, lines * 10).join(" ") + (words.length > lines * 10 ? " ..." : "");
+      // return `https://flagcdn.com/32x24/${country.toLowerCase()}.png`;
+      return `https://flagcdn.com/32x24/kz.png`
     },
     goToDetailPage(id) {
       this.$router.push({ name: "ProjectDetails", params: { id } });
+    },
+    truncateText(text, maxLength) {
+      if (!text) return "";
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = text; 
+      const plainText = tempDiv.textContent || tempDiv.innerText;
+      return plainText.length > maxLength ? plainText.substring(0, maxLength) + "..." : plainText;
     },
   },
 };

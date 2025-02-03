@@ -1,16 +1,13 @@
 <template>
     <div class="container mt-5">
-      <!-- Project Title -->
       <div class="text-center mb-4">
         <h1><strong>{{ project.Title }}</strong></h1>
       </div>
   
-      <!-- Project Body -->
       <div class="border p-3 mb-4">
         <p>{{ project.Body }}</p>
       </div>
   
-      <!-- Additional Info: Two-column layout -->
       <div class="row mb-4">
         <div class="col-md-6">
           <div><strong>Status:</strong> {{ project.Status }}</div>
@@ -24,11 +21,9 @@
         </div>
       </div>
   
-      <!-- Project Updates Section -->
       <div class="mb-4">
         <h4>Project Updates</h4>
   
-        <!-- Check if there are updates -->
         <div v-if="updates && updates.length > 0" class="row">
           <div v-for="update in updates" :key="update.id" class="col-md-4 mb-3">
             <div class="card">
@@ -40,13 +35,11 @@
           </div>
         </div>
   
-        <!-- If no updates -->
         <div v-else>
           <p>No updates available for this project.</p>
         </div>
       </div>
   
-      <!-- Comments Section -->
       <div>
         <h4>Comments</h4>
         <textarea
@@ -79,7 +72,7 @@
           const projectId = this.$route.params.id;
           const response = await fetch(`http://localhost:900/projects/${projectId}`);
           const data = await response.json();
-          this.project = data; // Assign project data to 'project' property
+          this.project = data; 
         } catch (error) {
           console.error("Error fetching project details:", error);
         }
@@ -90,7 +83,7 @@
           const projectId = this.$route.params.id;
           const response = await fetch(`http://localhost:900/projects/${projectId}/updates`);
           const data = await response.json();
-          this.updates = Array.isArray(data) ? data : []; // Ensure updates is an array
+          this.updates = Array.isArray(data) ? data : []; 
         } catch (error) {
           console.error("Error fetching project updates:", error);
         }
@@ -121,7 +114,7 @@
           });
   
           if (response.ok) {
-            this.newComment = ""; // Clear the comment input after submitting
+            this.newComment = ""; 
             alert("Comment sent successfully!");
           } else {
             alert("Failed to send comment.");
@@ -135,7 +128,6 @@
   </script>
   
   <style scoped>
-  /* Styles for the project details page */
   .card {
     border: 1px solid #ddd;
     border-radius: 8px;

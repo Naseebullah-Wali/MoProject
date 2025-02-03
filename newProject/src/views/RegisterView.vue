@@ -95,7 +95,7 @@ export default {
       notifyOnUpdates: false,
       error: false,
       errorMsg: "",
-      companies: [], // List of companies fetched from the JSON Server
+      companies: [], 
     };
   },
   methods: {

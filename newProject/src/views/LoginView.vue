@@ -67,31 +67,25 @@ export default {
   methods: {
     async login() {
       try {
-        // Fetch users from the JSON Server
         const response = await fetch("http://localhost:3000/users");
         const users = await response.json();
 
-        // Check if email and password match
         const user = users.find(
           (u) => u.email === this.email && u.password === this.password
         );
 
         if (user) {
-          // Successful login
           this.error = false;
           this.errorMsg = "";
 
-          // Save user info in session storage (or use Vuex for state management)
           sessionStorage.setItem("loggedInUser", JSON.stringify(user));
 
-          // Redirect to home or role-based route
           if (user.role === "admin") {
             this.$router.push({ name: "users" }); // Admin page
           } else {
             this.$router.push({ name: "projects" }); // Default page for regular users
           }
         } else {
-          // Invalid login credentials
           this.error = true;
           this.errorMsg = "Invalid email or password. Please try again.";
         }
