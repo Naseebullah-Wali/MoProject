@@ -3,7 +3,7 @@ import { Server, createServer } from 'http';
 import { Sequelize } from 'sequelize';
 import rout from '../routers/pagerouter'
 const cookieParser = require('cookie-parser');
-import sequelize from '../dbConfig/dbConfig';
+import {sequelize} from '../dbConfig/dbConfig';
 import cors from 'cors';
 
 class App {
