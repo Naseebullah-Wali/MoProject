@@ -8,7 +8,7 @@ import { companyControllers } from "../controllers/companiesController";
 import { topicsController } from "../controllers/topicsControllers";
 import { projectController } from "../controllers/projectControllers";
 import { ProjectTopicController } from "../controllers/functionCallController"; // Import the new controller
-
+import { ProjectUpdatesController } from "../controllers/projectUpdateFunctionCall";
 const rout: express.Router = express.Router();
 
 // User Routes
@@ -55,5 +55,5 @@ rout.delete('/projects/:id', projectController.deleteProject);
 
 //function get project by user id
 rout.get('/project-topics/:id', ProjectTopicController.getProjectTopicsByProjectId);
-
+rout.get("/project-updates/:id", ProjectUpdatesController.getProjectUpdatesByProjectId);
 export default rout;
