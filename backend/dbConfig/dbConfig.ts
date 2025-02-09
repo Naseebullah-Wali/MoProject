@@ -9,7 +9,7 @@ import Country from "../models/Countries";
 import Company from "../models/Companies";
 import Topic from "../models/Topics";
 import Project from "../models/Projects";
-
+import ProjectComment from "../models/project_comments";
 import { setupAssociations } from "../models/associations";
 
 const SUPABASE_URL = process.env.SUPABASE_URL || "";
@@ -30,10 +30,11 @@ const sequelize = new Sequelize({
   logging: false,
 });
 
-sequelize.addModels([User, Region, Country, Company, Topic, Project]);
+// sequelize.addModels([User, Region, Country, Company, Topic, Project, ProjectComment]);
+sequelize.addModels([User]);
 
 // Set up Model Associations
-setupAssociations();
+// setupAssociations();
 
 // Sync Database
 sequelize
