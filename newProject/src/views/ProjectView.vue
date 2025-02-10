@@ -73,7 +73,7 @@
           <div class="card-header d-flex justify-content-between align-items-center">
             <div>
               <img
-                :src="getCountryFlag(project.Country_Name)"
+                :src="project.Flag"
                 alt="Country Flag"
                 class="me-2"
                 style="width: 20px; height: 15px;"

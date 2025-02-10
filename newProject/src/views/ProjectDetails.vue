@@ -65,10 +65,10 @@
       <div v-if="comments.length > 0" class="list-group mb-3">
         <div v-for="comment in comments" :key="comment.id" class="list-group-item">
           <div class="d-flex justify-content-between align-items-center mb-1">
-            <strong>{{ comment.username }}</strong>
-            <small class="text-muted">{{ formatDate(comment.date) }}</small>
+            <strong>{{ comment.Name }}</strong>
+            <small class="text-muted">{{ formatDate(comment.CreatedAt) }}</small>
           </div>
-          <p class="mb-0">{{ comment.text }}</p>
+          <p class="mb-0">{{ comment.Comment }}</p>
         </div>
       </div>
       <div v-else class="alert alert-info">
@@ -177,9 +177,9 @@ export default {
     async fetchComments() {
       if (!this.project.ID) return;
       try {
-        const response = await fetch(`http://localhost:900/comments/${this.project.ID}`);
+        const response = await fetch(`http://localhost:900/project-comments/${this.project.ID}`);
         const data = await response.json();
-        this.comments = data.filter(comment => !comment.is_deleted);
+        this.comments = data.filter(comment => !comment.Is_Deleted);
       } catch (error) {
         console.error('Error fetching comments:', error);
       }
@@ -294,37 +294,44 @@ export default {
     },
 
     async sendComment() {
-      if (!this.project.ID || !this.newComment.trim()) {
-        alert('Please enter a valid comment.');
-        return;
-      }
-      
-      try {
-        const response = await fetch('http://localhost:900/comments', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            user_id: 123,
-            project_id: this.project.ID,
-            comment: this.newComment.trim(),
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to post comment');
-        }
-
-        // Clear form and refresh comments
-        this.newComment = '';
-        await this.fetchComments();
-        
-      } catch (error) {
-        console.error('Error posting comment:', error);
-        alert('Failed to post comment. Please try again.');
-      }
+    if (!this.$route.params.id || !this.newComment.trim()) {
+      alert('Please enter a valid comment.');
+      return;
     }
+    console.log(this.$route.params.id)
+    console.log(this.newComment.trim())
+    try {
+      const response = await fetch('http://localhost:900/project-comments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          User_ID: 1, // Change to logged USer id
+          Project_ID: parseInt(this.$route.params.id), // Taken from route params
+          Comment: this.newComment.trim(),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to post comment');
+      }
+
+      // Clear input field
+      this.newComment = '';
+
+      // Refresh comments
+      await this.fetchComments();
+
+      // Refresh the page to reflect the new comment
+      window.location.reload();
+
+    } catch (error) {
+      console.error('Error posting comment:', error);
+      alert('Failed to post comment. Please try again.');
+    }
+  }
+
   },
   
   

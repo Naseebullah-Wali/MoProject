@@ -15,12 +15,12 @@
             <router-link class="nav-link" to="/about">Reports</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/topics">News</router-link>
+            <router-link class="nav-link" to="/companies">Scientific reviews</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/companies">Scientific reviews</router-link>
-            
+            <router-link class="nav-link" to="/topics">News</router-link>
           </li>
+          
         </ul>
 
         <!-- Right side items -->

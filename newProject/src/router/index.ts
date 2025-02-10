@@ -12,6 +12,7 @@ import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
 import ProjectDetails from '../views/ProjectDetails.vue'
 import UpdateDetail from '../views/UpdateDetail.vue'
+import NewsDetailsVue from '../views/NewsDetails.vue';
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
@@ -44,9 +45,14 @@ const routes: Array<RouteRecordRaw> = [
     component: UsersView // Only for admin users; enforce via route guards
   },
   {
-    path: '/reviews',
+    path: '/reviews/:id',
     name: 'reviews',
     component: ReviewsView // Only for admin users; enforce via route guards
+  },
+  {
+    path: '/news/:id',
+    name: 'news',
+    component: NewsDetailsVue // Only for admin users; enforce via route guards
   },
   {
     path: '/login',
@@ -84,7 +90,7 @@ const router = createRouter({
 });
 router.beforeEach((to, from, next) => {
   const userType = localStorage.getItem('userType'); // Mock example; replace with actual auth logic
-  if ((to.name === 'users' || to.name === 'reviews') && userType !== 'admin') {
+  if ((to.name === 'users' || to.name === 'UsersView') && userType !== 'admin') {
     next('/'); // Redirect to home if not an admin
   } else {
     next(); // Proceed to the route
