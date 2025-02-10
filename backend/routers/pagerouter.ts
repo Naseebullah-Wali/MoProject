@@ -10,10 +10,9 @@ import { projectController } from "../controllers/projectControllers";
 import { ProjectTopicController } from "../controllers/functionCallController"; // Import the new controller
 import { ProjectUpdatesController } from "../controllers/projectUpdateFunctionCall";
 import { ProjectCommentController } from "../controllers/projectCommentsConrtollers";
-import { ScientificReviewController } from "../controllers/funcScientificReview";
 import { NewsController } from "../controllers/funcNews";
 import { ProjectCommentsController } from "../controllers/funcComments";
-
+import { ScientificReviewController } from "../controllers/funcScientificReview";
 
 
 
@@ -76,14 +75,26 @@ rout.get('/project-topics/:id', ProjectTopicController.getProjectTopicsByProject
 rout.get("/project-updates/:id", ProjectUpdatesController.getProjectUpdatesByProjectId);
 
 //Sciencetific Reviews
-rout.get("/SciReviews/:userId", ScientificReviewController.getScientificReviewsByUserId);
+rout.get("/scientific-reviews/user/:userId", ScientificReviewController.getScientificReviewsByUserId);
+rout.post("/scientific-reviews", ScientificReviewController.addScientificReview);
+rout.put("/scientific-reviews/:id", ScientificReviewController.updateScientificReview);
+rout.delete("/scientific-reviews/:id", ScientificReviewController.deleteScientificReview);
+
+
+
 
 //News
 rout.get("/news/:userId", NewsController.getNewsByUserId);
+rout.post("/news", NewsController.addNews);
+rout.put("/news/:newsId", NewsController.updateNews);
+rout.delete("/news/:newsId", NewsController.deleteNews);
 
 
 //Comments
 rout.get("/project-comments/:projectId", ProjectCommentsController.getProjectCommentsByProjectId);
+rout.post("/project-comments", ProjectCommentsController.addProjectComment);
+rout.put("/project-comments/:commentId", ProjectCommentsController.updateProjectComment);
+rout.delete("/project-comments/:commentId", ProjectCommentsController.deleteProjectComment);
 
 
 export default rout;
