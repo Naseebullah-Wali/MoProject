@@ -3,17 +3,18 @@ import { userControllers } from "../controllers/pageControllers";
 import { body } from "express-validator";
 import jwtout from "../middleware/jwtout";
 import { regionControllers } from "../controllers/regionControllers";
-import { countryControllers } from "../controllers/countriesControllers";
-import { companyControllers } from "../controllers/companiesController";
+// import { companyControllers } from "../controllers/companiesController";
 import { topicsController } from "../controllers/topicsControllers";
 import { projectController } from "../controllers/projectControllers";
 import { ProjectTopicController } from "../controllers/functionCallController"; // Import the new controller
 import { ProjectUpdatesController } from "../controllers/projectUpdateFunctionCall";
-import { ProjectCommentController } from "../controllers/projectCommentsConrtollers";
 import { NewsController } from "../controllers/funcNews";
 import { ProjectCommentsController } from "../controllers/funcComments";
 import { ScientificReviewController } from "../controllers/funcScientificReview";
-
+import { CountriesController } from "../controllers/funcCountries";
+import { CompaniesController } from "../controllers/funcCompanies";
+import { CharactersController } from "../controllers/funcCharacter";
+import { StatusController } from "../controllers/funcStatus";
 
 
 const rout: express.Router = express.Router();
@@ -35,15 +36,6 @@ rout.get('/jwt', jwtout, (req, res) => {
 // Regions
 rout.get('/regions', regionControllers.ShowRegions);
 
-// Countries
-rout.get('/countries', countryControllers.getAllCountries);
-
-// Companies
-rout.post('/companies', companyControllers.createCompany);
-rout.get('/companies', companyControllers.getAllCompanies);
-rout.get('/companies/:id', companyControllers.getCompanyById);
-rout.put('/companies/:id', companyControllers.updateCompany);
-rout.delete('/companies/:id', companyControllers.deleteCompany);
 
 // Topics
 rout.post('/topics', topicsController.createTopic);
@@ -60,30 +52,22 @@ rout.put('/projects/:id', projectController.updateProject);
 rout.delete('/projects/:id', projectController.deleteProject);
 
 
-
-//Comments
-// rout.post("/project-comments", ProjectCommentController.addComment);
-// rout.get("/project-comments", ProjectCommentController.getAllComments);
-// rout.get("/project-comments/:id", ProjectCommentController.getCommentById);
-// rout.put("/project-comments/:id", ProjectCommentController.updateComment);
-// rout.delete("/project-comments/:id", ProjectCommentController.deleteComment);
-
-
-
 //function get project by user id
 rout.get('/project-topics/:id', ProjectTopicController.getProjectTopicsByProjectId);
 rout.get("/project-updates/:id", ProjectUpdatesController.getProjectUpdatesByProjectId);
 
+
+
 //Sciencetific Reviews
+rout.get("/scientific-reviews",ScientificReviewController.getScientificReviews)
 rout.get("/scientific-reviews/user/:userId", ScientificReviewController.getScientificReviewsByUserId);
 rout.post("/scientific-reviews", ScientificReviewController.addScientificReview);
 rout.put("/scientific-reviews/:id", ScientificReviewController.updateScientificReview);
 rout.delete("/scientific-reviews/:id", ScientificReviewController.deleteScientificReview);
 
 
-
-
 //News
+rout.get("/news", NewsController.getAllNews)
 rout.get("/news/:userId", NewsController.getNewsByUserId);
 rout.post("/news", NewsController.addNews);
 rout.put("/news/:newsId", NewsController.updateNews);
@@ -96,5 +80,37 @@ rout.post("/project-comments", ProjectCommentsController.addProjectComment);
 rout.put("/project-comments/:commentId", ProjectCommentsController.updateProjectComment);
 rout.delete("/project-comments/:commentId", ProjectCommentsController.deleteProjectComment);
 
+
+//Countries
+rout.get("/countries", CountriesController.getAllCountries);
+rout.get("/countries/:id", CountriesController.getCountryById);
+rout.post("/countries", CountriesController.addCountry);
+rout.put("/countries/:id", CountriesController.updateCountry);
+rout.delete("/countries/:id", CountriesController.deleteCountry);
+
+
+//Companies
+rout.get("/companies", CompaniesController.getAllCompanies);
+rout.get("/companies/:id", CompaniesController.getCompanyById);
+rout.post("/companies", CompaniesController.addCompany);
+rout.put("/companies/:id", CompaniesController.updateCompany);
+rout.delete("/companies/:id", CompaniesController.deleteCompany);
+
+
+//Characters
+rout.get("/characters", CharactersController.getAllCharacters);
+rout.get("/characters/:id", CharactersController.getCharacterById);
+rout.post("/characters", CharactersController.addCharacter);
+rout.put("/characters/:id", CharactersController.updateCharacter);
+rout.delete("/characters/:id", CharactersController.deleteCharacter);
+
+
+
+//Statuses
+rout.get("/statuses", StatusController.getAllStatuses);
+rout.get("/statuses/:id", StatusController.getStatusById);
+rout.post("/statuses", StatusController.addStatus);
+rout.put("/statuses/:id", StatusController.updateStatus);
+rout.delete("/statuses/:id", StatusController.deleteStatus);
 
 export default rout;

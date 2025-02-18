@@ -1,5 +1,6 @@
 import express from "express";
 import { supabase } from "../dbConfig/dbConfig";
+import { UpdatedAt } from "sequelize-typescript";
 
 export class ProjectCommentsController {
   public static async getProjectCommentsByProjectId(req: express.Request, res: express.Response) {
@@ -63,7 +64,7 @@ export class ProjectCommentsController {
         return res.status(400).json({ message: "Comment ID is required" });
       }
 
-      let { data, error } = await supabase.from("Project_Comments").update({ Comment, Is_Deleted, update_date: new Date() }).eq("id", commentId).select();
+      let { data, error } = await supabase.from("Project_Comments").update({ Comment, Is_Deleted, UpdatedAt: new Date() }).eq("id", commentId).select();
 
       if (error) {
         console.error("Error updating project comment:", error);
@@ -85,7 +86,7 @@ export class ProjectCommentsController {
         return res.status(400).json({ message: "Comment ID is required" });
       }
 
-      let { data, error } = await supabase.from("Project_Comments").update({ Is_Deleted: true, update_date: new Date() }).eq("id", commentId).select();
+      let { data, error } = await supabase.from("Project_Comments").update({ Is_Deleted: true, UpdatedAt: new Date() }).eq("id", commentId).select();
 
       if (error) {
         console.error("Error deleting project comment:", error);

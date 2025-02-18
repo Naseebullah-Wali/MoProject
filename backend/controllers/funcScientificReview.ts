@@ -2,6 +2,31 @@ import express from "express";
 import { supabase } from "../dbConfig/dbConfig";
 
 export class ScientificReviewController {
+  // Get all scientific reviews (excluding soft-deleted ones)
+  public static async getScientificReviews(req: express.Request, res: express.Response) {
+    try {
+      let { data, error } = await supabase
+        .from("ScientificReviews")
+        .select("*")
+        .eq("Is_Deleted", false); // Exclude soft-deleted reviews
+
+      if (error) {
+        console.error("Error fetching scientific reviews:", error);
+        return res.status(500).json({ message: "Failed to fetch scientific reviews", error });
+      }
+
+      if (!data || data.length === 0) {
+        return res.status(404).json({ message: "No scientific reviews found" });
+      }
+
+      res.json(data);
+    } catch (error) {
+      console.error("Server Error:", error);
+      res.status(500).json({ message: "Server error", error });
+    }
+  }
+
+  // Get scientific reviews by User ID
   public static async getScientificReviewsByUserId(req: express.Request, res: express.Response) {
     try {
       const userId = req.params.userId;
@@ -22,7 +47,7 @@ export class ScientificReviewController {
       if (!data || data.length === 0) {
         return res.status(404).json({ message: "No scientific reviews found for this user" });
       }
-      
+
       res.json(data);
     } catch (error) {
       console.error("Server Error:", error);
@@ -30,17 +55,22 @@ export class ScientificReviewController {
     }
   }
 
+  // Add a new scientific review
   public static async addScientificReview(req: express.Request, res: express.Response) {
     try {
-      const { Permalink, Title, Content_text, Date, Image, Tematiki, Source, Link_to_source } = req.body;
+      const { Old_ID, Permalink, Title, Content_text, reviewDate, Image, Tematiki, Source, Link_to_source } = req.body;
 
       if (!Title || !Content_text || !Source) {
         return res.status(400).json({ message: "Title, Content, and Source are required" });
       }
 
-      let { data, error } = await supabase.from("Scientific_Reviews").insert([
-        { Permalink, Title, Content_text, Date, Image, Tematiki, Source, Link_to_source }
-      ]).select();
+
+      let { data, error } = await supabase
+        .from("ScientificReviews")
+        .insert([
+          { Old_ID, Permalink, Title, Content_text, reviewDate: reviewDate, Image, Tematiki, Source, Link_to_source, Is_Deleted: false, createdAt: new Date(), updatedAt: new Date() }
+        ])
+        .select();
 
       if (error) {
         console.error("Error adding scientific review:", error);
@@ -54,18 +84,34 @@ export class ScientificReviewController {
     }
   }
 
+  // Update the most recent scientific review
   public static async updateScientificReview(req: express.Request, res: express.Response) {
     try {
-      const reviewId = req.params.reviewId;
-      const { Permalink, Title, Content_text, Date, Image, Tematiki, Source, Link_to_source, Is_Deleted } = req.body;
+      const reviewID = req.params.id;
+      const { Old_ID, Permalink, Title, Content_text, reviewDate, Image, Tematiki, Source, Link_to_source, Is_Deleted } = req.body;
 
-      if (!reviewId) {
-        return res.status(400).json({ message: "Review ID is required" });
+      if (!reviewID) {
+        return res.status(400).json({ message: "ID is required" });
       }
 
-      let { data, error } = await supabase.from("Scientific_Reviews").update({
-        Permalink, Title, Content_text, Date, Image, Tematiki, Source, Link_to_source, Is_Deleted
-      }).eq("id", reviewId).select();
+      // Update the most recent review
+      let { data, error } = await supabase
+        .from("ScientificReviews")
+        .update({
+          Old_ID,
+          Permalink,
+          Title,
+          Content_text,
+          reviewDate: reviewDate,
+          Image,
+          Tematiki,
+          Source,
+          Link_to_source,
+          Is_Deleted,
+          updatedAt: new Date(),
+        })
+        .eq("id", reviewID)
+        .select();
 
       if (error) {
         console.error("Error updating scientific review:", error);
@@ -79,15 +125,19 @@ export class ScientificReviewController {
     }
   }
 
+  // Soft delete the most recent scientific review
   public static async deleteScientificReview(req: express.Request, res: express.Response) {
     try {
-      const reviewId = req.params.reviewId;
-
-      if (!reviewId) {
-        return res.status(400).json({ message: "Review ID is required" });
+  
+      const reviewID = req.params.id;
+      if (!reviewID) {
+        return res.status(400).json({ message: "ID is required" });
       }
-
-      let { data, error } = await supabase.from("Scientific_Reviews").update({ Is_Deleted: true }).eq("id", reviewId).select();
+      let { data, error } = await supabase
+      .from("ScientificReviews")
+        .update({ Is_Deleted: true, updatedAt: new Date() }) // Fixed soft delete
+        .eq("id", reviewID)
+        .select();
 
       if (error) {
         console.error("Error deleting scientific review:", error);
