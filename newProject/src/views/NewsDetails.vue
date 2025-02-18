@@ -5,9 +5,9 @@
           <div class="col-lg-8 col-md-10 mx-auto">
             <!-- News Header -->
             <div class="news-header mb-4">
-              <h1 class="news-title">{{ newsDetails.Title }}</h1>
+              <h1 class="news-title">{{ newsDetails.title }}</h1>
               <div class="news-meta">
-                <span class="badge bg-primary me-2">{{ newsDetails.Source }}</span>
+                <span class="badge bg-primary me-2">{{ newsDetails.source }}</span>
                 <span class="badge bg-secondary me-2">{{ newsDetails.all_topics }}</span>
                 <span class="text-muted">
                   <i class="bi bi-calendar3"></i> 
@@ -38,7 +38,7 @@
   
             <!-- News Content -->
             <div class="news-content mb-4">
-              <div v-html="newsDetails.Content_Text" class="content-text"></div>
+              <div v-html="newsDetails.content_text" class="content-text"></div>
             </div>
   
             <!-- Action Buttons -->
@@ -129,8 +129,8 @@
           const data = await response.json();
           this.newsDetails = data.find(item => item.id === parseInt(this.$route.params.id));
           
-          if (this.newsDetails?.Image) {
-            this.images = this.newsDetails.Image.split('|');
+          if (this.newsDetails?.image) {
+            this.images = this.newsDetails.image.split('|');
           }
         } catch (error) {
           console.error('Error fetching news details:', error);

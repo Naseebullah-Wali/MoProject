@@ -49,19 +49,19 @@
         <div class="card h-100" @click="goToDetailPage(news.id)" style="cursor: pointer;">
           <div class="card-img-container">
             <img 
-              v-if="news.Image" 
-              :src="news.Image" 
+              v-if="news.image" 
+              :src="news.image" 
               class="card-img-top" 
               alt="News Image"
             />
           </div>
           <div class="card-body">
-            <h5 class="card-title">{{ news.Title }}</h5>
-            <p class="card-text" v-html="truncateText(news.Content_Text, 200)"></p>
+            <h5 class="card-title">{{ news.title }}</h5>
+            <p class="card-text" v-html="truncateText(news.content_text, 200)"></p>
           </div>
           <div class="card-footer text-muted">
             <small>
-              Source: {{ news.Source }} | Topics: {{ news.all_topics }} | Published: {{ formatDate(news.created_at) }}
+              Source: {{ news.source }} | Topics: {{ news.all_topics }} | Published: {{ formatDate(news.created_at) }}
             </small>
           </div>
         </div>
@@ -97,7 +97,7 @@ export default {
       return [...new Set(this.news.map((n) => n.all_topics))];
     },
     uniqueSources() {
-      return [...new Set(this.news.map((n) => n.Source))];
+      return [...new Set(this.news.map((n) => n.source))];
     },
     isFilterApplied() {
       return this.filters.topic || this.filters.source || this.searchQuery;

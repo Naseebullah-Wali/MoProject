@@ -138,7 +138,7 @@ export default {
     },
     sortReviews() {
       this.filteredReviews.sort((a, b) => {
-        if (this.sortBy === "CreatedAt") return new Date(b.CreatedAt) - new Date(a.CreatedAt);
+        if (this.sortBy === "CreatedAt") return new Date(b.createdAt) - new Date(a.createdAt);
         return a[this.sortBy].localeCompare(b[this.sortBy]);
       });
       this.updateVisibleReviews();

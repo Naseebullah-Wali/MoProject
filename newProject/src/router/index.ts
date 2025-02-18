@@ -37,7 +37,7 @@ const routes: Array<RouteRecordRaw> = [
   { path: '/companies', name: 'companies', component: CompaniesView },
   { path: '/users', name: 'users', component: UsersView },
   { path: '/reviews/:id', name: 'reviews', component: ReviewsView },
-  { path: '/reviews', name: 'reviews', component: ReviewsView },
+  // { path: '/reviews', name: 'reviews', component: ReviewsView },
   { path: '/news/:id', name: 'news', component: NewsDetailsVue },
   { path: '/login', name: 'login', component: LoginView },
   { path: '/register', name: 'register', component: RegisterView },

@@ -61,7 +61,7 @@
 
     <!-- Comments Section -->
     <div class="mb-4">
-      <h2 class="h4 mb-3">Related Comments</h2>
+      <h2 class="h4 mb-3">Comments</h2>
       <div v-if="comments.length > 0" class="list-group mb-3">
         <div v-for="comment in comments" :key="comment.id" class="list-group-item">
           <div class="d-flex justify-content-between align-items-center mb-1">
