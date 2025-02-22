@@ -35,7 +35,7 @@
               <li><router-link class="dropdown-item" to="/statuses">Statuses</router-link></li>
               <li><router-link class="dropdown-item" to="/topics">Topics</router-link></li>
               <li><router-link class="dropdown-item" to="/user_management">User Management</router-link></li>
-              <li><router-link class="dropdown-item" to="/regions">Regions</router-link></li>
+              <li><router-link class="dropdown-item" to="/regions">Project Updates</router-link></li>
               <li><router-link class="dropdown-item" to="/news_edit">News Edit</router-link></li>
               <li><router-link class="dropdown-item" to="/scientific_reviews_edit">Scientific Reviews Edit</router-link></li>
               <li><router-link class="dropdown-item" to="/project_comments">Project Comments</router-link></li>

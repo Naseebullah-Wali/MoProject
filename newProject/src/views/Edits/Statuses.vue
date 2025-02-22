@@ -3,19 +3,19 @@
     <div class="row">
       <div class="col">
         <div class="d-flex justify-content-between align-items-center mb-4">
-          <h1 class="h3 mb-0">Characters</h1>
+          <h1 class="h3 mb-0">Statuses</h1>
           <button
             @click="showCreateModal = true"
             class="btn btn-primary"
           >
-            <i class="bi bi-plus"></i> Add Character
+            <i class="bi bi-plus"></i> Add Status
           </button>
         </div>
 
         <!-- Table Component -->
         <TableComponent
-          :data="characters"
-          :exclude-columns="['id']"
+          :data="statuses"
+          :exclude-columns="['id','createdAt','updatedAt']"
           @edit="handleEdit"
           @delete="handleDelete"
         >
@@ -42,7 +42,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">
-              {{ isEditing ? 'Edit Character' : 'Add New Character' }}
+              {{ isEditing ? 'Edit Status' : 'Add New Status' }}
             </h5>
             <button
               type="button"
@@ -53,14 +53,14 @@
           <div class="modal-body">
             <form @submit.prevent="isEditing ? handleUpdate() : handleCreate()">
               <div class="mb-3">
-                <label class="form-label">Character Name</label>
+                <label class="form-label">Status Name</label>
                 <input
-                  v-model="formData.Character_name"
+                  v-model="formData.Status_Name"
                   class="form-control"
-                  :class="{ 'is-invalid': errors.Character_name }"
+                  :class="{ 'is-invalid': errors.Status_Name }"
                   required
                 >
-                <div class="invalid-feedback">{{ errors.Character_name }}</div>
+                <div class="invalid-feedback">{{ errors.Status_Name }}</div>
               </div>
               <div class="modal-footer px-0 pb-0">
                 <button
@@ -97,40 +97,40 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import TableComponent from '../components/TableComponent.vue';
+import TableComponent from '../../components/TableComponent.vue';
 
-const API_URL = 'http://localhost:900/characters';
-const characters = ref([]);
+const API_URL = 'http://localhost:900/statuses';
+const statuses = ref([]);
 const showCreateModal = ref(false);
 const isEditing = ref(false);
 const loading = ref(false);
 const errors = ref({});
 
 const formData = ref({
-  Character_name: ''
+  Status_Name: ''
 });
 
 const initialFormState = {
-  Character_name: ''
+  Status_Name: ''
 };
 
-onMounted(fetchCharacters);
+onMounted(fetchStatuses);
 
-async function fetchCharacters() {
+async function fetchStatuses() {
   try {
     const response = await fetch(API_URL);
-    if (!response.ok) throw new Error('Failed to fetch characters');
-    characters.value = await response.json();
+    if (!response.ok) throw new Error('Failed to fetch statuses');
+    statuses.value = await response.json();
   } catch (error) {
-    showError('Error fetching characters', error);
+    showError('Error fetching statuses', error);
   }
 }
 
 function validateForm() {
   errors.value = {};
 
-  if (!formData.value.Character_name.trim()) {
-    errors.value.Character_name = 'Character name is required';
+  if (!formData.value.Status_Name.trim()) {
+    errors.value.Status_Name = 'Status name is required';
   }
 
   return Object.keys(errors.value).length === 0;
@@ -149,22 +149,22 @@ async function handleCreate() {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to create character');
+      throw new Error(errorData.message || 'Failed to create status');
     }
 
-    await fetchCharacters();
+    await fetchStatuses();
     closeModal();
   } catch (error) {
     console.error('Request payload:', formData.value);
     console.error('Response:', error);
-    showError('Error creating character', error);
+    showError('Error creating status', error);
   } finally {
     loading.value = false;
   }
 }
 
-function handleEdit(character) {
-  formData.value = { ...character };
+function handleEdit(status) {
+  formData.value = { ...status };
   isEditing.value = true;
 }
 
@@ -181,30 +181,30 @@ async function handleUpdate() {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to update character');
+      throw new Error(errorData.message || 'Failed to update status');
     }
 
-    await fetchCharacters();
+    await fetchStatuses();
     closeModal();
   } catch (error) {
     console.error('Request payload:', formData.value);
     console.error('Response:', error);
-    showError('Error updating character', error);
+    showError('Error updating status', error);
   } finally {
     loading.value = false;
   }
 }
 
 async function handleDelete(id) {
-  if (!confirm('Are you sure you want to delete this character?')) return;
+  if (!confirm('Are you sure you want to delete this status?')) return;
 
   try {
     const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-    if (!response.ok) throw new Error('Failed to delete character');
+    if (!response.ok) throw new Error('Failed to delete status');
 
-    await fetchCharacters();
+    await fetchStatuses();
   } catch (error) {
-    showError('Error deleting character', error);
+    showError('Error deleting status', error);
   }
 }
 
@@ -221,18 +221,18 @@ function showError(message, error) {
 }
 
 function exportToCSV() {
-  const headers = ['Character Name'];
+  const headers = ['Status Name'];
   const csvContent = [
     headers.join(','),
-    ...characters.value.map(character =>
-      [character.Character_name].join(',')
+    ...statuses.value.map(status =>
+      [status.Status_Name].join(',')
     )
   ].join('\n');
 
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = 'characters.csv';
+  link.download = 'statuses.csv';
   link.click();
 }
 </script>

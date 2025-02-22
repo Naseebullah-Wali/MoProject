@@ -15,7 +15,7 @@
         <!-- Table Component -->
         <TableComponent
           :data="truncatedScientificReviews"
-          :exclude-columns="['id']"
+          :exclude-columns="['id','createdAt','updatedAt','Old_ID','Permalink','Content_text','Image','Source','Link_to_source','Tematiki']"
           @edit="handleEdit"
           @delete="handleDelete"
         >

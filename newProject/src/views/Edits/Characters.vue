@@ -3,19 +3,19 @@
     <div class="row">
       <div class="col">
         <div class="d-flex justify-content-between align-items-center mb-4">
-          <h1 class="h3 mb-0">News Articles</h1>
+          <h1 class="h3 mb-0">Characters</h1>
           <button
             @click="showCreateModal = true"
             class="btn btn-primary"
           >
-            <i class="bi bi-plus"></i> Add News Article
+            <i class="bi bi-plus"></i> Add Character
           </button>
         </div>
 
         <!-- Table Component -->
         <TableComponent
-          :data="truncatedNews"
-          :exclude-columns="['id']"
+          :data="characters"
+          :exclude-columns="['id','createdAt','updatedAt']"
           @edit="handleEdit"
           @delete="handleDelete"
         >
@@ -42,7 +42,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">
-              {{ isEditing ? 'Edit News Article' : 'Add New News Article' }}
+              {{ isEditing ? 'Edit Character' : 'Add New Character' }}
             </h5>
             <button
               type="button"
@@ -53,58 +53,14 @@
           <div class="modal-body">
             <form @submit.prevent="isEditing ? handleUpdate() : handleCreate()">
               <div class="mb-3">
-                <label class="form-label">Title</label>
+                <label class="form-label">Character Name</label>
                 <input
-                  v-model="formData.Title"
+                  v-model="formData.Character_name"
                   class="form-control"
-                  :class="{ 'is-invalid': errors.Title }"
+                  :class="{ 'is-invalid': errors.Character_name }"
                   required
                 >
-                <div class="invalid-feedback">{{ errors.Title }}</div>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Content</label>
-                <textarea
-                  v-model="formData.Content_Text"
-                  class="form-control"
-                  :class="{ 'is-invalid': errors.Content_Text }"
-                  rows="5"
-                  required
-                ></textarea>
-                <div class="invalid-feedback">{{ errors.Content_Text }}</div>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Image URL</label>
-                <input
-                  v-model="formData.Image"
-                  class="form-control"
-                  :class="{ 'is-invalid': errors.Image }"
-                >
-                <div class="invalid-feedback">{{ errors.Image }}</div>
-                <div class="form-text">
-                  Enter a valid URL for the image
-                </div>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Source</label>
-                <input
-                  v-model="formData.Source"
-                  class="form-control"
-                  :class="{ 'is-invalid': errors.Source }"
-                >
-                <div class="invalid-feedback">{{ errors.Source }}</div>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Link to Source</label>
-                <input
-                  v-model="formData.Link_to_source"
-                  class="form-control"
-                  :class="{ 'is-invalid': errors.Link_to_source }"
-                >
-                <div class="invalid-feedback">{{ errors.Link_to_source }}</div>
-                <div class="form-text">
-                  Enter a valid URL for the source link
-                </div>
+                <div class="invalid-feedback">{{ errors.Character_name }}</div>
               </div>
               <div class="modal-footer px-0 pb-0">
                 <button
@@ -141,85 +97,43 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import TableComponent from '../components/TableComponent.vue';
+import TableComponent from '../../components/TableComponent.vue';
 
-const API_URL = 'http://localhost:900/news';
-const newsArticles = ref([]);
-const truncatedNews = ref([]);
+const API_URL = 'http://localhost:900/characters';
+const characters = ref([]);
 const showCreateModal = ref(false);
 const isEditing = ref(false);
 const loading = ref(false);
 const errors = ref({});
 
 const formData = ref({
-  Title: '',
-  Content_Text: '',
-  Image: '',
-  Source: '',
-  Link_to_source: ''
+  Character_name: ''
 });
 
 const initialFormState = {
-  Title: '',
-  Content_Text: '',
-  Image: '',
-  Source: '',
-  Link_to_source: ''
+  Character_name: ''
 };
 
-onMounted(fetchNewsArticles);
+onMounted(fetchCharacters);
 
-async function fetchNewsArticles() {
+async function fetchCharacters() {
   try {
     const response = await fetch(API_URL);
-    if (!response.ok) throw new Error('Failed to fetch news articles');
-    newsArticles.value = await response.json();
-    truncateContentText();
+    if (!response.ok) throw new Error('Failed to fetch characters');
+    characters.value = await response.json();
   } catch (error) {
-    showError('Error fetching news articles', error);
+    showError('Error fetching characters', error);
   }
-}
-
-function truncateContentText() {
-  truncatedNews.value = newsArticles.value.map(article => ({
-    ...article,
-    Content_Text: truncateText(article.Content_Text, 50)
-  }));
 }
 
 function validateForm() {
   errors.value = {};
 
-  if (!formData.value.Title.trim()) {
-    errors.value.Title = 'Title is required';
-  }
-
-  if (!formData.value.Content_Text.trim()) {
-    errors.value.Content_Text = 'Content is required';
-  }
-
-  if (formData.value.Image && !isValidUrl(formData.value.Image)) {
-    errors.value.Image = 'Please enter a valid URL';
-  }
-
-  if (!formData.value.Source.trim()) {
-    errors.value.Source = 'Source is required';
-  }
-
-  if (formData.value.Link_to_source && !isValidUrl(formData.value.Link_to_source)) {
-    errors.value.Link_to_source = 'Please enter a valid URL';
+  if (!formData.value.Character_name.trim()) {
+    errors.value.Character_name = 'Character name is required';
   }
 
   return Object.keys(errors.value).length === 0;
-}
-
-function isValidUrl(string) {
-  try {
-    new URL(string);
-    return true;
-  } catch (_) {
-    return false;
-  }
 }
 
 async function handleCreate() {
@@ -235,22 +149,22 @@ async function handleCreate() {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to create news article');
+      throw new Error(errorData.message || 'Failed to create character');
     }
 
-    await fetchNewsArticles();
+    await fetchCharacters();
     closeModal();
   } catch (error) {
     console.error('Request payload:', formData.value);
     console.error('Response:', error);
-    showError('Error creating news article', error);
+    showError('Error creating character', error);
   } finally {
     loading.value = false;
   }
 }
 
-function handleEdit(newsArticle) {
-  formData.value = { ...newsArticle };
+function handleEdit(character) {
+  formData.value = { ...character };
   isEditing.value = true;
 }
 
@@ -267,30 +181,30 @@ async function handleUpdate() {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to update news article');
+      throw new Error(errorData.message || 'Failed to update character');
     }
 
-    await fetchNewsArticles();
+    await fetchCharacters();
     closeModal();
   } catch (error) {
     console.error('Request payload:', formData.value);
     console.error('Response:', error);
-    showError('Error updating news article', error);
+    showError('Error updating character', error);
   } finally {
     loading.value = false;
   }
 }
 
 async function handleDelete(id) {
-  if (!confirm('Are you sure you want to delete this news article?')) return;
+  if (!confirm('Are you sure you want to delete this character?')) return;
 
   try {
     const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-    if (!response.ok) throw new Error('Failed to delete news article');
+    if (!response.ok) throw new Error('Failed to delete character');
 
-    await fetchNewsArticles();
+    await fetchCharacters();
   } catch (error) {
-    showError('Error deleting news article', error);
+    showError('Error deleting character', error);
   }
 }
 
@@ -307,26 +221,19 @@ function showError(message, error) {
 }
 
 function exportToCSV() {
-  const headers = ['Title', 'Content', 'Image', 'Source', 'Link to Source'];
+  const headers = ['Character Name'];
   const csvContent = [
     headers.join(','),
-    ...newsArticles.value.map(newsArticle =>
-      [newsArticle.Title, truncateText(newsArticle.Content_Text, 10), newsArticle.Image, newsArticle.Source, newsArticle.Link_to_source].join(',')
+    ...characters.value.map(character =>
+      [character.Character_name].join(',')
     )
   ].join('\n');
 
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = 'news_articles.csv';
+  link.download = 'characters.csv';
   link.click();
-}
-
-function truncateText(text, maxLength) {
-  if (text.length <= maxLength) {
-    return text;
-  }
-  return text.substring(0, maxLength) + '...';
 }
 </script>
 

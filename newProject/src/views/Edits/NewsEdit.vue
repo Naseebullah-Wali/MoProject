@@ -3,19 +3,19 @@
     <div class="row">
       <div class="col">
         <div class="d-flex justify-content-between align-items-center mb-4">
-          <h1 class="h3 mb-0">Companies</h1>
+          <h1 class="h3 mb-0">News Articles</h1>
           <button
             @click="showCreateModal = true"
             class="btn btn-primary"
           >
-            <i class="bi bi-plus"></i> Add Company
+            <i class="bi bi-plus"></i> Add News Article
           </button>
         </div>
 
         <!-- Table Component -->
         <TableComponent
-          :data="companies"
-          :exclude-columns="['id']"
+          :data="truncatedNews"
+          :exclude-columns="['id','createdAt','updatedAt','created_at']"
           @edit="handleEdit"
           @delete="handleDelete"
         >
@@ -42,7 +42,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">
-              {{ isEditing ? 'Edit Company' : 'Add New Company' }}
+              {{ isEditing ? 'Edit News Article' : 'Add New News Article' }}
             </h5>
             <button
               type="button"
@@ -53,38 +53,58 @@
           <div class="modal-body">
             <form @submit.prevent="isEditing ? handleUpdate() : handleCreate()">
               <div class="mb-3">
-                <label class="form-label">Company Name</label>
+                <label class="form-label">Title</label>
                 <input
-                  v-model="formData.Company_Name"
+                  v-model="formData.Title"
                   class="form-control"
-                  :class="{ 'is-invalid': errors.Company_Name }"
+                  :class="{ 'is-invalid': errors.Title }"
                   required
                 >
-                <div class="invalid-feedback">{{ errors.Company_Name }}</div>
+                <div class="invalid-feedback">{{ errors.Title }}</div>
               </div>
               <div class="mb-3">
-                <label class="form-label">Company Logo URL</label>
-                <input
-                  v-model="formData.Company_Logo"
+                <label class="form-label">Content</label>
+                <textarea
+                  v-model="formData.Content_Text"
                   class="form-control"
-                  :class="{ 'is-invalid': errors.Company_Logo }"
+                  :class="{ 'is-invalid': errors.Content_Text }"
+                  rows="5"
                   required
+                ></textarea>
+                <div class="invalid-feedback">{{ errors.Content_Text }}</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Image URL</label>
+                <input
+                  v-model="formData.Image"
+                  class="form-control"
+                  :class="{ 'is-invalid': errors.Image }"
                 >
-                <div class="invalid-feedback">{{ errors.Company_Logo }}</div>
+                <div class="invalid-feedback">{{ errors.Image }}</div>
                 <div class="form-text">
-                  Enter a valid URL for the company's logo image
+                  Enter a valid URL for the image
                 </div>
               </div>
               <div class="mb-3">
-                <label class="form-label">About</label>
-                <textarea
-                  v-model="formData.About"
+                <label class="form-label">Source</label>
+                <input
+                  v-model="formData.Source"
                   class="form-control"
-                  :class="{ 'is-invalid': errors.About }"
-                  rows="3"
-                  required
-                ></textarea>
-                <div class="invalid-feedback">{{ errors.About }}</div>
+                  :class="{ 'is-invalid': errors.Source }"
+                >
+                <div class="invalid-feedback">{{ errors.Source }}</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Link to Source</label>
+                <input
+                  v-model="formData.Link_to_source"
+                  class="form-control"
+                  :class="{ 'is-invalid': errors.Link_to_source }"
+                >
+                <div class="invalid-feedback">{{ errors.Link_to_source }}</div>
+                <div class="form-text">
+                  Enter a valid URL for the source link
+                </div>
               </div>
               <div class="modal-footer px-0 pb-0">
                 <button
@@ -121,54 +141,73 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import TableComponent from '../components/TableComponent.vue';
+import TableComponent from '../../components/TableComponent.vue';
 
-const API_URL = 'http://localhost:900/companies';
-const companies = ref([]);
+const API_URL = 'http://localhost:900/news';
+const newsArticles = ref([]);
+const truncatedNews = ref([]);
 const showCreateModal = ref(false);
 const isEditing = ref(false);
 const loading = ref(false);
 const errors = ref({});
 
 const formData = ref({
-  Company_Name: '',
-  Company_Logo: '',
-  About: ''
+  Title: '',
+  Content_Text: '',
+  Image: '',
+  Source: '',
+  Link_to_source: ''
 });
 
 const initialFormState = {
-  Company_Name: '',
-  Company_Logo: '',
-  About: ''
+  Title: '',
+  Content_Text: '',
+  Image: '',
+  Source: '',
+  Link_to_source: ''
 };
 
-onMounted(fetchCompanies);
+onMounted(fetchNewsArticles);
 
-async function fetchCompanies() {
+async function fetchNewsArticles() {
   try {
     const response = await fetch(API_URL);
-    if (!response.ok) throw new Error('Failed to fetch companies');
-    companies.value = await response.json();
+    if (!response.ok) throw new Error('Failed to fetch news articles');
+    newsArticles.value = await response.json();
+    truncateContentText();
   } catch (error) {
-    showError('Error fetching companies', error);
+    showError('Error fetching news articles', error);
   }
+}
+
+function truncateContentText() {
+  truncatedNews.value = newsArticles.value.map(article => ({
+    ...article,
+    Content_Text: truncateText(article.Content_Text, 50)
+  }));
 }
 
 function validateForm() {
   errors.value = {};
 
-  if (!formData.value.Company_Name.trim()) {
-    errors.value.Company_Name = 'Company name is required';
+  if (!formData.value.Title.trim()) {
+    errors.value.Title = 'Title is required';
   }
 
-  if (!formData.value.Company_Logo.trim()) {
-    errors.value.Company_Logo = 'Company logo URL is required';
-  } else if (!isValidUrl(formData.value.Company_Logo)) {
-    errors.value.Company_Logo = 'Please enter a valid URL';
+  if (!formData.value.Content_Text.trim()) {
+    errors.value.Content_Text = 'Content is required';
   }
 
-  if (!formData.value.About.trim()) {
-    errors.value.About = 'About is required';
+  if (formData.value.Image && !isValidUrl(formData.value.Image)) {
+    errors.value.Image = 'Please enter a valid URL';
+  }
+
+  if (!formData.value.Source.trim()) {
+    errors.value.Source = 'Source is required';
+  }
+
+  if (formData.value.Link_to_source && !isValidUrl(formData.value.Link_to_source)) {
+    errors.value.Link_to_source = 'Please enter a valid URL';
   }
 
   return Object.keys(errors.value).length === 0;
@@ -196,22 +235,22 @@ async function handleCreate() {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to create company');
+      throw new Error(errorData.message || 'Failed to create news article');
     }
 
-    await fetchCompanies();
+    await fetchNewsArticles();
     closeModal();
   } catch (error) {
     console.error('Request payload:', formData.value);
     console.error('Response:', error);
-    showError('Error creating company', error);
+    showError('Error creating news article', error);
   } finally {
     loading.value = false;
   }
 }
 
-function handleEdit(company) {
-  formData.value = { ...company };
+function handleEdit(newsArticle) {
+  formData.value = { ...newsArticle };
   isEditing.value = true;
 }
 
@@ -228,30 +267,30 @@ async function handleUpdate() {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to update company');
+      throw new Error(errorData.message || 'Failed to update news article');
     }
 
-    await fetchCompanies();
+    await fetchNewsArticles();
     closeModal();
   } catch (error) {
     console.error('Request payload:', formData.value);
     console.error('Response:', error);
-    showError('Error updating company', error);
+    showError('Error updating news article', error);
   } finally {
     loading.value = false;
   }
 }
 
 async function handleDelete(id) {
-  if (!confirm('Are you sure you want to delete this company?')) return;
+  if (!confirm('Are you sure you want to delete this news article?')) return;
 
   try {
     const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-    if (!response.ok) throw new Error('Failed to delete company');
+    if (!response.ok) throw new Error('Failed to delete news article');
 
-    await fetchCompanies();
+    await fetchNewsArticles();
   } catch (error) {
-    showError('Error deleting company', error);
+    showError('Error deleting news article', error);
   }
 }
 
@@ -268,19 +307,26 @@ function showError(message, error) {
 }
 
 function exportToCSV() {
-  const headers = ['Company Name', 'Company Logo', 'About'];
+  const headers = ['Title', 'Content', 'Image', 'Source', 'Link to Source'];
   const csvContent = [
     headers.join(','),
-    ...companies.value.map(company =>
-      [company.Company_Name, company.Company_Logo, company.About].join(',')
+    ...newsArticles.value.map(newsArticle =>
+      [newsArticle.Title, truncateText(newsArticle.Content_Text, 10), newsArticle.Image, newsArticle.Source, newsArticle.Link_to_source].join(',')
     )
   ].join('\n');
 
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = 'companies.csv';
+  link.download = 'news_articles.csv';
   link.click();
+}
+
+function truncateText(text, maxLength) {
+  if (text.length <= maxLength) {
+    return text;
+  }
+  return text.substring(0, maxLength) + '...';
 }
 </script>
 
