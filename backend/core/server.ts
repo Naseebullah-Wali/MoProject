@@ -26,12 +26,11 @@ class App {
         const app = express();
 
         app.use(cors({
-            origin: 'https://moproject.onrender.com/', //frontend origin
+            origin: 'https://mo-project-jet.vercel.app', //frontend origin
             methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
             allowedHeaders: ['Content-Type', 'Authorization'],
             credentials: true // Enable if using cookies or authentication headers
         }));
-
         app.use(cookieParser());
         app.use(express.json());
 
