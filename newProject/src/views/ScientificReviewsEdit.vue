@@ -184,7 +184,7 @@
 import { ref, onMounted } from 'vue';
 import TableComponent from '../components/TableComponent.vue';
 
-const API_URL = 'http://localhost:900/scientific-reviews';
+const API_URL = 'https://moproject.onrender.com/scientific-reviews';
 const scientificReviews = ref([]);
 const truncatedScientificReviews = ref([]);
 const showCreateModal = ref(false);
@@ -223,6 +223,7 @@ async function fetchScientificReviews() {
     const response = await fetch(API_URL);
     if (!response.ok) throw new Error('Failed to fetch scientific reviews');
     scientificReviews.value = await response.json();
+    console.log(scientificReviews.value)
     truncateContentText();
   } catch (error) {
     showError('Error fetching scientific reviews', error);

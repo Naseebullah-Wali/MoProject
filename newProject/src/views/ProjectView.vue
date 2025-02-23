@@ -159,6 +159,7 @@ export default {
     async fetchProjects() {
       try {
         const response = await fetch("https://moproject.onrender.com/project-topics/1");
+        console.log(response)
         this.projects = await response.json();
         this.applyFilters();
       } catch (error) {
