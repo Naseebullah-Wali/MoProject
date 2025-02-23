@@ -26,7 +26,7 @@ class App {
         const app = express();
 
         app.use(cors({
-            origin: 'http://localhost:8080', //frontend origin
+            origin: 'https://moproject.onrender.com/', //frontend origin
             methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
             allowedHeaders: ['Content-Type', 'Authorization'],
             credentials: true // Enable if using cookies or authentication headers
