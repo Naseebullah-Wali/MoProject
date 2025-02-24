@@ -27,6 +27,7 @@ class App {
 
         app.use(cors({
             origin: 'https://mo-project-jet.vercel.app', //frontend origin
+            // origin: 'http://localhost:8080',
             methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
             allowedHeaders: ['Content-Type', 'Authorization'],
             credentials: true // Enable if using cookies or authentication headers

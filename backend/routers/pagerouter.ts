@@ -5,7 +5,7 @@ import jwtout from "../middleware/jwtout";
 import { regionControllers } from "../controllers/regionControllers";
 // import { companyControllers } from "../controllers/companiesController";
 import { topicsController } from "../controllers/topicsControllers";
-import { projectController } from "../controllers/projectControllers";
+// import { projectController } from "../controllers/projectControllers";
 import { ProjectTopicController } from "../controllers/functionCallController"; // Import the new controller
 import { ProjectUpdatesController } from "../controllers/projectUpdateFunctionCall";
 import { NewsController } from "../controllers/funcNews";
@@ -15,7 +15,7 @@ import { CountriesController } from "../controllers/funcCountries";
 import { CompaniesController } from "../controllers/funcCompanies";
 import { CharactersController } from "../controllers/funcCharacter";
 import { StatusController } from "../controllers/funcStatus";
-
+import upload from '../middleware/multer';
 
 const rout: express.Router = express.Router();
 
@@ -45,11 +45,11 @@ rout.put('/topics/:id', topicsController.updateTopic);
 rout.delete('/topics/:id', topicsController.deleteTopic);
 
 // Projects
-rout.post('/projects', projectController.createProject);
-rout.get('/projects', projectController.getProjects);
-rout.get('/projects/:id', projectController.getProjectById);
-rout.put('/projects/:id', projectController.updateProject);
-rout.delete('/projects/:id', projectController.deleteProject);
+// rout.post('/projects', projectController.createProject);
+// rout.get('/projects', projectController.getProjects);
+// rout.get('/projects/:id', projectController.getProjectById);
+// rout.put('/projects/:id', projectController.updateProject);
+// rout.delete('/projects/:id', projectController.deleteProject);
 
 
 //function get project by user id
@@ -79,21 +79,26 @@ rout.get("/project-comments/:projectId", ProjectCommentsController.getProjectCom
 rout.post("/project-comments", ProjectCommentsController.addProjectComment);
 rout.put("/project-comments/:commentId", ProjectCommentsController.updateProjectComment);
 rout.delete("/project-comments/:commentId", ProjectCommentsController.deleteProjectComment);
-
+rout.get("/project-comments",ProjectCommentsController.getAllComments)
 
 //Countries
 rout.get("/countries", CountriesController.getAllCountries);
 rout.get("/countries/:id", CountriesController.getCountryById);
-rout.post("/countries", CountriesController.addCountry);
-rout.put("/countries/:id", CountriesController.updateCountry);
+// rout.post("/countries", CountriesController.addCountry);
+// rout.put("/countries/:id", CountriesController.updateCountry);
 rout.delete("/countries/:id", CountriesController.deleteCountry);
+rout.post('/countries', upload.single('Flag'), CountriesController.addCountry);
+rout.put('/countries/:id', upload.single('Flag'), CountriesController.updateCountry);
+
 
 
 //Companies
+rout.post('/companies', upload.single('Company_Logo'), CompaniesController.addCompany);
+rout.put('/companies/:id', upload.single('Company_Logo'), CompaniesController.updateCompany);
 rout.get("/companies", CompaniesController.getAllCompanies);
 rout.get("/companies/:id", CompaniesController.getCompanyById);
-rout.post("/companies", CompaniesController.addCompany);
-rout.put("/companies/:id", CompaniesController.updateCompany);
+// rout.post("/companies", CompaniesController.addCompany);
+// rout.put("/companies/:id", CompaniesController.updateCompany);
 rout.delete("/companies/:id", CompaniesController.deleteCompany);
 
 
