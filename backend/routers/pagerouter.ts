@@ -15,7 +15,7 @@ import { CountriesController } from "../controllers/funcCountries";
 import { CompaniesController } from "../controllers/funcCompanies";
 import { CharactersController } from "../controllers/funcCharacter";
 import { StatusController } from "../controllers/funcStatus";
-import upload from '../middleware/multer';
+// import upload from '../middleware/multer';
 
 const rout: express.Router = express.Router();
 
@@ -87,14 +87,14 @@ rout.get("/countries/:id", CountriesController.getCountryById);
 // rout.post("/countries", CountriesController.addCountry);
 // rout.put("/countries/:id", CountriesController.updateCountry);
 rout.delete("/countries/:id", CountriesController.deleteCountry);
-rout.post('/countries', upload.single('Flag'), CountriesController.addCountry);
-rout.put('/countries/:id', upload.single('Flag'), CountriesController.updateCountry);
+// rout.post('/countries', upload.single('Flag'), CountriesController.addCountry);
+// rout.put('/countries/:id', upload.single('Flag'), CountriesController.updateCountry);
 
 
 
 //Companies
-rout.post('/companies', upload.single('Company_Logo'), CompaniesController.addCompany);
-rout.put('/companies/:id', upload.single('Company_Logo'), CompaniesController.updateCompany);
+// rout.post('/companies', upload.single('Company_Logo'), CompaniesController.addCompany);
+// rout.put('/companies/:id', upload.single('Company_Logo'), CompaniesController.updateCompany);
 rout.get("/companies", CompaniesController.getAllCompanies);
 rout.get("/companies/:id", CompaniesController.getCompanyById);
 // rout.post("/companies", CompaniesController.addCompany);
