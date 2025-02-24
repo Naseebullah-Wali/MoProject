@@ -6,7 +6,7 @@
           <router-link to="/privacy-policy" class="text-decoration-none text-light">Privacy Policy</router-link> - 
           <router-link to="/disclaimer" class="text-decoration-none text-light">Disclaimer</router-link> - 
           Developed by 
-          <a href="https://yourdeveloperwebsite.com" class="text-decoration-none text-light" target="_blank">Your Company</a>
+          <a href="https://yourdeveloperwebsite.com" class="text-decoration-none text-light" target="_blank">+++</a>
         </p>
       </div>
     </footer>

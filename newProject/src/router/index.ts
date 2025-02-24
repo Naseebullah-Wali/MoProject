@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-import HomeView from '../views/HomeView.vue';
+// import HomeView from '../views/HomeView.vue';
 import ProjectView from '../views/ProjectView.vue';
 import ProjectEdit from '../views/Edits/ProjectsEdit.vue';
 import TopicsView from '../views/TopicsView.vue';
@@ -9,7 +9,7 @@ import ReviewsView from '../views/ReviewsView.vue';
 import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
 import ProjectDetails from '../views/ProjectDetails.vue';
-import UpdateDetail from '../views/UpdateDetail.vue';
+// import UpdateDetail from '../views/UpdateDetail.vue';
 import NewsDetailsVue from '../views/NewsDetails.vue';
 import CountriesVue from '../views/Edits/CountriesEdit.vue';
 import ProjectsEditVue from '../views/Edits/ProjectsEdit.vue';
@@ -24,7 +24,7 @@ import CompaniesEditVue from '../views/Edits/CompaniesEdit.vue';
 const routes: Array<RouteRecordRaw> = [
   { path: '/', 
     name: 'home', 
-    component: HomeView 
+    component: ProjectView 
   },
   { path: '/ProductUpdateEdit', 
     name: 'ProductUpdateEdit', 
@@ -39,7 +39,7 @@ const routes: Array<RouteRecordRaw> = [
   { path: '/login', name: 'login', component: LoginView },
   { path: '/register', name: 'register', component: RegisterView },
   { path: '/projects1/:id', name: 'projectDetails1', component: ProjectDetails },
-  { path: '/updates/:id', name: 'UpdateDetail', component: UpdateDetail },
+  // { path: '/updates/:id', name: 'UpdateDetail', component: UpdateDetail },
   { path: '/projects/:id', name: 'ProjectDetails', component: ProjectDetails },
   { path: '/projects_edit', name: 'ProjectsEdit', component: ProjectsEditVue },
   { path: '/countries', name: 'Countries', component: CountriesVue },

@@ -17,13 +17,6 @@
         </ul>
 
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item" v-if="isAdmin">
-            <router-link class="nav-link" to="/users">Users</router-link>
-          </li>
-          <li class="nav-item" v-if="isAdmin">
-            <router-link class="nav-link" to="/reviews">Reviews</router-link>
-          </li>
-
           <li class="nav-item dropdown" v-if="isAdmin">
             <button class="btn btn-secondary dropdown-toggle nav-link" type="button" id="adminDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Admin Pages

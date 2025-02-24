@@ -5,17 +5,11 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h1 class="h3 mb-0">Project Comments</h1>
           <div class="d-flex align-items-center gap-3">
-            <input
-              v-model="projectIdInput"
-              class="form-control form-control-sm"
-              placeholder="Enter Project ID"
-              style="width: 200px"
-            >
             <button
-              @click="fetchProjectComments"
+              @click="fetchAllComments"
               class="btn btn-secondary"
             >
-              <i class="bi bi-search"></i> Search
+              <i class="bi bi-arrow-repeat"></i> Refresh
             </button>
           </div>
         </div>
@@ -24,7 +18,7 @@
         <TableComponent
           v-if="projectComments.length > 0"
           :data="projectComments"
-          :exclude-columns="['id']"
+          :exclude-columns="['id', 'User_ID', 'Project_ID', 'Is_Deleted', 'CreatedAt', 'UpdatedAt']"
           @edit="handleEdit"
           @delete="handleDelete"
         >
@@ -38,7 +32,7 @@
           </template>
         </TableComponent>
         <div v-else class="text-center py-4">
-          <p>No data found. Please enter a Project ID and click Search.</p>
+          <p>No data found.</p>
         </div>
       </div>
     </div>
@@ -107,16 +101,15 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import TableComponent from '../components/TableComponent.vue';
 
-const API_URL = 'http://localhost:900/project-comments';
+// const API_URL = 'http://localhost:900/project-comments';
+const API_URL = 'https://moproject.onrender.com/project-comments';
 const projectComments = ref([]);
 const isEditing = ref(false);
 const loading = ref(false);
 const errors = ref({});
-const projectIdInput = ref('');
-const projectId = ref('');
 
 const formData = ref({
   Comment: '',
@@ -128,16 +121,9 @@ const initialFormState = {
   Project_ID: ''
 };
 
-async function fetchProjectComments() {
-  if (!projectIdInput.value.trim()) {
-    alert('Please enter a Project ID.');
-    return;
-  }
-
-  projectId.value = projectIdInput.value.trim();
-
+async function fetchAllComments() {
   try {
-    const response = await fetch(`${API_URL}/${projectId.value}`);
+    const response = await fetch(API_URL);
     if (!response.ok) throw new Error('Failed to fetch project comments');
     projectComments.value = await response.json();
   } catch (error) {
@@ -171,7 +157,7 @@ async function handleUpdate() {
       throw new Error(errorData.message || 'Failed to update comment');
     }
 
-    await fetchProjectComments();
+    await fetchAllComments();
     closeModal();
   } catch (error) {
     console.error('Request payload:', formData.value);
@@ -194,7 +180,7 @@ async function handleDelete(id) {
     const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
     if (!response.ok) throw new Error('Failed to delete comment');
 
-    await fetchProjectComments();
+    await fetchAllComments();
   } catch (error) {
     showError('Error deleting comment', error);
   }
@@ -212,11 +198,11 @@ function showError(message, error) {
 }
 
 function exportToCSV() {
-  const headers = ['Comment', 'CreatedAt', 'UpdatedAt', 'Name'];
+  const headers = ['Comment', 'User_Name', 'Project_Title'];
   const csvContent = [
     headers.join(','),
     ...projectComments.value.map(comment =>
-      [comment.Comment, comment.CreatedAt, comment.UpdatedAt, comment.Name].join(',')
+      [comment.Comment, comment.User_Name, comment.Project_Title].join(',')
     )
   ].join('\n');
 
@@ -226,6 +212,10 @@ function exportToCSV() {
   link.download = 'project-comments.csv';
   link.click();
 }
+
+onMounted(() => {
+  fetchAllComments();
+});
 </script>
 
 <style scoped>

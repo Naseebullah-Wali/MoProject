@@ -185,6 +185,7 @@ import { ref, onMounted } from 'vue';
 import TableComponent from '../components/TableComponent.vue';
 
 const API_URL = 'https://moproject.onrender.com/scientific-reviews';
+// const API_URL = 'http://localhost:900/scientific-reviews';
 const scientificReviews = ref([]);
 const truncatedScientificReviews = ref([]);
 const showCreateModal = ref(false);
