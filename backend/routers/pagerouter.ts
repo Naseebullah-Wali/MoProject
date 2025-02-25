@@ -4,10 +4,12 @@ import { body } from "express-validator";
 import jwtout from "../middleware/jwtout";
 import { regionControllers } from "../controllers/regionControllers";
 // import { companyControllers } from "../controllers/companiesController";
-import { topicsController } from "../controllers/topicsControllers";
-// import { projectController } from "../controllers/projectControllers";
+// import { topicsController } from "../controllers/topicsControllers";
+import { ProjectUpdatesController } from "../controllers/funcProjectUpdates";
+import { TopicsController } from "../controllers/funcTopics";
+import { ProjectsController } from "../controllers/funcProject";
 import { ProjectTopicController } from "../controllers/functionCallController"; // Import the new controller
-import { ProjectUpdatesController } from "../controllers/projectUpdateFunctionCall";
+import { projectUpdateFunctionCall } from "../controllers/projectUpdateFunctionCall";
 import { NewsController } from "../controllers/funcNews";
 import { ProjectCommentsController } from "../controllers/funcComments";
 import { ScientificReviewController } from "../controllers/funcScientificReview";
@@ -38,23 +40,36 @@ rout.get('/regions', regionControllers.ShowRegions);
 
 
 // Topics
-rout.post('/topics', topicsController.createTopic);
-rout.get('/topics', topicsController.getAllTopics);
-rout.get('/topics/:id', topicsController.getTopicById);
-rout.put('/topics/:id', topicsController.updateTopic);
-rout.delete('/topics/:id', topicsController.deleteTopic);
+rout.post('/topics', TopicsController.addTopic);
+rout.get('/topics', TopicsController.getAllTopics);
+rout.get('/topics/:id', TopicsController.getTopicById);
+rout.put('/topics/:id', TopicsController.updateTopic);
+rout.delete('/topics/:id', TopicsController.deleteTopic);
 
 // Projects
-// rout.post('/projects', projectController.createProject);
-// rout.get('/projects', projectController.getProjects);
-// rout.get('/projects/:id', projectController.getProjectById);
-// rout.put('/projects/:id', projectController.updateProject);
-// rout.delete('/projects/:id', projectController.deleteProject);
+rout.get('/projects', ProjectsController.getAllProjects);
+rout.delete('/projects/:id', ProjectsController.deleteProject);
+// rout.post('/projects', upload.fields([
+//     { name: 'Image', maxCount: 1 },
+//     { name: 'File1', maxCount: 1 },
+//     { name: 'File2', maxCount: 1 },
+//     { name: 'File3', maxCount: 1 }
+//   ]), ProjectsController.addProject);
+  
+//   rout.put('/projects/:id', upload.fields([
+//     { name: 'Image', maxCount: 1 },
+//     { name: 'File1', maxCount: 1 },
+//     { name: 'File2', maxCount: 1 },
+//     { name: 'File3', maxCount: 1 }
+//   ]), ProjectsController.updateProject);
+
+
+
 
 
 //function get project by user id
 rout.get('/project-topics/:id', ProjectTopicController.getProjectTopicsByProjectId);
-rout.get("/project-updates/:id", ProjectUpdatesController.getProjectUpdatesByProjectId);
+rout.get("/project-updates/:id", projectUpdateFunctionCall.getProjectUpdatesByProjectId);
 
 
 
@@ -84,8 +99,6 @@ rout.get("/project-comments",ProjectCommentsController.getAllComments)
 //Countries
 rout.get("/countries", CountriesController.getAllCountries);
 rout.get("/countries/:id", CountriesController.getCountryById);
-// rout.post("/countries", CountriesController.addCountry);
-// rout.put("/countries/:id", CountriesController.updateCountry);
 rout.delete("/countries/:id", CountriesController.deleteCountry);
 // rout.post('/countries', upload.single('Flag'), CountriesController.addCountry);
 // rout.put('/countries/:id', upload.single('Flag'), CountriesController.updateCountry);
@@ -97,8 +110,6 @@ rout.delete("/countries/:id", CountriesController.deleteCountry);
 // rout.put('/companies/:id', upload.single('Company_Logo'), CompaniesController.updateCompany);
 rout.get("/companies", CompaniesController.getAllCompanies);
 rout.get("/companies/:id", CompaniesController.getCompanyById);
-// rout.post("/companies", CompaniesController.addCompany);
-// rout.put("/companies/:id", CompaniesController.updateCompany);
 rout.delete("/companies/:id", CompaniesController.deleteCompany);
 
 
@@ -117,5 +128,29 @@ rout.get("/statuses/:id", StatusController.getStatusById);
 rout.post("/statuses", StatusController.addStatus);
 rout.put("/statuses/:id", StatusController.updateStatus);
 rout.delete("/statuses/:id", StatusController.deleteStatus);
+
+
+
+
+//ProjectUpdates
+rout.get('/project-updates', ProjectUpdatesController.getAllProjectUpdates);
+rout.get('/project-updates/:id', ProjectUpdatesController.getProjectUpdateById);
+// rout.post('/project-updates', upload.fields([
+//   { name: 'file1', maxCount: 1 },
+//   { name: 'file2', maxCount: 1 },
+//   { name: 'file3', maxCount: 1 },
+//   { name: 'file4', maxCount: 1 },
+//   { name: 'file5', maxCount: 1 },
+//   { name: 'file6', maxCount: 1 }
+// ]), ProjectUpdatesController.addProjectUpdate);
+// rout.put('/project-updates/:id', upload.fields([
+//   { name: 'file1', maxCount: 1 },
+//   { name: 'file2', maxCount: 1 },
+//   { name: 'file3', maxCount: 1 },
+//   { name: 'file4', maxCount: 1 },
+//   { name: 'file5', maxCount: 1 },
+//   { name: 'file6', maxCount: 1 }
+// ]), ProjectUpdatesController.updateProjectUpdate);
+rout.delete('/project-updates/:id', ProjectUpdatesController.deleteProjectUpdate);
 
 export default rout;

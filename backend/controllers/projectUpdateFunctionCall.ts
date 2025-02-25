@@ -1,7 +1,7 @@
 import express from "express";
 import { supabase } from "../dbConfig/dbConfig";
 
-export class ProjectUpdatesController {
+export class projectUpdateFunctionCall {
   public static async getProjectUpdatesByProjectId(req: express.Request, res: express.Response) {
     try {
       const projectId = Number(req.params.id); 

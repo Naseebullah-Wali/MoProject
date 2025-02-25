@@ -26,7 +26,7 @@ class App {
         const app = express();
 
         app.use(cors({
-            origin: 'https://mo-project-jet.vercel.app', //frontend origin
+            origin: 'https://mo-project-jet.vercel.app',
             // origin: 'http://localhost:8080',
             methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
             allowedHeaders: ['Content-Type', 'Authorization'],
