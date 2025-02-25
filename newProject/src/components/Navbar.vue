@@ -11,7 +11,7 @@
       <div :class="['collapse', 'navbar-collapse', { show: isNavbarOpen }]" id="navbarSupportedContent">
         <ul class="navbar-nav">
           <li class="nav-item"><router-link class="nav-link" to="/projects">Projects</router-link></li>
-          <li class="nav-item"><router-link class="nav-link" to="/about">Reports</router-link></li>
+          <!-- <li class="nav-item"><router-link class="nav-link" to="/about">Reports</router-link></li> -->
           <li class="nav-item"><router-link class="nav-link" to="/companies">Scientific reviews</router-link></li>
           <li class="nav-item"><router-link class="nav-link" to="/topics">News</router-link></li>
         </ul>
@@ -22,17 +22,17 @@
               Admin Pages
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
-              <li><router-link class="dropdown-item" to="/projects_edit">Projects Edit</router-link></li>
-              <li><router-link class="dropdown-item" to="/countries">Countries</router-link></li>
-              <li><router-link class="dropdown-item" to="/companiesEdit">Companies</router-link></li>
-              <li><router-link class="dropdown-item" to="/statuses">Statuses</router-link></li>
-              <li><router-link class="dropdown-item" to="/topics">Topics</router-link></li>
-              <li><router-link class="dropdown-item" to="/user_management">User Management</router-link></li>
-              <li><router-link class="dropdown-item" to="/regions">Project Updates</router-link></li>
-              <li><router-link class="dropdown-item" to="/news_edit">News Edit</router-link></li>
-              <li><router-link class="dropdown-item" to="/scientific_reviews_edit">Scientific Reviews Edit</router-link></li>
-              <li><router-link class="dropdown-item" to="/project_comments">Project Comments</router-link></li>
-              <li><router-link class="dropdown-item" to="/characters">Characters</router-link></li>
+              <li><router-link class="dropdown-item" to="/projects_edit">Manage Projects</router-link></li>
+              <li><router-link class="dropdown-item" to="/countries">Manage Countries</router-link></li>
+              <li><router-link class="dropdown-item" to="/companiesEdit">Manage Companies</router-link></li>
+              <li><router-link class="dropdown-item" to="/statuses">Manage Statuses</router-link></li>
+              <li><router-link class="dropdown-item" to="/topic_edit">Manage Topics</router-link></li>
+              <!-- <li><router-link class="dropdown-item" to="/user_management">Manage Users</router-link></li> -->
+              <!-- <li><router-link class="dropdown-item" to="/projectUpdates_edit">Manage Project Updates</router-link></li> -->
+              <li><router-link class="dropdown-item" to="/news_edit">Manage News Edit</router-link></li>
+              <li><router-link class="dropdown-item" to="/scientific_reviews_edit">Manage Scientific Reviews Edit</router-link></li>
+              <li><router-link class="dropdown-item" to="/project_comments">Manage Project Comments</router-link></li>
+              <li><router-link class="dropdown-item" to="/characters">Manage Characters</router-link></li>
             </ul>
           </li>
 

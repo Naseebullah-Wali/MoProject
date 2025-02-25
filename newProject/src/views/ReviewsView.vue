@@ -135,7 +135,7 @@ export default {
     async fetchReviewDetail() {
       try {
           const response = await fetch(`https://moproject.onrender.com/scientific-reviews/user/1`);
-       // const response = await fetch(`http://localhost:900/scientific-reviews/user/1`);
+      //  const response = await fetch(`http://localhost:900/scientific-reviews/user/1`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

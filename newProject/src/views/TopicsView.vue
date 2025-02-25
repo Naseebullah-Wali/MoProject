@@ -110,7 +110,7 @@ export default {
     async fetchNews() {
       try {
          const response = await fetch("https://moproject.onrender.com/news/1");
-       // const response = await fetch("http://localhost:900/news/1");
+      //  const response = await fetch("http://localhost:900/news/1");
         const data = await response.json();
         this.news = data; // Assuming data is an array with a single item
         this.applyFilters();

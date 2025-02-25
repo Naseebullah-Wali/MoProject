@@ -15,12 +15,13 @@ import CountriesVue from '../views/Edits/CountriesEdit.vue';
 import ProjectsEditVue from '../views/Edits/ProjectsEdit.vue';
 import StatusesVue from '../views/Edits/Statuses.vue';
 import UserManagementVue from '../views/Edits/UserManagement.vue';
-// import RegionsVue from '../views/Regions.vue';
+import ProjectUpdatesVue from '@/views/Edits/ProjectUpdates.vue';
 import NewsEditVue from '../views/Edits/NewsEdit.vue';
 import ScientificReviewsEditVue from '../views/ScientificReviewsEdit.vue';
 import ProjectCommentsVue from '../views/ProjectComments.vue';
 import CharactersVue from '../views/Edits/Characters.vue';
 import CompaniesEditVue from '../views/Edits/CompaniesEdit.vue';
+import TopicsEditVue from '../views/Edits/TopicsEdit.vue';
 const routes: Array<RouteRecordRaw> = [
   { path: '/', 
     name: 'home', 
@@ -31,6 +32,7 @@ const routes: Array<RouteRecordRaw> = [
     component: ProjectEdit 
   },
   { path: '/projects', name: 'projects', component: ProjectView },
+  { path: '/topic_edit', name: 'TopicEdit', component: TopicsEditVue },
   { path: '/topics', name: 'topics', component: TopicsView },
   { path: '/companies', name: 'companies', component: CompaniesView },
   { path: '/users', name: 'users', component: UsersView },
@@ -45,7 +47,7 @@ const routes: Array<RouteRecordRaw> = [
   { path: '/countries', name: 'Countries', component: CountriesVue },
   { path: '/statuses', name: 'Statuses', component: StatusesVue },
   { path: '/user_management', name: 'UserManagement', component: UserManagementVue },
-  // { path: '/regions', name: 'Regions', component: RegionsVue },
+  { path: '/projectUpdates_edit', name: 'ProjectUpdates', component: ProjectUpdatesVue },
   { path: '/news_edit', name: 'NewsEdit', component: NewsEditVue },
   { path: '/scientific_reviews_edit', name: 'ScientificReviewsEdit', component: ScientificReviewsEditVue },
   { path: '/project_comments', name: 'ProjectComments', component: ProjectCommentsVue },

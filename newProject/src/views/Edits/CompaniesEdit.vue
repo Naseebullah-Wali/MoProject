@@ -43,7 +43,7 @@
           <div class="modal-body">
             <form @submit.prevent="isEditing ? handleUpdate() : handleCreate()">
               <div class="mb-3">
-                <label class="form-label">Company Name</label>
+                <label class="form-label">Company Name *</label>
                 <input
                   v-model="formData.Company_Name"
                   class="form-control"
@@ -66,6 +66,7 @@
                     class="form-control"
                     :class="{ 'is-invalid': errors.Company_Logo }"
                     accept="image/*"
+                    ref="fileInput"
                   />
                   <div class="form-text">Drag & drop a file or click to upload</div>
                 </div>
@@ -80,21 +81,24 @@
               </div>
               <div class="mb-3">
                 <label class="form-label">Countries</label>
-                <select
-                  v-model="formData.Country_Ids"
-                  class="form-control"
-                  :class="{ 'is-invalid': errors.Country_Ids }"
-                  multiple
-                  required
-                >
-                  <option v-for="country in countries" :key="country.id" :value="country.id">
-                    {{ country.Country_Name }}
-                  </option>
-                </select>
+                <div :class="{ 'is-invalid': errors.Country_Ids }" class="country-select-container border rounded p-2">
+                  <div v-for="country in countries" :key="country.id" class="form-check">
+                    <input
+                      type="checkbox"
+                      :id="`country-${country.id}`"
+                      :value="country.id"
+                      v-model="formData.Country_Ids"
+                      class="form-check-input"
+                    />
+                    <label :for="`country-${country.id}`" class="form-check-label">
+                      {{ country.Country_Name }}
+                    </label>
+                  </div>
+                </div>
                 <div class="invalid-feedback">{{ errors.Country_Ids }}</div>
               </div>
               <div class="mb-3">
-                <label class="form-label">About</label>
+                <label class="form-label">About *</label>
                 <textarea
                   v-model="formData.About"
                   class="form-control"
@@ -219,6 +223,7 @@ function handleFileChange(event) {
 }
 
 function handleDrop(event) {
+  event.preventDefault();
   const file = event.dataTransfer.files[0];
   if (file && file.type.startsWith('image/')) {
     formData.value.Company_LogoFile = file;
@@ -287,31 +292,46 @@ async function handleCreate() {
 }
 
 function handleEdit(company) {
+  isEditing.value = true;
+  
+  // Reset form data first
+  formData.value = { ...initialFormState };
+  
   if (company && company.id) {
     console.log("Editing company:", company);
-    console.log("Available countries:", countries.value);
-    if (company.Country_Names && typeof company.Country_Names === 'string') {
-      const countryIds = company.Country_Names.split(', ').map(name => {
-        const country = countries.value.find(country => country.name === name);
+    
+    // Extract country IDs from the company data
+    let countryIds = [];
+    if (company.countries && Array.isArray(company.countries)) {
+      // If countries is an array of objects with id property
+      countryIds = company.countries.map(country => country.id);
+    } else if (company.Country_Ids && Array.isArray(company.Country_Ids)) {
+      // If Country_Ids is directly available
+      countryIds = company.Country_Ids;
+    } else if (company.Country_Names && typeof company.Country_Names === 'string') {
+      // If Country_Names is a comma-separated string
+      const countryNames = company.Country_Names.split(', ');
+      countryIds = countryNames.map(name => {
+        const country = countries.value.find(c => c.Country_Name === name);
         return country ? country.id : null;
-      }).filter(id => id !== null); // Filter out any null values
-
-      formData.value = {
-        ...company,
-        Company_LogoFile: null,
-        Country_Ids: countryIds
-      };
-      isEditing.value = true;
-    } else {
-      console.error("Country_Names is not defined or not a string:", company);
+      }).filter(id => id !== null);
     }
+    
+    // Set form data
+    formData.value = {
+      id: company.id,
+      Company_Name: company.Company_Name || '',
+      Company_Logo: company.Company_Logo || '',
+      Company_LogoFile: null,
+      About: company.About || '',
+      Country_Ids: countryIds
+    };
+    
+    console.log("Form data set:", formData.value);
   } else {
-    console.error("Company ID is undefined:", company);
+    console.error("Invalid company data:", company);
   }
 }
-
-
-
 
 async function handleUpdate() {
   if (!validateForm()) return;
@@ -434,5 +454,18 @@ function exportToCSV() {
 
 .btn-link:hover {
   text-decoration: underline;
+}
+
+.country-select-container {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.form-check {
+  margin-bottom: 0.5rem;
+}
+
+.form-check:last-child {
+  margin-bottom: 0;
 }
 </style>
