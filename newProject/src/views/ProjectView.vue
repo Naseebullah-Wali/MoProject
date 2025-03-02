@@ -81,7 +81,7 @@
               <strong>{{ project.Post_Title }}</strong>
             </div>
             <span class="text-muted" style="font-size: 0.9rem;">
-              {{ formatDate(project.CreatedAt) }}
+              {{ project.Project_Date }}
             </span>
           </div>
           <div class="card-body">
@@ -136,9 +136,18 @@ export default {
     uniqueCountries() {
       return [...new Set(this.projects.map((p) => p.Country_Name))];
     },
+    // uniqueTopics() {
+    //   return [...new Set(this.projects.map((p) => p.all_topics))];
+    // },
     uniqueTopics() {
-      return [...new Set(this.projects.map((p) => p.all_topics))];
+      const topics = this.projects
+        .flatMap((p) => (p.all_topics ? p.all_topics.split(",") : [])) // Split by comma
+        .map((topic) => topic.trim()) // Trim spaces
+        .filter((topic) => topic !== ""); // Remove empty values
+      return [...new Set(topics)]; // Ensure uniqueness
     },
+
+
     uniqueStatuses() {
       return [...new Set(this.projects.map((p) => p.Status_Name))];
     },
@@ -158,8 +167,8 @@ export default {
   methods: {
     async fetchProjects() {
       try {
-          const response = await fetch("https://moproject.onrender.com/project-topics/1");
-      //  const response = await fetch("http://localhost:900/project-topics/1");
+          // const response = await fetch("https://moproject.onrender.com/project-topics/1");
+       const response = await fetch("http://localhost:900/project-topics/1");
         console.log(response)
         this.projects = await response.json();
         this.applyFilters();
@@ -171,7 +180,9 @@ export default {
       this.filteredProjects = this.projects.filter((project) => {
         return (
           (!this.filters.country || project.Country_Name === this.filters.country) &&
-          (!this.filters.topic || project.all_topics.includes(this.filters.topic)) &&
+          // (!this.filters.topic || project.all_topics.includes(this.filters.topic)) &&
+          (!this.filters.topic || (project.all_topics &&
+            project.all_topics.split(",").map(t => t.trim()).some(t => t === this.filters.topic))) &&
           (!this.filters.status || project.Status_Name === this.filters.status) &&
           (!this.filters.character || project.Character_name === this.filters.character) &&
           (!this.searchQuery ||
@@ -183,7 +194,7 @@ export default {
     },
     sortProjects() {
       this.filteredProjects.sort((a, b) => {
-        if (this.sortBy === "CreatedAt") return new Date(b.CreatedAt) - new Date(a.CreatedAt);
+        if (this.sortBy === "CreatedAt") return new Date(b.Project_Date) - new Date(a.Project_Date);
         return a[this.sortBy].localeCompare(b[this.sortBy]);
       });
       this.updateVisibleProjects();

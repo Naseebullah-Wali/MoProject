@@ -58,7 +58,7 @@
           </div>
 
           <!-- Action Buttons -->
-          <div class="review-actions">
+          <!-- <div class="review-actions">
             <div class="d-flex gap-3">
               <button @click="goBack" class="btn btn-outline-primary">
                 <i class="bi bi-arrow-left"></i> Back to Reviews
@@ -71,7 +71,7 @@
                 <i class="bi bi-box-arrow-up-right"></i> Read Full Article
               </a>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -134,8 +134,8 @@ export default {
   methods: {
     async fetchReviewDetail() {
       try {
-          const response = await fetch(`https://moproject.onrender.com/scientific-reviews/user/1`);
-      //  const response = await fetch(`http://localhost:900/scientific-reviews/user/1`);
+          // const response = await fetch(`https://moproject.onrender.com/scientific-reviews/user/1`);
+       const response = await fetch(`http://localhost:900/scientific-reviews/user/1`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

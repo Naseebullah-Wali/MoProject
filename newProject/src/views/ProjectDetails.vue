@@ -156,8 +156,8 @@ export default {
     async fetchProjectDetails() {
       try {
         const projectId = this.$route.params.id || 1;
-        // const response = await fetch(`http://localhost:900/project-topics/1`);
-        const response = await fetch(`https://moproject.onrender.com/project-topics/1`);
+        const response = await fetch(`http://localhost:900/project-topics/1`);
+        // const response = await fetch(`https://moproject.onrender.com/project-topics/1`);
         const data = await response.json();
         this.project = data.find(project => project.ID == projectId) || {};
       } catch (error) {
@@ -168,8 +168,8 @@ export default {
     async fetchProjectUpdates() {
       if (!this.project.ID) return;
       try {
-        // const response = await fetch(`http://localhost:900/project-updates/${this.project.ID}`);
-        const response = await fetch(`https://moproject.onrender.com/project-updates/${this.project.ID}`);
+        const response = await fetch(`http://localhost:900/project-updates/${this.project.ID}`);
+        // const response = await fetch(`https://moproject.onrender.com/project-updates/${this.project.ID}`);
         this.updates = await response.json();
       } catch (error) {
         console.error('Error fetching project updates:', error);
@@ -179,8 +179,8 @@ export default {
     async fetchComments() {
       if (!this.project.ID) return;
       try {
-        // const response = await fetch(`http://localhost:900/project-comments/${this.project.ID}`);
-        const response = await fetch(`https://moproject.onrender.com/project-comments/${this.project.ID}`);
+        const response = await fetch(`http://localhost:900/project-comments/${this.project.ID}`);
+        // const response = await fetch(`https://moproject.onrender.com/project-comments/${this.project.ID}`);
         const data = await response.json();
         this.comments = data.filter(comment => !comment.Is_Deleted);
       } catch (error) {
@@ -304,8 +304,8 @@ export default {
     console.log(this.$route.params.id)
     console.log(this.newComment.trim())
     try {
-      // const response = await fetch('http://localhost:900/project-comments', {
-      const response = await fetch('https://moproject.onrender.com/project-comments', {
+      const response = await fetch('http://localhost:900/project-comments', {
+      // const response = await fetch('https://moproject.onrender.com/project-comments', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

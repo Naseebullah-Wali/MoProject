@@ -12,7 +12,7 @@
         <!-- Table Component --> 
         <TableComponent
           :data="projects"
-          :exclude-columns="['id', 'createdAt', 'updatedAt', 'Is_deleted', 'ID', 'Old_ID', 'wplink', 'Topics', 'Companies', 'Priority', 'CreatedAt','Country_ID','Document_Type','Character_ID','Status_ID','UpdatedAt','Topic']"
+          :exclude-columns="['Post_Content','Project_Number','Developer_Organization','File1','File2','File3','Original_Document','Took_Affect_Date', 'createdAt', 'updatedAt', 'Is_deleted', 'Old_ID', 'wplink', 'Topics', 'Companies', 'Priority', 'CreatedAt','Country_ID','Document_Type','Character_ID','Status_ID','UpdatedAt','Topic']"
           @edit="handleEdit"
           @delete="handleDelete"
         >
@@ -53,7 +53,7 @@
                 />
                 <div class="invalid-feedback">{{ errors.Post_Title }}</div>
               </div>
-              
+
               <div class="mb-3">
                 <label class="form-label">Content *</label>
                 <textarea
@@ -65,23 +65,23 @@
                 ></textarea>
                 <div class="invalid-feedback">{{ errors.Post_Content }}</div>
               </div>
-              
+
               <div class="mb-3">
                 <label class="form-label">Topics</label>
                 <div class="d-flex flex-wrap gap-2">
-                  <div v-for="(topic, index) in availableTopics" :key="index" class="form-check">
-                    <input 
-                      type="checkbox" 
-                      :id="'topic-' + index" 
-                      :value="topic" 
+                  <div v-for="topic in availableTopics" :key="topic.id" class="form-check">
+                    <input
+                      type="checkbox"
+                      :id="'topic-' + topic.id"
+                      :value="topic.id"
                       v-model="formData.selectedTopics"
                       class="form-check-input"
                     />
-                    <label :for="'topic-' + index" class="form-check-label">{{ topic }}</label>
+                    <label :for="'topic-' + topic.id" class="form-check-label">{{ topic.Topic }}</label>
                   </div>
                 </div>
               </div>
-              
+
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Project Date</label>
@@ -93,7 +93,7 @@
                   />
                   <div class="invalid-feedback">{{ errors.Project_Date }}</div>
                 </div>
-                
+
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Project Number</label>
                   <input
@@ -104,7 +104,7 @@
                   <div class="invalid-feedback">{{ errors.Project_Number }}</div>
                 </div>
               </div>
-              
+
               <div class="mb-3">
                 <label class="form-label">Developer Organization *</label>
                 <input
@@ -115,7 +115,7 @@
                 />
                 <div class="invalid-feedback">{{ errors.Developer_Organization }}</div>
               </div>
-              
+
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Country *</label>
@@ -132,7 +132,7 @@
                   </select>
                   <div class="invalid-feedback">{{ errors.Country_ID }}</div>
                 </div>
-                
+
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Document Type *</label>
                   <select
@@ -143,13 +143,13 @@
                   >
                     <option value="">Select document type</option>
                     <option v-for="type in documentTypes" :key="type.id" :value="type.id">
-                      {{ type.name }}
+                      {{ type.Doc_Type }}
                     </option>
                   </select>
                   <div class="invalid-feedback">{{ errors.Document_Type }}</div>
                 </div>
               </div>
-              
+
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Character *</label>
@@ -161,12 +161,12 @@
                   >
                     <option value="">Select character</option>
                     <option v-for="character in characters" :key="character.id" :value="character.id">
-                      {{ character.name }}
+                      {{ character.Character_name }}
                     </option>
                   </select>
                   <div class="invalid-feedback">{{ errors.Character_ID }}</div>
                 </div>
-                
+
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Status *</label>
                   <select
@@ -177,13 +177,13 @@
                   >
                     <option value="">Select status</option>
                     <option v-for="status in statuses" :key="status.id" :value="status.id">
-                      {{ status.name }}
+                      {{ status.Status_Name }}
                     </option>
                   </select>
                   <div class="invalid-feedback">{{ errors.Status_ID }}</div>
                 </div>
               </div>
-              
+
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Took Effect Date</label>
@@ -195,7 +195,7 @@
                   />
                   <div class="invalid-feedback">{{ errors.Took_Affect_Date }}</div>
                 </div>
-                
+
                 <div class="col-md-6 mb-3">
                   <label class="form-label">No Longer Valid Date</label>
                   <input
@@ -207,7 +207,7 @@
                   <div class="invalid-feedback">{{ errors.No_Longer_Valid_Date }}</div>
                 </div>
               </div>
-              
+
               <div class="mb-3">
                 <label class="form-label">Original Document</label>
                 <input
@@ -217,7 +217,7 @@
                 />
                 <div class="invalid-feedback">{{ errors.Original_Document }}</div>
               </div>
-              
+
               <!-- File uploads -->
               <div class="mb-3">
                 <label class="form-label">File 1</label>
@@ -232,7 +232,7 @@
                 </div>
                 <div class="invalid-feedback">{{ errors.File1 }}</div>
               </div>
-              
+
               <div class="mb-3">
                 <label class="form-label">File 2</label>
                 <input
@@ -246,7 +246,7 @@
                 </div>
                 <div class="invalid-feedback">{{ errors.File2 }}</div>
               </div>
-              
+
               <div class="mb-3">
                 <label class="form-label">File 3</label>
                 <input
@@ -260,7 +260,7 @@
                 </div>
                 <div class="invalid-feedback">{{ errors.File3 }}</div>
               </div>
-              
+
               <!-- Image upload -->
               <div class="mb-3">
                 <label class="form-label">Image</label>
@@ -279,7 +279,7 @@
                 </div>
                 <div class="invalid-feedback">{{ errors.Image }}</div>
               </div>
-              
+
               <div class="modal-footer px-0 pb-0">
                 <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
                 <button type="submit" class="btn btn-primary" :disabled="loading">
@@ -292,6 +292,7 @@
         </div>
       </div>
     </div>
+
     <div
       class="modal-backdrop fade"
       :class="{ show: showCreateModal || isEditing }"
@@ -304,48 +305,26 @@
 import { ref, onMounted, computed } from 'vue';
 import TableComponent from '../../components/TableComponent.vue';
 
-// const API_URL = 'http://localhost:900/projects';
-// const COUNTRIES_URL = 'http://localhost:900/countries';
-// const COMPANIES_URL = 'http://localhost:900/companies';
-const API_URL = 'https://moproject.onrender.com/projects';
-const COUNTRIES_URL = 'https://moproject.onrender.com/countries';
-const COMPANIES_URL = 'https://moproject.onrender.com/companies';
 
+
+// const API_URL = 'https://moproject.onrender.com/projects';
+// const COUNTRIES_URL = 'https://moproject.onrender.com/countries';
+// const COMPANIES_URL = 'https://moproject.onrender.com/companies';
+const API_URL = 'http://localhost:900/projects';
+const COUNTRIES_URL = 'http://localhost:900/countries';
+const COMPANIES_URL = 'http://localhost:900/companies';
+const TOPICS_URL = 'http://localhost:900/topics';
+const DOCUMENT_TYPES_URL = 'http://localhost:900/document-types';
+const CHARACTERS_URL = 'http://localhost:900/characters';
+const STATUSES_URL = 'http://localhost:900/statuses';
 
 const projects = ref([]);
 const countries = ref([]);
 const companies = ref([]);
-const availableTopics = ref([
-  'Environment', 
-  'Energy', 
-  'Water', 
-  'Agriculture', 
-  'Infrastructure', 
-  'Health', 
-  'Education', 
-  'Economy',
-  'Social Development',
-  'Technology'
-]);
-
-const documentTypes = ref([
-  { id: 1, name: 'Law' },
-  { id: 2, name: 'Decree' },
-  { id: 13, name: 'Постановление' },
-  // Add more document types as needed
-]);
-const characters = ref([
-  { id: 1, name: 'Required' },
-  { id: 2, name: 'Optional' },
-  // Add more characters as needed
-]);
-const statuses = ref([
-  { id: 1, name: 'Draft' },
-  { id: 2, name: 'Under Review' },
-  { id: 3, name: 'Approved' },
-  { id: 4, name: 'Open for comments' },
-  // Add more statuses as needed
-]);
+const availableTopics = ref([]);
+const documentTypes = ref([]);
+const characters = ref([]);
+const statuses = ref([]);
 
 const showCreateModal = ref(false);
 const isEditing = ref(false);
@@ -407,6 +386,10 @@ onMounted(() => {
   fetchProjects();
   fetchCountries();
   fetchCompanies();
+  fetchTopics();
+  fetchDocumentTypes();
+  fetchCharacters();
+  fetchStatuses();
 });
 
 function getFileName(path) {
@@ -419,7 +402,7 @@ async function fetchProjects() {
     const response = await fetch(API_URL);
     if (!response.ok) throw new Error('Failed to fetch projects');
     const data = await response.json();
-    
+
     // Process data to add truncated content for display
     projects.value = data.map(project => ({
       ...project,
@@ -453,6 +436,59 @@ async function fetchCompanies() {
     companies.value = await response.json();
   } catch (error) {
     showError('Error fetching companies', error);
+  }
+}
+
+async function fetchTopics() {
+  try {
+    const response = await fetch(TOPICS_URL);
+    if (!response.ok) throw new Error('Failed to fetch topics');
+    availableTopics.value = await response.json();
+  } catch (error) {
+    showError('Error fetching topics', error);
+  }
+}
+
+async function fetchDocumentTypes() {
+  try {
+    const response = await fetch(DOCUMENT_TYPES_URL);
+    if (!response.ok) throw new Error('Failed to fetch document types');
+    documentTypes.value = await response.json();
+  } catch (error) {
+    showError('Error fetching document types', error);
+  }
+}
+
+async function fetchCharacters() {
+  try {
+    const response = await fetch(CHARACTERS_URL);
+    if (!response.ok) throw new Error('Failed to fetch characters');
+    characters.value = await response.json();
+  } catch (error) {
+    showError('Error fetching characters', error);
+  }
+}
+
+async function fetchStatuses() {
+  try {
+    const response = await fetch(STATUSES_URL);
+    if (!response.ok) throw new Error('Failed to fetch statuses');
+    statuses.value = await response.json();
+  } catch (error) {
+    showError('Error fetching statuses', error);
+  }
+}
+async function fetchProjectTopics(projectId) {
+  try {
+    const response = await fetch(`http://localhost:900/project-topicsRelation/project/${projectId}`);
+    if (!response.ok) throw new Error('Failed to fetch project topics');
+    const data = await response.json();
+    // Extract topic IDs from the response
+    return data.map(item => item.Topic_ID);
+  } catch (error) {
+    console.error('Error fetching project topics:', error);
+    showError('Error fetching project topics', error);
+    return [];
   }
 }
 
@@ -529,32 +565,29 @@ function previewImage(file) {
   reader.readAsDataURL(file);
 }
 
-function handleEdit(project) {
+async function handleEdit(project) {
   console.log("Editing project:", project);
-  
-  // Prepare selectedTopics from comma-separated string
-  let selectedTopics = [];
-  if (project.Topic) {
-    selectedTopics = project.Topic.split(',').map(topic => topic.trim()).filter(topic => topic);
-  }
-  
+
+  // Fetch related topics from the Project_topics table
+  const topicIds = await fetchProjectTopics(project.ID);
+
   // Format dates if needed
   const projectDate = project.Project_Date ? formatDateForInput(project.Project_Date) : '';
   const tookAffectDate = project.Took_Affect_Date ? formatDateForInput(project.Took_Affect_Date) : '';
   const noLongerValidDate = project.No_Longer_Valid_Date ? formatDateForInput(project.No_Longer_Valid_Date) : '';
-  
+
   formData.value = {
     ...project,
     Project_Date: projectDate,
     Took_Affect_Date: tookAffectDate,
     No_Longer_Valid_Date: noLongerValidDate,
-    selectedTopics: selectedTopics,
+    selectedTopics: topicIds, // Set the selected topics using the fetched IDs
     ImageFile: null,
     File1Object: null,
     File2Object: null,
     File3Object: null
   };
-  
+
   isEditing.value = true;
   imagePreview.value = null;
 }

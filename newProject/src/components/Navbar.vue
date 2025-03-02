@@ -12,8 +12,8 @@
         <ul class="navbar-nav">
           <li class="nav-item"><router-link class="nav-link" to="/projects">Projects</router-link></li>
           <!-- <li class="nav-item"><router-link class="nav-link" to="/about">Reports</router-link></li> -->
-          <li class="nav-item"><router-link class="nav-link" to="/companies">Scientific reviews</router-link></li>
-          <li class="nav-item"><router-link class="nav-link" to="/topics">News</router-link></li>
+          <li class="nav-item"><router-link class="nav-link" to="/scientific_review">Scientific reviews</router-link></li>
+          <li class="nav-item"><router-link class="nav-link" to="/news">News</router-link></li>
         </ul>
 
         <ul class="navbar-nav ms-auto">
@@ -33,6 +33,7 @@
               <li><router-link class="dropdown-item" to="/scientific_reviews_edit">Manage Scientific Reviews Edit</router-link></li>
               <li><router-link class="dropdown-item" to="/project_comments">Manage Project Comments</router-link></li>
               <li><router-link class="dropdown-item" to="/characters">Manage Characters</router-link></li>
+              <li><router-link class="dropdown-item" to="/document_edit">Manage documentTypes</router-link></li>
             </ul>
           </li>
 

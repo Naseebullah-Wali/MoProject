@@ -143,8 +143,8 @@
 import { ref, onMounted } from 'vue';
 import TableComponent from '../../components/TableComponent.vue';
 
-// const API_URL = 'http://localhost:900/news';
-const API_URL = 'https://moproject.onrender.com/news';
+const API_URL = 'http://localhost:900/news';
+// const API_URL = 'https://moproject.onrender.com/news';
 const newsArticles = ref([]);
 const truncatedNews = ref([]);
 const showCreateModal = ref(false);

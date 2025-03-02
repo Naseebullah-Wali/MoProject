@@ -2,8 +2,8 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 // import HomeView from '../views/HomeView.vue';
 import ProjectView from '../views/ProjectView.vue';
 import ProjectEdit from '../views/Edits/ProjectsEdit.vue';
-import TopicsView from '../views/TopicsView.vue';
-import CompaniesView from '../views/CompaniesView.vue';
+import NewsView from '../views/NewsView.vue';
+import ScientificReviewVue from '../views/ScientificReview.vue';
 import UsersView from '../views/UsersView.vue';
 import ReviewsView from '../views/ReviewsView.vue';
 import LoginView from '../views/LoginView.vue';
@@ -15,13 +15,14 @@ import CountriesVue from '../views/Edits/CountriesEdit.vue';
 import ProjectsEditVue from '../views/Edits/ProjectsEdit.vue';
 import StatusesVue from '../views/Edits/Statuses.vue';
 import UserManagementVue from '../views/Edits/UserManagement.vue';
-import ProjectUpdatesVue from '@/views/Edits/ProjectUpdates.vue';
+import ProjectUpdatesVue from '../views/Edits/ProjectUpdates.vue';
 import NewsEditVue from '../views/Edits/NewsEdit.vue';
 import ScientificReviewsEditVue from '../views/ScientificReviewsEdit.vue';
 import ProjectCommentsVue from '../views/ProjectComments.vue';
 import CharactersVue from '../views/Edits/Characters.vue';
 import CompaniesEditVue from '../views/Edits/CompaniesEdit.vue';
 import TopicsEditVue from '../views/Edits/TopicsEdit.vue';
+import Document_EditVue from '@/views/Edits/Document_Edit.vue';
 const routes: Array<RouteRecordRaw> = [
   { path: '/', 
     name: 'home', 
@@ -33,11 +34,11 @@ const routes: Array<RouteRecordRaw> = [
   },
   { path: '/projects', name: 'projects', component: ProjectView },
   { path: '/topic_edit', name: 'TopicEdit', component: TopicsEditVue },
-  { path: '/topics', name: 'topics', component: TopicsView },
-  { path: '/companies', name: 'companies', component: CompaniesView },
+  { path: '/news', name: 'news', component: NewsView },
+  { path: '/scientific_review', name: 'scientific_review', component: ScientificReviewVue },
   { path: '/users', name: 'users', component: UsersView },
   { path: '/reviews/:id', name: 'reviews', component: ReviewsView },
-  { path: '/news/:id', name: 'news', component: NewsDetailsVue },
+  { path: '/news_details/:id', name: 'news_details', component: NewsDetailsVue },
   { path: '/login', name: 'login', component: LoginView },
   { path: '/register', name: 'register', component: RegisterView },
   { path: '/projects1/:id', name: 'projectDetails1', component: ProjectDetails },
@@ -52,6 +53,7 @@ const routes: Array<RouteRecordRaw> = [
   { path: '/scientific_reviews_edit', name: 'ScientificReviewsEdit', component: ScientificReviewsEditVue },
   { path: '/project_comments', name: 'ProjectComments', component: ProjectCommentsVue },
   { path: '/characters', name: 'Characters', component: CharactersVue },
+  { path: '/document_edit', name: 'Document_Edit', component: Document_EditVue },
   { path: '/companiesEdit', name: 'CompEdit', component: CompaniesEditVue }
 ];
 

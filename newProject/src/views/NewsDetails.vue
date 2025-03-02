@@ -40,9 +40,24 @@
             <div class="news-content mb-4">
               <div v-html="newsDetails.content_text" class="content-text"></div>
             </div>
-  
+            
+            <div class="additional-info mb-4">
+              <h5 class="mb-3">Additional Information</h5>
+              <ul class="list-unstyled">
+                <li class="mb-2">
+                  <strong>Original Source: </strong> 
+                  <a :href="newsDetails.Link_to_source" target="_blank" class="text-primary">
+                    {{ newsDetails.source }}
+                    <i class="bi bi-box-arrow-up-right ms-1"></i>
+                  </a>
+                </li>
+                <li class="mb-2"><strong>Topic:</strong> {{ newsDetails.all_topics }}</li>
+                <li><strong>Created:</strong> {{ formatDate(newsDetails.created_at) }}</li>
+              </ul>
+            </div>
+
             <!-- Action Buttons -->
-            <div class="news-actions">
+            <!-- <div class="news-actions">
               <div class="d-flex gap-3">
                 <button @click="$router.go(-1)" class="btn btn-outline-primary">
                   <i class="bi bi-arrow-left"></i> Back
@@ -55,7 +70,7 @@
                   <i class="bi bi-box-arrow-up-right"></i> Read Full Article
                 </a>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -123,8 +138,8 @@
     methods: {
       async fetchNewsDetail() {
         try {
-          const response = await fetch('https://moproject.onrender.com/news/1');
-          // const response = await fetch('http://localhost:900/news/1');
+          // const response = await fetch('https://moproject.onrender.com/news/1');
+          const response = await fetch('http://localhost:900/news/1');
           if (!response.ok) throw new Error('Network response was not ok');
           const data = await response.json();
           console.log(data)
@@ -237,4 +252,19 @@
       width: 100%;
     }
   }
+  .additional-info {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.additional-info h5 {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.additional-info li {
+  padding: 0.5rem 0;
+}
   </style>
