@@ -4,13 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import User from "../models/user";
-import Region from "../models/Region";
-import Country from "../models/Countries";
-import Company from "../models/Companies";
-import Topic from "../models/Topics";
-import Project from "../models/Projects";
-import ProjectComment from "../models/project_comments";
-import { setupAssociations } from "../models/associations";
+
 
 const SUPABASE_URL = process.env.SUPABASE_URL || "";
 const SUPABASE_KEY = process.env.SUPABASE_KEY || "";

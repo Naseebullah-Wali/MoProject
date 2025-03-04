@@ -14,7 +14,6 @@ export class ProjectTopicController {
         return res.status(400).json({ message: "Invalid project ID" });
       }
 
-      // Correct Supabase RPC call format
       let { data, error } = await supabase.rpc("get_projects_by_userid", {
         p_user_id: projectId, 
       });

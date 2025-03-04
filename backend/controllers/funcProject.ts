@@ -11,7 +11,6 @@ export class ProjectsController {
         .select("*")
         .eq("Is_deleted", false)
         .order('CreatedAt', { ascending: false });
-  
       if (projectsError) {
         console.error("Error fetching projects:", projectsError);
         return res.status(500).json({ message: "Failed to fetch projects", error: projectsError });

@@ -22,8 +22,8 @@ export class ProjectUpdatesController {
       const projectIds = updates.map(update => update.Project_ID);
       let { data: projects, error: projectsError } = await supabase
         .from("Projects")
-        .select("ID, Post_Title")
-        .in("ID", projectIds);
+        .select("id, Post_Title")
+        .in("id", projectIds);
 
       if (projectsError || !projects) {
         console.error("Error fetching projects:", projectsError);
@@ -32,7 +32,7 @@ export class ProjectUpdatesController {
 
       // Map project titles to updates
       const updatesWithTitles = updates.map(update => {
-        const project = projects.find(p => p.ID === update.Project_ID);
+        const project = projects.find(p => p.id === update.Project_ID);
         return { ...update, Post_Title: project ? project.Post_Title : "Unknown Project" };
       });
 
