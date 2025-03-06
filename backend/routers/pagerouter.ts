@@ -18,7 +18,7 @@ import { DocumentTypeController } from "../controllers/funcDocType";
 import { ProjectTopicsController } from "../controllers/funcProjectTopic";
 import { UsersController } from "../controllers/funcUsers";
 import { UserTypesController } from "../controllers/funcUsersTypes";
-import upload from '../middleware/multer';
+// import upload from '../middleware/multer';
 
 const rout: express.Router = express.Router();
 
@@ -48,19 +48,19 @@ rout.delete('/topics/:id', TopicsController.deleteTopic);
 // Projects
 rout.get('/projects', ProjectsController.getAllProjects);
 rout.delete('/projects/:id', ProjectsController.deleteProject);
-rout.post('/projects', upload.fields([
-    { name: 'Image', maxCount: 1 },
-    { name: 'File1', maxCount: 1 },
-    { name: 'File2', maxCount: 1 },
-    { name: 'File3', maxCount: 1 }
-  ]), ProjectsController.addProject);
+// rout.post('/projects', upload.fields([
+//     { name: 'Image', maxCount: 1 },
+//     { name: 'File1', maxCount: 1 },
+//     { name: 'File2', maxCount: 1 },
+//     { name: 'File3', maxCount: 1 }
+//   ]), ProjectsController.addProject);
   
-  rout.put('/projects/:id', upload.fields([
-    { name: 'Image', maxCount: 1 },
-    { name: 'File1', maxCount: 1 },
-    { name: 'File2', maxCount: 1 },
-    { name: 'File3', maxCount: 1 }
-  ]), ProjectsController.updateProject);
+//   rout.put('/projects/:id', upload.fields([
+//     { name: 'Image', maxCount: 1 },
+//     { name: 'File1', maxCount: 1 },
+//     { name: 'File2', maxCount: 1 },
+//     { name: 'File3', maxCount: 1 }
+//   ]), ProjectsController.updateProject);
 
 
 
@@ -99,14 +99,14 @@ rout.get("/project-comments",ProjectCommentsController.getAllComments)
 rout.get("/countries", CountriesController.getAllCountries);
 rout.get("/countries/:id", CountriesController.getCountryById);
 rout.delete("/countries/:id", CountriesController.deleteCountry);
-rout.post('/countries', upload.single('Flag'), CountriesController.addCountry);
-rout.put('/countries/:id', upload.single('Flag'), CountriesController.updateCountry);
+// rout.post('/countries', upload.single('Flag'), CountriesController.addCountry);
+// rout.put('/countries/:id', upload.single('Flag'), CountriesController.updateCountry);
 
 
 
 //Companies
-rout.post('/companies', upload.single('Company_Logo'), CompaniesController.addCompany);
-rout.put('/companies/:id', upload.single('Company_Logo'), CompaniesController.updateCompany);
+// rout.post('/companies', upload.single('Company_Logo'), CompaniesController.addCompany);
+// rout.put('/companies/:id', upload.single('Company_Logo'), CompaniesController.updateCompany);
 rout.get("/companies", CompaniesController.getAllCompanies);
 rout.get("/companies/:id", CompaniesController.getCompanyById);
 rout.delete("/companies/:id", CompaniesController.deleteCompany);
@@ -134,22 +134,22 @@ rout.delete("/statuses/:id", StatusController.deleteStatus);
 //ProjectUpdates
 rout.get('/project-updates', ProjectUpdatesController.getAllProjectUpdates);
 rout.get('/project-updates/:id', ProjectUpdatesController.getProjectUpdateById);
-rout.post('/project-updates', upload.fields([
-  { name: 'file1', maxCount: 1 },
-  { name: 'file2', maxCount: 1 },
-  { name: 'file3', maxCount: 1 },
-  { name: 'file4', maxCount: 1 },
-  { name: 'file5', maxCount: 1 },
-  { name: 'file6', maxCount: 1 }
-]), ProjectUpdatesController.addProjectUpdate);
-rout.put('/project-updates/:id', upload.fields([
-  { name: 'file1', maxCount: 1 },
-  { name: 'file2', maxCount: 1 },
-  { name: 'file3', maxCount: 1 },
-  { name: 'file4', maxCount: 1 },
-  { name: 'file5', maxCount: 1 },
-  { name: 'file6', maxCount: 1 }
-]), ProjectUpdatesController.updateProjectUpdate);
+// rout.post('/project-updates', upload.fields([
+//   { name: 'file1', maxCount: 1 },
+//   { name: 'file2', maxCount: 1 },
+//   { name: 'file3', maxCount: 1 },
+//   { name: 'file4', maxCount: 1 },
+//   { name: 'file5', maxCount: 1 },
+//   { name: 'file6', maxCount: 1 }
+// ]), ProjectUpdatesController.addProjectUpdate);
+// rout.put('/project-updates/:id', upload.fields([
+//   { name: 'file1', maxCount: 1 },
+//   { name: 'file2', maxCount: 1 },
+//   { name: 'file3', maxCount: 1 },
+//   { name: 'file4', maxCount: 1 },
+//   { name: 'file5', maxCount: 1 },
+//   { name: 'file6', maxCount: 1 }
+// ]), ProjectUpdatesController.updateProjectUpdate);
 rout.delete('/project-updates/:id', ProjectUpdatesController.deleteProjectUpdate);
 
 
