@@ -129,8 +129,8 @@
 import { ref, onMounted } from 'vue';
 import TableComponent from '../../components/TableComponent.vue';
 
-const API_URL = 'http://localhost:900/countries';
-// const API_URL = 'https://moproject.onrender.com/countries';
+// const API_URL = 'http://localhost:900/countries';
+const API_URL = 'https://moproject.onrender.com/countries';
 
 const countries = ref([]);
 const showCreateModal = ref(false);

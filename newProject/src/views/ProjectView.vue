@@ -167,8 +167,8 @@ export default {
   methods: {
     async fetchProjects() {
       try {
-          // const response = await fetch("https://moproject.onrender.com/project-topics/1");
-       const response = await fetch("http://localhost:900/project-topics/1");
+          const response = await fetch("https://moproject.onrender.com/project-topics/1");
+      //  const response = await fetch("http://localhost:900/project-topics/1");
         console.log(response)
         this.projects = await response.json();
         this.applyFilters();

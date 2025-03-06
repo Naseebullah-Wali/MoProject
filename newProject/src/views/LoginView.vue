@@ -1,107 +1,286 @@
 <template>
-  <section class="vh-100 bg-image">
-    <div class="mask d-flex align-items-center h-100 gradient-custom-3">
-      <div class="container h-100">
-        <div class="row d-flex justify-content-center align-items-center h-100">
-          <div class="col-12 col-md-9 col-lg-7 col-xl-6">
-            <div class="card shadow-lg rounded-3">
-              <div class="card-body p-5">
-                <h2 class="text-uppercase text-center mb-4">Login to Your Account</h2>
-
-                <form @submit.prevent="login">
-                  <div class="mb-4">
-                    <label for="email" class="form-label">Your Email</label>
-                    <input
-                      type="email"
-                      id="email"
-                      class="form-control form-control-lg"
-                      placeholder="Your Email"
-                      v-model="email"
+  <div class="login-container min-vh-100 d-flex align-items-center">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+          <div class="card shadow-lg border-0">
+            <div class="card-header text-center py-3 bg-white">
+              <h3 class="mb-0 fw-bold">Login</h3>
+            </div>
+            <div class="card-body p-4">
+              <!-- Login Form -->
+              <form v-if="!forgotPasswordMode" @submit.prevent="login" novalidate>
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email Address</label>
+                  <input 
+                    type="email" 
+                    id="email" 
+                    class="form-control" 
+                    :class="{'is-invalid': emailError}"
+                    v-model="email" 
+                    placeholder="Enter your email" 
+                    required
+                  />
+                  <div v-if="emailError" class="invalid-feedback">
+                    {{ emailError }}
+                  </div>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="password" class="form-label">Password</label>
+                  <div class="input-group">
+                    <input 
+                      :type="showPassword ? 'text' : 'password'" 
+                      id="password" 
+                      class="form-control" 
+                      :class="{'is-invalid': passwordError}"
+                      v-model="password" 
+                      placeholder="Enter your password" 
                       required
                     />
+                    <button 
+                      type="button" 
+                      class="btn btn-outline-secondary" 
+                      @click="togglePasswordVisibility"
+                    >
+                      <i class="bi" :class="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                    </button>
+                    <div v-if="passwordError" class="invalid-feedback">
+                      {{ passwordError }}
+                    </div>
                   </div>
-
-                  <div class="mb-4">
-                    <label for="password" class="form-label">Password</label>
-                    <input
-                      type="password"
-                      id="password"
-                      class="form-control form-control-lg"
-                      placeholder="Password"
-                      v-model="password"
-                      required
-                    />
+                </div>
+                
+                <div class="d-flex justify-content-end mb-3">
+                  <button 
+                    type="button" 
+                    class="btn btn-link text-dark p-0" 
+                    @click="forgotPasswordMode = true"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
+                
+                <div v-if="loginError" class="alert alert-danger" role="alert">
+                  {{ loginErrorMessage }}
+                </div>
+                
+                <button 
+                  type="submit" 
+                  class="btn btn-dark btn-block w-100" 
+                  :disabled="isLoading"
+                >
+                  <span 
+                    v-if="isLoading" 
+                    class="spinner-border spinner-border-sm mr-1"
+                  ></span>
+                  Login
+                </button>
+              </form>
+              
+              <!-- Forgot Password Form -->
+              <form v-else @submit.prevent="sendPasswordResetEmail" novalidate>
+                <div class="mb-3">
+                  <label for="resetEmail" class="form-label">Email Address</label>
+                  <input 
+                    type="email" 
+                    id="resetEmail" 
+                    class="form-control" 
+                    :class="{'is-invalid': resetEmailError}"
+                    v-model="resetEmail" 
+                    placeholder="Enter your email" 
+                    required
+                  />
+                  <div v-if="resetEmailError" class="invalid-feedback">
+                    {{ resetEmailError }}
                   </div>
-
-                  <div v-show="error" class="error text-danger">{{ errorMsg }}</div>
-
-                  <div class="d-grid">
-                    <button type="submit" class="btn btn-dark btn-lg btn-block gradient-custom-4">Login</button>
-                  </div>
-
-                  <p class="text-center mt-4">
-                    Don't have an account?
-                    <router-link class="fw-bold text-body" :to="{ name: 'register' }">Register Here</router-link>
-                  </p>
-                </form>
-              </div>
+                </div>
+                
+                <div v-if="resetEmailSent" class="alert alert-success" role="alert">
+                  Please check your email inbox. We've sent a password reset link.
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                  <button 
+                    type="submit" 
+                    class="btn btn-dark" 
+                    :disabled="isResetLoading"
+                  >
+                    <span 
+                      v-if="isResetLoading" 
+                      class="spinner-border spinner-border-sm mr-1"
+                    ></span>
+                    Send Reset Link
+                  </button>
+                  <button 
+                    type="button" 
+                    class="btn btn-outline-dark" 
+                    @click="forgotPasswordMode = false"
+                  >
+                    Back to Login
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 </template>
 
 <script>
 export default {
-  name: "Login",
+  name: 'LoginPage',
   data() {
     return {
-      email: "",
-      password: "",
-      error: false,
-      errorMsg: "",
-    };
+      // Login form data
+      email: '',
+      password: '',
+      showPassword: false,
+      forgotPasswordMode: false,
+      resetEmail: '',
+      emailError: '',
+      passwordError: '',
+      loginError: false,
+      loginErrorMessage: '',
+      resetEmailError: '',
+      resetEmailSent: false,
+      isLoading: false,
+      isResetLoading: false
+    }
   },
   methods: {
+    togglePasswordVisibility() {
+      this.showPassword = !this.showPassword;
+    },
+    
+    validateEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    },
+    
     async login() {
+      this.emailError = '';
+      this.passwordError = '';
+      this.loginError = false;
+      if (!this.email) {
+        this.emailError = 'Email is required';
+        return;
+      }
+      if (!this.validateEmail(this.email)) {
+        this.emailError = 'Invalid email format';
+        return;
+      }
+      
+      // Validate password
+      if (!this.password) {
+        this.passwordError = 'Password is required';
+        return;
+      }
+      this.isLoading = true;
+      
       try {
-        const response = await fetch("http://localhost:3000/users");
-        const users = await response.json();
-
-        const user = users.find(
-          (u) => u.email === this.email && u.password === this.password
-        );
-
-        if (user) {
-          this.error = false;
-          this.errorMsg = "";
-
-          sessionStorage.setItem("loggedInUser", JSON.stringify(user));
-
-          if (user.role === "admin") {
-            this.$router.push({ name: "users" }); // Admin page
-          } else {
-            this.$router.push({ name: "projects" }); // Default page for regular users
-          }
+        // const response = await fetch('http://localhost:900/login', {
+        const response = await fetch('https://moproject.onrender.com/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: this.email,
+            password: this.password
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error('Login failed');
+        }
+        
+        const { user_id, company_id, role } = await response.json();
+        sessionStorage.setItem('user_id', user_id);
+        sessionStorage.setItem('company_id', company_id);
+        
+        // Redirect based on user role
+        if (role === 'admin') {
+          this.$router.push({ name: 'users' });
         } else {
-          this.error = true;
-          this.errorMsg = "Invalid email or password. Please try again.";
+          this.$router.push({ name: 'projects' });
         }
       } catch (error) {
-        this.error = true;
-        this.errorMsg = "Error during login. Please try again later.";
-        console.error("Login error:", error);
+        this.loginError = true;
+        this.loginErrorMessage = 'Login failed. Please try again.';
+      } finally {
+        this.isLoading = false;
       }
     },
-  },
-};
+    
+    async sendPasswordResetEmail() {
+      // Reset previous errors
+      this.resetEmailError = '';
+      this.resetEmailSent = false;
+      
+      // Validate email
+      if (!this.resetEmail) {
+        this.resetEmailError = 'Email is required';
+        return;
+      }
+      if (!this.validateEmail(this.resetEmail)) {
+        this.resetEmailError = 'Invalid email format';
+        return;
+      }
+      
+      // Set loading state
+      this.isResetLoading = true;
+      
+      try {
+        // Make API call to password reset endpoint
+        // const response = await fetch('http://localhost:900/forgot-password', {
+        const response = await fetch('https://moproject.onrender.com/forgot-password', {
+
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: this.resetEmail
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to send reset link');
+        }
+        
+        // Show success message
+        this.resetEmailSent = true;
+      } catch (error) {
+        this.resetEmailError = 'Failed to send reset link. Please try again.';
+      } finally {
+        this.isResetLoading = false;
+      }
+    }
+  }
+}
 </script>
 
 <style scoped>
-.error {
-  color: red;
-  margin-top: 10px;
+.login-container {
+  background-color: #f8f9fa;
+}
+
+.card {
+  border: 1px solid #dee2e6;
+}
+
+.card-header {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.btn-dark {
+  transition: all 0.3s ease;
+}
+
+.btn-dark:hover {
+  opacity: 0.9;
 }
 </style>

@@ -117,8 +117,8 @@ export default {
   methods: {
     async fetchReviews() {
       try {
-        const response = await fetch("http://localhost:900/scientific-reviews/user/1");
-        // const response = await fetch("https://moproject.onrender.com/scientific-reviews/user/1");
+        // const response = await fetch("http://localhost:900/scientific-reviews/user/1");
+        const response = await fetch("https://moproject.onrender.com/scientific-reviews/user/1");
         this.reviews = await response.json();
         this.applyFilters();
       } catch (error) {

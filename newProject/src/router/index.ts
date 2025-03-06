@@ -23,6 +23,9 @@ import CharactersVue from '../views/Edits/Characters.vue';
 import CompaniesEditVue from '../views/Edits/CompaniesEdit.vue';
 import TopicsEditVue from '../views/Edits/TopicsEdit.vue';
 import Document_EditVue from '@/views/Edits/Document_Edit.vue';
+import UserTypesEditVue from '@/views/Edits/UserTypesEdit.vue';
+
+
 const routes: Array<RouteRecordRaw> = [
   { path: '/', 
     name: 'home', 
@@ -54,6 +57,7 @@ const routes: Array<RouteRecordRaw> = [
   { path: '/project_comments', name: 'ProjectComments', component: ProjectCommentsVue },
   { path: '/characters', name: 'Characters', component: CharactersVue },
   { path: '/document_edit', name: 'Document_Edit', component: Document_EditVue },
+  { path: '/userTypes_edit', name: 'UserTypesEditVue', component: UserTypesEditVue },
   { path: '/companiesEdit', name: 'CompEdit', component: CompaniesEditVue }
 ];
 
@@ -62,13 +66,13 @@ const router = createRouter({
   routes
 });
 
-router.beforeEach((to, from, next) => {
-  const userType = localStorage.getItem('userType');
-  if ((to.name === 'users' || to.name === 'UsersView') && userType !== 'admin') {
-    next('/');
-  } else {
-    next();
-  }
-});
+// router.beforeEach((to, from, next) => {
+//   const userType = localStorage.getItem('userType');
+//   if ((to.name === 'usersi' || to.name === 'UsersView') && userType !== 'admin') {
+//     next('/');
+//   } else {
+//     next();
+//   }
+// });
 
 export default router;

@@ -3,16 +3,16 @@
       <div class="row">
         <div class="col">
           <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h3 mb-0">Document Types</h1>
+            <h1 class="h3 mb-0">User Types</h1>
             <button @click="showCreateModal = true" class="btn btn-primary">
-              <i class="bi bi-plus"></i> Add Document Type
+              <i class="bi bi-plus"></i> Add User Type
             </button>
           </div>
   
           <!-- Table Component -->
           <TableComponent
-            :data="documentTypes"
-            :exclude-columns="['id', 'Is_Deleted']"
+            :data="userTypes"
+            :exclude-columns="['id','createdAt']"
             @edit="handleEdit"
             @delete="handleDelete"
           >
@@ -36,21 +36,21 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">
-                {{ isEditing ? 'Edit Document Type' : 'Add New Document Type' }}
+                {{ isEditing ? 'Edit User Type' : 'Add New User Type' }}
               </h5>
               <button type="button" class="btn-close" @click="closeModal"></button>
             </div>
             <div class="modal-body">
               <form @submit.prevent="isEditing ? handleUpdate() : handleCreate()">
                 <div class="mb-3">
-                  <label class="form-label">Document Type Name *</label>
+                  <label class="form-label">User Type Name *</label>
                   <input
-                    v-model="formData.Doc_Type"
+                    v-model="formData.User_Type"
                     class="form-control"
-                    :class="{ 'is-invalid': errors.Doc_Type }"
+                    :class="{ 'is-invalid': errors.User_Type }"
                     required
                   />
-                  <div class="invalid-feedback">{{ errors.Doc_Type }}</div>
+                  <div class="invalid-feedback">{{ errors.User_Type }}</div>
                 </div>
                 <div class="modal-footer px-0 pb-0">
                   <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
@@ -76,41 +76,41 @@
   import { ref, onMounted } from 'vue';
   import TableComponent from '../../components/TableComponent.vue';
   
-  // const API_URL = 'http://localhost:900/document-types';
-  const API_URL = 'https://moproject.onrender.com/document-types';
-  const documentTypes = ref([]);
+  // const API_URL = 'http://localhost:900/user-types';
+  const API_URL = 'https://moproject.onrender.com/user-types';
+  const userTypes = ref([]);
   const showCreateModal = ref(false);
   const isEditing = ref(false);
   const loading = ref(false);
   const errors = ref({});
   
   const formData = ref({
-    Doc_Type: '',
+    User_Type: '',
   });
   
   const initialFormState = {
-    Doc_Type: '',
+    User_Type: '',
   };
   
   onMounted(() => {
-    fetchDocumentTypes();
+    fetchUserTypes();
   });
   
-  async function fetchDocumentTypes() {
+  async function fetchUserTypes() {
     try {
       const response = await fetch(API_URL);
-      if (!response.ok) throw new Error('Failed to fetch document types');
-      documentTypes.value = await response.json();
+      if (!response.ok) throw new Error('Failed to fetch user types');
+      userTypes.value = await response.json();
     } catch (error) {
-      showError('Error fetching document types', error);
+      showError('Error fetching user types', error);
     }
   }
   
   function validateForm() {
     errors.value = {};
   
-    if (!formData.value.Doc_Type.trim()) {
-      errors.value.Doc_Type = 'Document type name is required';
+    if (!formData.value.User_Type.trim()) {
+      errors.value.User_Type = 'User type name is required';
     }
   
     return Object.keys(errors.value).length === 0;
@@ -131,21 +131,21 @@
   
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create document type');
+        throw new Error(errorData.message || 'Failed to create user type');
       }
   
-      await fetchDocumentTypes();
+      await fetchUserTypes();
       closeModal();
     } catch (error) {
-      showError('Error creating document type', error);
+      showError('Error creating user type', error);
     } finally {
       loading.value = false;
     }
   }
   
-  function handleEdit(docType) {
+  function handleEdit(userType) {
     isEditing.value = true;
-    formData.value = { ...docType };
+    formData.value = { ...userType };
   }
   
   async function handleUpdate() {
@@ -163,28 +163,28 @@
   
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update document type');
+        throw new Error(errorData.message || 'Failed to update user type');
       }
   
-      await fetchDocumentTypes();
+      await fetchUserTypes();
       closeModal();
     } catch (error) {
-      showError('Error updating document type', error);
+      showError('Error updating user type', error);
     } finally {
       loading.value = false;
     }
   }
   
   async function handleDelete(id) {
-    if (!confirm('Are you sure you want to delete this document type?')) return;
+    if (!confirm('Are you sure you want to delete this user type?')) return;
   
     try {
       const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-      if (!response.ok) throw new Error('Failed to delete document type');
+      if (!response.ok) throw new Error('Failed to delete user type');
   
-      await fetchDocumentTypes();
+      await fetchUserTypes();
     } catch (error) {
-      showError('Error deleting document type', error);
+      showError('Error deleting user type', error);
     }
   }
   
@@ -201,16 +201,16 @@
   }
   
   function exportToCSV() {
-    const headers = ['Document Type'];
+    const headers = ['User Type'];
     const csvContent = [
       headers.join(','),
-      ...documentTypes.value.map(docType => [docType.Doc_Type].join(',')),
+      ...userTypes.value.map(userType => [userType.User_Type].join(',')),
     ].join('\n');
   
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = 'document_types.csv';
+    link.download = 'user_types.csv';
     link.click();
   }
   </script>

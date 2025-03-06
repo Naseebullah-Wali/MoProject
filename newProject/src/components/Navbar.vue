@@ -11,31 +11,43 @@
       <div :class="['collapse', 'navbar-collapse', { show: isNavbarOpen }]" id="navbarSupportedContent">
         <ul class="navbar-nav">
           <li class="nav-item"><router-link class="nav-link" to="/projects">Projects</router-link></li>
-          <!-- <li class="nav-item"><router-link class="nav-link" to="/about">Reports</router-link></li> -->
           <li class="nav-item"><router-link class="nav-link" to="/scientific_review">Scientific reviews</router-link></li>
           <li class="nav-item"><router-link class="nav-link" to="/news">News</router-link></li>
         </ul>
 
         <ul class="navbar-nav ms-auto">
+          <!-- Admin Pages Dropdown -->
+          <li class="nav-item dropdown" v-if="isEditor">
+            <button class="btn btn-secondary dropdown-toggle nav-link" type="button" id="editorDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Editor Pages  
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="editorDropdown">
+              <li><router-link class="dropdown-item" to="/projects_edit">Manage Projects</router-link></li>
+              <li><router-link class="dropdown-item" to="/news_edit">Manage News Edit</router-link></li>
+              <li><router-link class="dropdown-item" to="/scientific_reviews_edit">Manage Scientific Reviews Edit</router-link></li>
+              <li><router-link class="dropdown-item" to="/project_comments">Manage Project Comments</router-link></li>
+            </ul>
+          </li>
+
           <li class="nav-item dropdown" v-if="isAdmin">
             <button class="btn btn-secondary dropdown-toggle nav-link" type="button" id="adminDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Admin Pages
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
-              <li><router-link class="dropdown-item" to="/projects_edit">Manage Projects</router-link></li>
               <li><router-link class="dropdown-item" to="/countries">Manage Countries</router-link></li>
               <li><router-link class="dropdown-item" to="/companiesEdit">Manage Companies</router-link></li>
               <li><router-link class="dropdown-item" to="/statuses">Manage Statuses</router-link></li>
               <li><router-link class="dropdown-item" to="/topic_edit">Manage Topics</router-link></li>
-              <!-- <li><router-link class="dropdown-item" to="/user_management">Manage Users</router-link></li> -->
-              <!-- <li><router-link class="dropdown-item" to="/projectUpdates_edit">Manage Project Updates</router-link></li> -->
-              <li><router-link class="dropdown-item" to="/news_edit">Manage News Edit</router-link></li>
-              <li><router-link class="dropdown-item" to="/scientific_reviews_edit">Manage Scientific Reviews Edit</router-link></li>
-              <li><router-link class="dropdown-item" to="/project_comments">Manage Project Comments</router-link></li>
+              <li><router-link class="dropdown-item" to="/user_management">Manage Users</router-link></li>
+              <li><router-link class="dropdown-item" to="/projectUpdates_edit">Manage Project Updates</router-link></li>
               <li><router-link class="dropdown-item" to="/characters">Manage Characters</router-link></li>
+              <li><router-link class="dropdown-item" to="/userTypes_edit">Manage UserTypes</router-link></li>
               <li><router-link class="dropdown-item" to="/document_edit">Manage documentTypes</router-link></li>
             </ul>
           </li>
+
+          <!-- Editor Pages Dropdown -->
+          
 
           <li class="nav-item dropdown" v-if="isLoggedIn">
             <button class="btn btn-secondary dropdown-toggle nav-link d-flex align-items-center" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -43,7 +55,7 @@
               <img :src="profilePicture" alt="Profile" class="rounded-circle" style="width: 30px; height: 30px; margin-left: 10px;">
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-              <li><router-link class="dropdown-item" to="/edit-profile">Edit Profile</router-link></li>
+              <li><router-link class="dropdown-item" to="/users">Edit Profile</router-link></li>
               <li><router-link class="dropdown-item" to="/bookmarks">Bookmarks</router-link></li>
               <li><router-link class="dropdown-item" to="/logout">Logout</router-link></li>
             </ul>
@@ -66,6 +78,7 @@ export default {
   data() {
     return {
       isAdmin: true, // Set dynamically in real case
+      isEditor: true, // Set dynamically in real case
       isLoggedIn: true,
       profilePicture: '1.jpg',
       notificationCount: 5,

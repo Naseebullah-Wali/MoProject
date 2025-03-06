@@ -101,6 +101,7 @@ export default {
   methods: {
     async fetchCompanies() {
       try {
+        // const response = await fetch("http://localhost:3000/companies");
         const response = await fetch("http://localhost:3000/companies");
         const data = await response.json();
         this.companies = data;

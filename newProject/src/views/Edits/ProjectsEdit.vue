@@ -305,19 +305,25 @@
 import { ref, onMounted, computed } from 'vue';
 import TableComponent from '../../components/TableComponent.vue';
 
+// API URLs
+// const API_URL = 'http://localhost:900/projects';
+// const COUNTRIES_URL = 'http://localhost:900/countries';
+// const COMPANIES_URL = 'http://localhost:900/companies';
+// const TOPICS_URL = 'http://localhost:900/topics';
+// const DOCUMENT_TYPES_URL = 'http://localhost:900/document-types';
+// const CHARACTERS_URL = 'http://localhost:900/characters';
+// const STATUSES_URL = 'http://localhost:900/statuses';
+// const PROJECT_TOPICS_URL = 'http://localhost:900/project-topicsRelation';
+const API_URL = 'https://moproject.onrender.com/projects';
+const COUNTRIES_URL = 'https://moproject.onrender.com/countries';
+const COMPANIES_URL = 'https://moproject.onrender.com/companies';
+const TOPICS_URL = 'https://moproject.onrender.com/topics';
+const DOCUMENT_TYPES_URL = 'https://moproject.onrender.com/document-types';
+const CHARACTERS_URL = 'https://moproject.onrender.com/characters';
+const STATUSES_URL = 'https://moproject.onrender.com/statuses';
+const PROJECT_TOPICS_URL = 'https://moproject.onrender.com/project-topicsRelation';
 
-
-// const API_URL = 'https://moproject.onrender.com/projects';
-// const COUNTRIES_URL = 'https://moproject.onrender.com/countries';
-// const COMPANIES_URL = 'https://moproject.onrender.com/companies';
-const API_URL = 'http://localhost:900/projects';
-const COUNTRIES_URL = 'http://localhost:900/countries';
-const COMPANIES_URL = 'http://localhost:900/companies';
-const TOPICS_URL = 'http://localhost:900/topics';
-const DOCUMENT_TYPES_URL = 'http://localhost:900/document-types';
-const CHARACTERS_URL = 'http://localhost:900/characters';
-const STATUSES_URL = 'http://localhost:900/statuses';
-
+// State variables
 const projects = ref([]);
 const countries = ref([]);
 const companies = ref([]);
@@ -331,6 +337,7 @@ const isEditing = ref(false);
 const loading = ref(false);
 const errors = ref({});
 const imagePreview = ref(null);
+const currentProjectTopics = ref([]);
 
 const formData = ref({
   Post_Title: '',
@@ -478,11 +485,13 @@ async function fetchStatuses() {
     showError('Error fetching statuses', error);
   }
 }
+
 async function fetchProjectTopics(projectId) {
   try {
-    const response = await fetch(`http://localhost:900/project-topicsRelation/project/${projectId}`);
+    const response = await fetch(`${PROJECT_TOPICS_URL}/project/${projectId}`);
     if (!response.ok) throw new Error('Failed to fetch project topics');
     const data = await response.json();
+    currentProjectTopics.value = data;
     // Extract topic IDs from the response
     return data.map(item => item.Topic_ID);
   } catch (error) {
@@ -566,7 +575,7 @@ function previewImage(file) {
 }
 
 async function handleEdit(project) {
-  console.log("Editing project:", project);
+  // console.log("Editing project:", project);
 
   // Fetch related topics from the Project_topics table
   const topicIds = await fetchProjectTopics(project.ID);
@@ -614,7 +623,7 @@ async function handleCreate() {
 
   loading.value = true;
   try {
-    // Process topics from selectedTopics array to comma-separated string
+    // Keep the original Topic field for backward compatibility if needed
     formData.value.Topic = formData.value.selectedTopics.join(',');
     
     const form = new FormData();
@@ -657,6 +666,7 @@ async function handleCreate() {
       console.log(pair[0] + ': ' + pair[1]);
     }
 
+    // Create the project
     const response = await fetch(API_URL, {
       method: 'POST',
       body: form,
@@ -665,6 +675,15 @@ async function handleCreate() {
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to create project');
+    }
+
+    // Get the created project with its ID
+    const createdProject = await response.json();
+    const projectId = createdProject.ID || createdProject.id;
+
+    // Create topic relationships in the Project_Topics table
+    if (formData.value.selectedTopics && formData.value.selectedTopics.length > 0) {
+      await createProjectTopicRelations(projectId, formData.value.selectedTopics);
     }
 
     await fetchProjects();
@@ -677,12 +696,68 @@ async function handleCreate() {
   }
 }
 
+async function createProjectTopicRelations(projectId, topicIds) {
+  const createPromises = topicIds.map(topicId => {
+    return fetch(PROJECT_TOPICS_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        Project_ID: projectId,
+        Topic_ID: topicId
+      }),
+    });
+  });
+
+  try {
+    const results = await Promise.allSettled(createPromises);
+    
+    // Log any failures for debugging
+    results.forEach((result, index) => {
+      if (result.status === 'rejected') {
+        console.error(`Failed to create relation for topic ${topicIds[index]}:`, result.reason);
+      }
+    });
+  } catch (error) {
+    console.error('Error creating project topic relations:', error);
+    throw error;
+  }
+}
+
+async function deleteProjectTopicRelations(projectId, exceptTopicIds = []) {
+  try {
+    // Get current topic relations
+    const response = await fetch(`${PROJECT_TOPICS_URL}/project/${projectId}`);
+    if (!response.ok) throw new Error('Failed to fetch project topics for deletion');
+    
+    const currentRelations = await response.json();
+    
+    // Filter out relations that should be kept
+    const relationsToDelete = currentRelations.filter(relation => 
+      !exceptTopicIds.includes(relation.Topic_ID)
+    );
+    
+    // Delete each relation that's no longer needed
+    const deletePromises = relationsToDelete.map(relation => {
+      return fetch(`${PROJECT_TOPICS_URL}/${relation.id}`, {
+        method: 'DELETE'
+      });
+    });
+    
+    await Promise.allSettled(deletePromises);
+  } catch (error) {
+    console.error('Error deleting project topic relations:', error);
+    throw error;
+  }
+}
+
 async function handleUpdate() {
   if (!validateForm()) return;
 
   loading.value = true;
   try {
-    // Process topics from selectedTopics array to comma-separated string
+    // Keep the original Topic field for backward compatibility if needed
     formData.value.Topic = formData.value.selectedTopics.join(',');
     
     const form = new FormData();
@@ -720,11 +795,7 @@ async function handleUpdate() {
       form.append('File3', formData.value.File3Object);
     }
 
-    // Debug - log form data before sending
-    for (let pair of form.entries()) {
-      console.log(pair[0] + ': ' + pair[1]);
-    }
-
+    // Update the project
     const response = await fetch(`${API_URL}/${formData.value.ID}`, {
       method: 'PUT',
       body: form,
@@ -733,6 +804,27 @@ async function handleUpdate() {
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to update project');
+    }
+
+    // Update topic relationships - efficient approach
+    const projectId = formData.value.ID;
+    const selectedTopics = formData.value.selectedTopics || [];
+    
+    // Find current topics from when we edited the project
+    const currentTopicIds = currentProjectTopics.value.map(item => item.Topic_ID);
+    
+    // Find topics to add (in selected but not in current)
+    const topicsToAdd = selectedTopics.filter(id => !currentTopicIds.includes(id));
+    
+    // Find topics to keep (in both selected and current)
+    const topicsToKeep = selectedTopics.filter(id => currentTopicIds.includes(id));
+    
+    // Delete relations that are no longer needed
+    await deleteProjectTopicRelations(projectId, topicsToKeep);
+    
+    // Create new relations for new topics
+    if (topicsToAdd.length > 0) {
+      await createProjectTopicRelations(projectId, topicsToAdd);
     }
 
     await fetchProjects();
@@ -746,9 +838,16 @@ async function handleUpdate() {
 }
 
 async function handleDelete(id) {
-  if (!confirm('Are you sure you want to delete this project?')) return;
+  
 
+  
+  if (!confirm('Are you sure you want to delete this project?')) return;
+  // alert(id)
   try {
+    // Delete the project topic relations first
+    await deleteProjectTopicRelations(id, []);
+    
+    // Then delete the project
     const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
     if (!response.ok) throw new Error('Failed to delete project');
 
@@ -764,6 +863,7 @@ function closeModal() {
   formData.value = { ...initialFormState };
   errors.value = {};
   imagePreview.value = null;
+  currentProjectTopics.value = [];
 }
 
 function showError(message, error) {
