@@ -9,7 +9,7 @@ import nodemailer from "nodemailer";
 const JWT_SECRET = process.env.JWT_SECRET || 'jwtsecret';
 const EMAIL_USER = process.env.EMAIL_USER || 'walinaseebullah@gmail.com';
 const EMAIL_PASS = process.env.EMAIL_PASS || 'ljss jrnm oqyt ldaw'; //google app password
-const FRONTEND_URL = process.env.FRONTEND_URL || 'https://moproject.onrender.com';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://mo-project-jet.vercel.app/';
 
 // Configure email transporter
 const transporter = nodemailer.createTransport({
