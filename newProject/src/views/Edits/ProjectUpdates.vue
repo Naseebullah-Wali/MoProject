@@ -10,18 +10,27 @@
         </div>
 
         <!-- Table Component -->
-        <TableComponent
-          :data="projectUpdates"
-          :exclude-columns="['id', 'created_at', 'file1', 'file2', 'file3', 'file4', 'file5', 'file6']"
-          @edit="handleEdit"
-          @delete="handleDelete"
-        >
-          <template #tableActions>
-            <button @click="exportToCSV" class="btn btn-outline-secondary btn-sm">
-              <i class="bi bi-download"></i> Export
-            </button>
-          </template>
-        </TableComponent>
+        <div v-if="projectUpdates.length > 0">
+          <TableComponent
+            :data="projectUpdates"
+            :exclude-columns="['id', 'created_at', 'file1', 'file2', 'file3', 'file4', 'file5', 'file6']"
+            @edit="handleEdit"
+            @delete="handleDelete"
+          >
+            <template #tableActions>
+              <button @click="exportToCSV" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-download"></i> Export
+              </button>
+            </template>
+          </TableComponent>
+        </div>
+        <div v-else class="card">
+          <div class="card-body text-center py-5">
+            <i class="bi bi-info-circle fs-3 text-muted mb-3 d-block"></i>
+            <p class="mb-0">No updates found for this project.</p>
+            <p class="text-muted mt-2">Click "Add Update" to create your first project update.</p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -41,63 +50,7 @@
             <button type="button" class="btn-close" @click="closeModal"></button>
           </div>
           <div class="modal-body">
-            <form @submit.prevent="isEditing ? handleUpdate() : handleCreate()">           
-              <div class="mb-3">
-                <label class="form-label">Project *</label>
-                <div class="dropdown">
-                  <button 
-                    class="form-control d-flex justify-content-between align-items-center dropdown-toggle text-start"
-                    :class="{ 'is-invalid': errors.Project_ID }"
-                    type="button" 
-                    @click="toggleDropdown"
-                  >
-                    <span class="text-truncate">{{ getSelectedProjectTitle() || 'Select a project' }}</span>
-                    <i class="bi bi-chevron-down"></i>
-                  </button>
-                  <div 
-                    class="dropdown-menu w-100" 
-                    :class="{ 'show': showDropdown }"
-                    style="max-height: 300px; overflow-y: auto;"
-                  >
-                    <div class="px-3 py-2">
-                      <input 
-                        type="text" 
-                        class="form-control form-control-sm" 
-                        placeholder="Search projects..." 
-                        v-model="searchQuery"
-                        @click.stop
-                      />
-                    </div>
-                    <div class="dropdown-divider"></div>
-                    <div v-if="filteredProjects.length === 0" class="dropdown-item text-muted">
-                      No matching projects found
-                    </div>
-                    <div 
-                      v-for="project in filteredProjects" 
-                      :key="project.id" 
-                      class="dropdown-item project-item"
-                      @click.stop="selectProject(project)"
-                    >
-                      <div class="d-flex align-items-center">
-                        <span class="project-title">{{ project.Post_Title }}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="invalid-feedback">{{ errors.Project_ID }}</div>
-              </div>
-              
-              <div class="mb-3">
-                <label class="form-label">Post Title *</label>
-                <input
-                  v-model="formData.Post_Title"
-                  class="form-control"
-                  :class="{ 'is-invalid': errors.Post_Title }"
-                  required
-                />
-                <div class="invalid-feedback">{{ errors.Post_Title }}</div>
-              </div>
-              
+            <form @submit.prevent="isEditing ? handleUpdate() : handleCreate()">
               <div class="mb-3">
                 <label class="form-label">Update Date *</label>
                 <input
@@ -109,7 +62,7 @@
                 />
                 <div class="invalid-feedback">{{ errors.update_date }}</div>
               </div>
-              
+
               <div class="mb-3">
                 <label class="form-label">Update Content *</label>
                 <textarea
@@ -121,7 +74,7 @@
                 ></textarea>
                 <div class="invalid-feedback">{{ errors.update_content }}</div>
               </div>
-              
+
               <div class="mb-3">
                 <label class="form-label">Files (optional)</label>
                 <div class="row">
@@ -130,23 +83,23 @@
                       <div class="card-body p-3">
                         <div class="d-flex justify-content-between mb-2">
                           <h6 class="mb-0">File {{ i }}</h6>
-                          <button 
-                            v-if="formData[`file${i}`]" 
-                            type="button" 
-                            class="btn btn-sm btn-outline-danger" 
+                          <button
+                            v-if="formData[`file${i}`]"
+                            type="button"
+                            class="btn btn-sm btn-outline-danger"
                             @click="removeFile(i)"
                           >
                             <i class="bi bi-x"></i>
                           </button>
                         </div>
-                        
+
                         <div v-if="formData[`file${i}`]" class="mb-2">
                           <div class="d-flex align-items-center">
                             <i class="bi bi-file-earmark me-2"></i>
                             <span class="text-truncate">{{ getFileName(formData[`file${i}`]) }}</span>
                           </div>
                         </div>
-                        
+
                         <div class="input-group">
                           <input
                             type="file"
@@ -160,7 +113,7 @@
                   </div>
                 </div>
               </div>
-              
+
               <div class="modal-footer px-0 pb-0">
                 <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
                 <button type="submit" class="btn btn-primary" :disabled="loading">
@@ -182,25 +135,21 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, nextTick } from 'vue';
+import { ref, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import TableComponent from '../../components/TableComponent.vue';
 
 // const API_URL = 'http://localhost:900/project-updates';
-// const PROJECTS_URL = 'http://localhost:900/projects';
 const API_URL = 'https://moproject.onrender.com/project-updates';
-const PROJECTS_URL = 'https://moproject.onrender.com/projects';
 
 const projectUpdates = ref([]);
-const projects = ref([]);
 const showCreateModal = ref(false);
 const isEditing = ref(false);
 const loading = ref(false);
 const errors = ref({});
-const searchQuery = ref('');
-const showDropdown = ref(false);
+const route = useRoute();
+
 const initialFormState = {
-  Project_ID: '',
-  Post_Title: '',
   update_date: formatDate(new Date()),
   update_content: '',
   file1: '',
@@ -223,14 +172,10 @@ const formData = ref({ ...initialFormState });
 
 onMounted(() => {
   fetchProjectUpdates();
-  fetchProjects();
-  
-  // Close dropdown when clicking outside
-  document.addEventListener('click', (e) => {
-    if (showDropdown.value) {
-      showDropdown.value = false;
-    }
-  });
+});
+
+watch(() => route.query.projectId, () => {
+  fetchProjectUpdates();
 });
 
 function formatDate(date) {
@@ -241,86 +186,47 @@ function formatDate(date) {
   return `${year}-${month}-${day}`;
 }
 
-const filteredProjects = computed(() => {
-  if (!searchQuery.value) return projects.value;
-  return projects.value.filter(project =>
-    project.Post_Title.toLowerCase().includes(searchQuery.value.toLowerCase())
-  );
-});
-
-function toggleDropdown(e) {
-  e.stopPropagation();
-  showDropdown.value = !showDropdown.value;
-}
-
-function selectProject(project) {
-  formData.value.Project_ID = project.id;
-  
-  // Wait for the next DOM update cycle then close the dropdown
-  nextTick(() => {
-    showDropdown.value = false;
-  });
-}
-
-function getSelectedProjectTitle() {
-  const project = projects.value.find(p => p.id === formData.value.Project_ID);
-  return project ? project.Post_Title : '';
-}
-  
-function formatDisplayDate(dateString) {
-  // Convert from DD.MM.YYYY to YYYY-MM-DD for the input field
-  if (!dateString) return '';
-  
-  const parts = dateString.split('.');
-  if (parts.length === 3) {
-    return `${parts[2]}-${parts[1]}-${parts[0]}`;
-  }
-  return dateString;
-}
-
-function getFileName(path) {
-  if (!path) return '';
-  return path.split('/').pop();
-}
-
 async function fetchProjectUpdates() {
+  const projectId = route.query.projectId;
+  if (!projectId) return;
+
   try {
-    const response = await fetch(API_URL);
-    if (!response.ok) throw new Error('Failed to fetch project updates');
-    projectUpdates.value = await response.json();
-    
-    // Format dates for display
-    projectUpdates.value.forEach(update => {
-      if (update.update_date) {
-        // Just keep the format as is for the table display
-        update.formatted_date = update.update_date;
+    const response = await fetch(`${API_URL}/${projectId}`);
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        // Instead of alert and going back, we'll just set an empty array
+        projectUpdates.value = [];
+      } else {
+        throw new Error('Failed to fetch project updates');
       }
-    });
+      return;
+    }
+
+    const data = await response.json();
+    if (data && data.length > 0) {
+      projectUpdates.value = data.map(update => ({
+        ...update,
+        update_content: truncateText(update.update_content, 200),
+        created_date: update.update_date
+      }));
+    } else {
+      projectUpdates.value = [];
+    }
   } catch (error) {
     showError('Error fetching project updates', error);
+    projectUpdates.value = []; // Set empty array on error
   }
 }
 
-async function fetchProjects() {
-  try {
-    const response = await fetch(PROJECTS_URL);
-    if (!response.ok) throw new Error('Failed to fetch projects');
-    projects.value = await response.json();
-  } catch (error) {
-    showError('Error fetching projects', error);
-  }
+function truncateText(text, maxLength) {
+  if (!text) return '';
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + '...';
 }
 
 function validateForm() {
   errors.value = {};
-
-  if (!formData.value.Project_ID) {
-    errors.value.Project_ID = 'Project is required';
-  }
-
-  if (!formData.value.Post_Title?.trim()) {
-    errors.value.Post_Title = 'Post title is required';
-  }
 
   if (!formData.value.update_date) {
     errors.value.update_date = 'Update date is required';
@@ -340,10 +246,15 @@ function handleFileChange(event, fileNumber) {
   }
 }
 
+function getFileName(path) {
+  if (!path) return '';
+  return path.split('/').pop();
+}
+
 function removeFile(fileNumber) {
   formData.value[`file${fileNumber}`] = '';
   formData.value.fileUploads[`file${fileNumber}`] = null;
-  
+
   // Reset the file input
   const fileInput = document.getElementById(`file${fileNumber}`);
   if (fileInput) fileInput.value = '';
@@ -355,16 +266,15 @@ async function handleCreate() {
   loading.value = true;
   try {
     const form = new FormData();
-    form.append('Project_ID', formData.value.Project_ID);
-    form.append('Post_Title', formData.value.Post_Title);
-    
+    form.append('Project_ID', route.query.projectId);
+
     // Convert date from YYYY-MM-DD to DD.MM.YYYY for API
     const dateParts = formData.value.update_date.split('-');
     const formattedDate = `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}`;
     form.append('update_date', formattedDate);
-    
+
     form.append('update_content', formData.value.update_content);
-    
+
     // Append files if they exist
     for (let i = 1; i <= 6; i++) {
       if (formData.value.fileUploads[`file${i}`]) {
@@ -393,21 +303,19 @@ async function handleCreate() {
 
 function handleEdit(update) {
   isEditing.value = true;
-  
+
   // Reset form data first
   formData.value = { ...initialFormState };
-  
+
   if (update && update.id) {
     // Convert date from DD.MM.YYYY to YYYY-MM-DD for the form input
     let formattedDate = update.update_date;
     if (update.update_date) {
       formattedDate = formatDisplayDate(update.update_date);
     }
-    
+
     formData.value = {
       id: update.id,
-      Project_ID: update.Project_ID,
-      Post_Title: update.Post_Title || '',
       update_date: formattedDate,
       update_content: update.update_content || '',
       file1: update.file1 || '',
@@ -434,23 +342,22 @@ async function handleUpdate() {
   loading.value = true;
   try {
     const form = new FormData();
-    form.append('Project_ID', formData.value.Project_ID);
-    form.append('Post_Title', formData.value.Post_Title);
-    
+    form.append('Project_ID', route.query.projectId);
+
     // Convert date from YYYY-MM-DD to DD.MM.YYYY for API
     const dateParts = formData.value.update_date.split('-');
     const formattedDate = `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}`;
     form.append('update_date', formattedDate);
-    
+
     form.append('update_content', formData.value.update_content);
-    
+
     // Append existing files
     for (let i = 1; i <= 6; i++) {
       // Only include the existing file paths if they weren't removed
       if (formData.value[`file${i}`]) {
         form.append(`existing_file${i}`, formData.value[`file${i}`]);
       }
-      
+
       // Append new files if they exist
       if (formData.value.fileUploads[`file${i}`]) {
         form.append(`file${i}`, formData.value.fileUploads[`file${i}`]);
@@ -494,8 +401,17 @@ function closeModal() {
   isEditing.value = false;
   formData.value = { ...initialFormState };
   errors.value = {};
-  searchQuery.value = '';
-  showDropdown.value = false;
+}
+
+function formatDisplayDate(dateString) {
+  // Convert from DD.MM.YYYY to YYYY-MM-DD for the input field
+  if (!dateString) return '';
+  
+  const parts = dateString.split('.');
+  if (parts.length === 3) {
+    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+  }
+  return dateString;
 }
 
 function showError(message, error) {
@@ -504,16 +420,21 @@ function showError(message, error) {
 }
 
 function exportToCSV() {
+  if (projectUpdates.value.length === 0) {
+    alert('No data available to export.');
+    return;
+  }
+  
   const headers = ['Project', 'Title', 'Date', 'Content'];
   const csvContent = [
     headers.join(','),
     ...projectUpdates.value.map(update => {
-      const projectName = projects.value.find(p => p.id === update.Project_ID)?.Project_Name || update.Project_ID;
+      const projectName = route.query.projectId;
       return [
         `"${projectName}"`,
-        `"${update.Post_Title.replace(/"/g, '""')}"`,
+        `"${(update.Project_Title || '').replace(/"/g, '""')}"`,
         update.update_date,
-        `"${update.update_content.replace(/"/g, '""').replace(/<[^>]*>/g, '')}"` // Remove HTML tags
+        `"${(update.update_content || '').replace(/"/g, '""').replace(/<[^>]*>/g, '')}"` // Remove HTML tags
       ].join(',');
     })
   ].join('\n');

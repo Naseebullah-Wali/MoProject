@@ -51,6 +51,7 @@
             </td>
             <td v-if="hasActions">
               <div class="d-flex gap-1">
+                <slot name="customActions" :item="item"></slot>
                 <button
                   @click="$emit('edit', item)"
                   class="btn btn-outline-primary btn-sm"

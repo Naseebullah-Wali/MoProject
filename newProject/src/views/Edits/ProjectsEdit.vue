@@ -21,6 +21,15 @@
               <i class="bi bi-download"></i> Export
             </button>
           </template>
+          <template #customActions="{ item }">
+            <router-link 
+              :to="{ path: '/projectUpdates_edit', query: { projectId: item.id } }" 
+              class="btn btn-outline-info btn-sm" 
+              title="Project Updates"
+            >
+              <i class="bi bi-arrow-up-circle"></i>
+            </router-link>
+          </template>
         </TableComponent>
       </div>
     </div>
@@ -305,7 +314,7 @@
 import { ref, onMounted, computed } from 'vue';
 import TableComponent from '../../components/TableComponent.vue';
 
-// API URLs
+
 // const API_URL = 'http://localhost:900/projects';
 // const COUNTRIES_URL = 'http://localhost:900/countries';
 // const COMPANIES_URL = 'http://localhost:900/companies';
@@ -578,7 +587,7 @@ async function handleEdit(project) {
   // console.log("Editing project:", project);
 
   // Fetch related topics from the Project_topics table
-  const topicIds = await fetchProjectTopics(project.ID);
+  const topicIds = await fetchProjectTopics(project.id);
 
   // Format dates if needed
   const projectDate = project.Project_Date ? formatDateForInput(project.Project_Date) : '';

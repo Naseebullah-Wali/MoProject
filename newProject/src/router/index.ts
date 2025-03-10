@@ -22,9 +22,9 @@ import ProjectCommentsVue from '../views/ProjectComments.vue';
 import CharactersVue from '../views/Edits/Characters.vue';
 import CompaniesEditVue from '../views/Edits/CompaniesEdit.vue';
 import TopicsEditVue from '../views/Edits/TopicsEdit.vue';
-import Document_EditVue from '@/views/Edits/Document_Edit.vue';
-import UserTypesEditVue from '@/views/Edits/UserTypesEdit.vue';
-
+import Document_EditVue from '../views/Edits/Document_Edit.vue';
+import UserTypesEditVue from '../views/Edits/UserTypesEdit.vue';
+import activationView from '../views/activationView.vue';
 
 const routes: Array<RouteRecordRaw> = [
   { path: '/', 
@@ -51,7 +51,19 @@ const routes: Array<RouteRecordRaw> = [
   { path: '/countries', name: 'Countries', component: CountriesVue },
   { path: '/statuses', name: 'Statuses', component: StatusesVue },
   { path: '/user_management', name: 'UserManagement', component: UserManagementVue },
-  { path: '/projectUpdates_edit', name: 'ProjectUpdates', component: ProjectUpdatesVue },
+  {
+    path: '/projectUpdates_edit',
+    name: 'ProjectUpdates',
+    component: ProjectUpdatesVue,
+    props: route => ({ projectId: route.query.projectId })
+  },
+  {
+    path: '/activate-account',
+    name: 'activateAccount',
+    component: activationView,
+    props: (route) => ({ token: route.query.token })
+  },
+  // { path: '/projectUpdates_edit/:projectId', name: 'ProjectUpdates', component: ProjectUpdatesVue },
   { path: '/news_edit', name: 'NewsEdit', component: NewsEditVue },
   { path: '/scientific_reviews_edit', name: 'ScientificReviewsEdit', component: ScientificReviewsEditVue },
   { path: '/project_comments', name: 'ProjectComments', component: ProjectCommentsVue },

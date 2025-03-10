@@ -23,8 +23,8 @@
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="editorDropdown">
               <li><router-link class="dropdown-item" to="/projects_edit">Manage Projects</router-link></li>
-              <li><router-link class="dropdown-item" to="/news_edit">Manage News Edit</router-link></li>
-              <li><router-link class="dropdown-item" to="/scientific_reviews_edit">Manage Scientific Reviews Edit</router-link></li>
+              <li><router-link class="dropdown-item" to="/news_edit">Manage News</router-link></li>
+              <li><router-link class="dropdown-item" to="/scientific_reviews_edit">Manage Scientific Reviews</router-link></li>
               <li><router-link class="dropdown-item" to="/project_comments">Manage Project Comments</router-link></li>
             </ul>
           </li>
@@ -43,6 +43,10 @@
               <li><router-link class="dropdown-item" to="/characters">Manage Characters</router-link></li>
               <li><router-link class="dropdown-item" to="/userTypes_edit">Manage UserTypes</router-link></li>
               <li><router-link class="dropdown-item" to="/document_edit">Manage documentTypes</router-link></li>
+              <li><router-link class="dropdown-item" to="/projects_edit">Manage Projects</router-link></li>
+              <li><router-link class="dropdown-item" to="/scientific_reviews_edit">Manage Scientific Reviews</router-link></li>
+              <li><router-link class="dropdown-item" to="/news_edit">Manage News</router-link></li>
+              <li><router-link class="dropdown-item" to="/project_comments">Manage Project Comments</router-link></li>
             </ul>
           </li>
 
