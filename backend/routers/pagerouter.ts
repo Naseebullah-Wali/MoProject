@@ -19,6 +19,8 @@ import { ProjectTopicsController } from "../controllers/funcProjectTopic";
 import { UsersController } from "../controllers/funcUsers";
 import { UserTypesController } from "../controllers/funcUsersTypes";
 // import upload from '../middleware/multer';
+import  authenticate from "../middleware/authMiddleware";
+
 
 const rout: express.Router = express.Router();
 
@@ -41,9 +43,10 @@ const rout: express.Router = express.Router();
 // Topics
 rout.post('/topics', TopicsController.addTopic);
 rout.get('/topics', TopicsController.getAllTopics);
-rout.get('/topics/:id', TopicsController.getTopicById);
+// rout.get('/topics/:id', TopicsController.getTopicById);
 rout.put('/topics/:id', TopicsController.updateTopic);
 rout.delete('/topics/:id', TopicsController.deleteTopic);
+rout.get('/project-topics/:id', ProjectTopicController.getProjectTopicsByProjectId);
 
 // Projects
 rout.get('/projects', ProjectsController.getAllProjects);
@@ -67,8 +70,8 @@ rout.delete('/projects/:id', ProjectsController.deleteProject);
 
 
 //function get project by user id
-rout.get('/project-topics/:id', ProjectTopicController.getProjectTopicsByProjectId);
-rout.get("/project-updates/:id", projectUpdateFunctionCall.getProjectUpdatesByProjectId);
+
+
 
 
 
@@ -133,7 +136,8 @@ rout.delete("/statuses/:id", StatusController.deleteStatus);
 
 //ProjectUpdates
 rout.get('/project-updates', ProjectUpdatesController.getAllProjectUpdates);
-rout.get('/project-updates/:id', ProjectUpdatesController.getProjectUpdateById);
+// rout.get('/project-updates/:id', ProjectUpdatesController.getProjectUpdateById);
+rout.get("/project-updates/:id", projectUpdateFunctionCall.getProjectUpdatesByProjectId);
 // rout.post('/project-updates', upload.fields([
 //   { name: 'file1', maxCount: 1 },
 //   { name: 'file2', maxCount: 1 },
@@ -172,17 +176,30 @@ rout.get('/project-topicsRelation/topic/:topicId', ProjectTopicsController.getPr
 rout.post('/project-topicsRelation', ProjectTopicsController.addProjectTopic);
 rout.delete('/project-topicsRelation/:id', ProjectTopicsController.deleteProjectTopic);
 
-
-
-
-
 //users
-rout.get('/users', UsersController.getAllUsers);
-rout.get('/users/:id', UsersController.getUserById);
-rout.post('/users', UsersController.addUser);
-rout.put('/users/:id', UsersController.updateUser);
-rout.delete('/users/:id', UsersController.deleteUser);
-rout.post('/accept-user', UsersController.acceptUser);
+rout.get("/users", UsersController.getAllUsers);
+rout.get("/users/:id", UsersController.getUserById);
+rout.post("/users", UsersController.addUser);
+// rout.put("/users/:id", upload.single('Photo'), UsersController.updateUser);
+rout.delete("/users/:id", UsersController.deleteUser);
+
+// User profile routes (protected by auth)
+// rout.put("/users/:id/profile", authenticate, upload.single('Photo'), UsersController.updateProfile);
+rout.put("/users/:id/password", authenticate, UsersController.changePassword);
+
+// Authentication routes
+rout.post("/auth/login", UsersController.login);
+rout.post("/auth/forgot-password", UsersController.forgotPassword);
+rout.post("/auth/reset-password", UsersController.resetPassword);
+rout.post("/auth/accept-invitation", UsersController.acceptInvitation);
+rout.post("/auth/verify-token", UsersController.verifyToken);
+rout.post("/auth/activate-account", UsersController.activateAccount);
+
+// Resend activation email
+rout.post("/auth/resend-activation-email", UsersController.resendActivationEmail);
+
+
+
 
 //users types
 rout.get('/user-types', UserTypesController.getAllUserTypes);

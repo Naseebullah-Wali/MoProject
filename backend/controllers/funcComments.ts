@@ -65,8 +65,8 @@ export class ProjectCommentsController {
       // Fetch project titles
       let { data: projects, error: projectsError } = await supabase
         .from("Projects")
-        .select("ID, Post_Title")
-        .in("ID", projectIds);
+        .select("id, Post_Title")
+        .in("id", projectIds);
 
       if (projectsError || !projects) {
         console.error("Error fetching project titles:", projectsError);
@@ -76,7 +76,7 @@ export class ProjectCommentsController {
       // Map user names and project titles to comments
       const commentsWithDetails = comments.map(comment => {
         const user = users.find(user => user.id === comment.User_ID);
-        const project = projects.find(project => project.ID === comment.Project_ID);
+        const project = projects.find(project => project.id === comment.Project_ID);
 
         return {
           ...comment,
