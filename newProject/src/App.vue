@@ -1,12 +1,14 @@
 <template>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
   <section>
-    <Navbar></Navbar>
+    <Navbar  v-if="!$route.meta.hideLayout"></Navbar>
+    <!-- <NavBar v-if="!$route.meta.hideLayout"></NavBar> -->
   <br>
   <br>
   <br>
     <router-view/>
-    <Footer></Footer>
+    <!-- <Footer></Footer> -->
+    <Footer v-if="!$route.meta.hideLayout"></Footer>
 
   </section>
   

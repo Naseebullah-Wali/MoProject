@@ -84,7 +84,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/login', 
     name: 'login', 
     component: LoginView,
-    meta: { requiresAuth: false }
+    meta: { requiresAuth: false, hideLayout: true}
   },
   // { 
   //   path: '/projects1/:id', 
@@ -134,14 +134,14 @@ const routes: Array<RouteRecordRaw> = [
     name: 'ResetPassword',
     component: resetPasswordVue,
     props: (route) => ({ token: route.query.token }),
-    meta: { requiresAuth: false }  // No authentication required
+    meta: { requiresAuth: false, hideLayout: true }  // No authentication required
   },
   {
     path: '/activate-account',
     name: 'activateAccount',
     component: activationView,
     props: (route) => ({ token: route.query.token }),
-    meta: { requiresAuth: false }  // No authentication required
+    meta: { requiresAuth: false, hideLayout: true }  // No authentication required
   },
   { 
     path: '/news_edit', 
