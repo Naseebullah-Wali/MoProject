@@ -121,9 +121,10 @@ export default {
       projects: [],
       filteredProjects: [],
       visibleProjects: [],
-      projectsToShow: 5,
+      projectsToShow: 15,
       searchQuery: "",
       sortBy: "CreatedAt",
+      user_id: localStorage.getItem('user_id'),
       filters: {
         country: "",
         topic: "",
@@ -167,8 +168,8 @@ export default {
   methods: {
     async fetchProjects() {
       try {
-          const response = await fetch("https://moproject.onrender.com/project-topics/1");
-      //  const response = await fetch("http://localhost:900/project-topics/1");
+          const response = await fetch(`https://moproject.onrender.com/project-topics/${this.user_id}`);
+      //  const response = await fetch(`http://localhost:900/project-topics/${this.user_id}`);
         console.log(response)
         this.projects = await response.json();
         this.applyFilters();
@@ -212,7 +213,7 @@ export default {
       this.visibleProjects = this.filteredProjects.slice(0, this.projectsToShow);
     },
     loadMoreProjects() {
-      this.projectsToShow += 5;
+      this.projectsToShow += 15;
       this.updateVisibleProjects();
     },
     formatDate(date) {

@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-// import HomeView from '../views/HomeView.vue';
 import ProjectView from '../views/ProjectView.vue';
 import ProjectEdit from '../views/Edits/ProjectsEdit.vue';
 import NewsView from '../views/NewsView.vue';
@@ -7,9 +6,7 @@ import ScientificReviewVue from '../views/ScientificReview.vue';
 import UsersView from '../views/UsersView.vue';
 import ReviewsView from '../views/ReviewsView.vue';
 import LoginView from '../views/LoginView.vue';
-import RegisterView from '../views/RegisterView.vue';
 import ProjectDetails from '../views/ProjectDetails.vue';
-// import UpdateDetail from '../views/UpdateDetail.vue';
 import NewsDetailsVue from '../views/NewsDetails.vue';
 import CountriesVue from '../views/Edits/CountriesEdit.vue';
 import ProjectsEditVue from '../views/Edits/ProjectsEdit.vue';
@@ -25,52 +22,169 @@ import TopicsEditVue from '../views/Edits/TopicsEdit.vue';
 import Document_EditVue from '../views/Edits/Document_Edit.vue';
 import UserTypesEditVue from '../views/Edits/UserTypesEdit.vue';
 import activationView from '../views/activationView.vue';
+import resetPasswordVue from '../views/resetPassword.vue';
+
 
 const routes: Array<RouteRecordRaw> = [
-  { path: '/', 
+  { 
+    path: '/', 
     name: 'home', 
-    component: ProjectView 
+    component: ProjectView,
+    meta: { requiresAuth: true }
   },
-  { path: '/ProductUpdateEdit', 
+  { 
+    path: '/ProductUpdateEdit', 
     name: 'ProductUpdateEdit', 
-    component: ProjectEdit 
+    component: ProjectEdit,
+    meta: { requiresAuth: true }
   },
-  { path: '/projects', name: 'projects', component: ProjectView },
-  { path: '/topic_edit', name: 'TopicEdit', component: TopicsEditVue },
-  { path: '/news', name: 'news', component: NewsView },
-  { path: '/scientific_review', name: 'scientific_review', component: ScientificReviewVue },
-  { path: '/users', name: 'users', component: UsersView },
-  { path: '/reviews/:id', name: 'reviews', component: ReviewsView },
-  { path: '/news_details/:id', name: 'news_details', component: NewsDetailsVue },
-  { path: '/login', name: 'login', component: LoginView },
-  { path: '/register', name: 'register', component: RegisterView },
-  { path: '/projects1/:id', name: 'projectDetails1', component: ProjectDetails },
-  // { path: '/updates/:id', name: 'UpdateDetail', component: UpdateDetail },
-  { path: '/projects/:id', name: 'ProjectDetails', component: ProjectDetails },
-  { path: '/projects_edit', name: 'ProjectsEdit', component: ProjectsEditVue },
-  { path: '/countries', name: 'Countries', component: CountriesVue },
-  { path: '/statuses', name: 'Statuses', component: StatusesVue },
-  { path: '/user_management', name: 'UserManagement', component: UserManagementVue },
+  { 
+    path: '/projects', 
+    name: 'projects', 
+    component: ProjectView,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/topic_edit', 
+    name: 'TopicEdit', 
+    component: TopicsEditVue,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/news', 
+    name: 'news', 
+    component: NewsView,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/scientific_review', 
+    name: 'scientific_review', 
+    component: ScientificReviewVue,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/users', 
+    name: 'users', 
+    component: UsersView,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/reviews/:id', 
+    name: 'reviews', 
+    component: ReviewsView,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/news_details/:id', 
+    name: 'news_details', 
+    component: NewsDetailsVue,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/login', 
+    name: 'login', 
+    component: LoginView,
+    meta: { requiresAuth: false }
+  },
+  // { 
+  //   path: '/projects1/:id', 
+  //   name: 'projectDetails1', 
+  //   component: ProjectDetails,
+  //   meta: { requiresAuth: true }
+  // },
+  { 
+    path: '/projects/:id', 
+    name: 'ProjectDetails', 
+    component: ProjectDetails,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/projects_edit', 
+    name: 'ProjectsEdit', 
+    component: ProjectsEditVue,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/countries', 
+    name: 'Countries', 
+    component: CountriesVue,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/statuses', 
+    name: 'Statuses', 
+    component: StatusesVue,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/user_management', 
+    name: 'UserManagement', 
+    component: UserManagementVue,
+    meta: { requiresAuth: true }
+  },
   {
     path: '/projectUpdates_edit',
     name: 'ProjectUpdates',
     component: ProjectUpdatesVue,
-    props: route => ({ projectId: route.query.projectId })
+    props: route => ({ projectId: route.query.projectId }),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/reset-password',
+    name: 'ResetPassword',
+    component: resetPasswordVue,
+    props: (route) => ({ token: route.query.token }),
+    meta: { requiresAuth: false }  // No authentication required
   },
   {
     path: '/activate-account',
     name: 'activateAccount',
     component: activationView,
-    props: (route) => ({ token: route.query.token })
+    props: (route) => ({ token: route.query.token }),
+    meta: { requiresAuth: false }  // No authentication required
   },
-  // { path: '/projectUpdates_edit/:projectId', name: 'ProjectUpdates', component: ProjectUpdatesVue },
-  { path: '/news_edit', name: 'NewsEdit', component: NewsEditVue },
-  { path: '/scientific_reviews_edit', name: 'ScientificReviewsEdit', component: ScientificReviewsEditVue },
-  { path: '/project_comments', name: 'ProjectComments', component: ProjectCommentsVue },
-  { path: '/characters', name: 'Characters', component: CharactersVue },
-  { path: '/document_edit', name: 'Document_Edit', component: Document_EditVue },
-  { path: '/userTypes_edit', name: 'UserTypesEditVue', component: UserTypesEditVue },
-  { path: '/companiesEdit', name: 'CompEdit', component: CompaniesEditVue }
+  { 
+    path: '/news_edit', 
+    name: 'NewsEdit', 
+    component: NewsEditVue,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/scientific_reviews_edit', 
+    name: 'ScientificReviewsEdit', 
+    component: ScientificReviewsEditVue,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/project_comments', 
+    name: 'ProjectComments', 
+    component: ProjectCommentsVue,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/characters', 
+    name: 'Characters', 
+    component: CharactersVue,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/document_edit', 
+    name: 'Document_Edit', 
+    component: Document_EditVue,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/userTypes_edit', 
+    name: 'UserTypesEditVue', 
+    component: UserTypesEditVue,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/companiesEdit', 
+    name: 'CompEdit', 
+    component: CompaniesEditVue,
+    meta: { requiresAuth: true }
+  }
 ];
 
 const router = createRouter({
@@ -78,13 +192,26 @@ const router = createRouter({
   routes
 });
 
-// router.beforeEach((to, from, next) => {
-//   const userType = localStorage.getItem('userType');
-//   if ((to.name === 'usersi' || to.name === 'UsersView') && userType !== 'admin') {
-//     next('/');
-//   } else {
-//     next();
-//   }
-// });
+// Add authentication guard
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth === false) {
+    next();
+    return;
+  }
+  
+  const token = localStorage.getItem('token');
+  if (!token) {
+    next({ name: 'login' });
+    return;
+  }
+  
+  const role = localStorage.getItem('role');
+  if (to.name === 'users' && role !== 'admin') {
+    next('/');
+    return;
+  }
+  
+  next();
+});
 
 export default router;

@@ -181,7 +181,9 @@ export default {
       this.isLoading = true;
       
       try {
-        // const response = await fetch('http://localhost:900/login', {
+        // console.log(this.email,"email")
+        // console.log(this.password,"password")
+        // const response = await fetch('http://localhost:900/auth/login', {
         const response = await fetch('https://moproject.onrender.com/login', {
           method: 'POST',
           headers: {
@@ -197,16 +199,15 @@ export default {
           throw new Error('Login failed');
         }
         
-        const { user_id, company_id, role } = await response.json();
-        sessionStorage.setItem('user_id', user_id);
-        sessionStorage.setItem('company_id', company_id);
+        const { user_id, company_id, role, token } = await response.json();
+        localStorage.setItem('user_id', user_id);
+        localStorage.setItem('company_id', company_id);
+        localStorage.setItem('role', role)
+        localStorage.setItem('token', token)
         
-        // Redirect based on user role
-        if (role === 'admin') {
-          this.$router.push({ name: 'users' });
-        } else {
-          this.$router.push({ name: 'projects' });
-        }
+      
+      this.$router.push({ name: 'projects' }).then(()=>{location.reload();})
+      
       } catch (error) {
         this.loginError = true;
         this.loginErrorMessage = 'Login failed. Please try again.';
@@ -235,7 +236,7 @@ export default {
       
       try {
         // Make API call to password reset endpoint
-        // const response = await fetch('http://localhost:900/forgot-password', {
+        // const response = await fetch('http://localhost:900/auth/forgot-password', {
         const response = await fetch('https://moproject.onrender.com/forgot-password', {
 
           method: 'POST',

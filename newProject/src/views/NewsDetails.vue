@@ -121,6 +121,7 @@
         newsDetails: null,
         images: [],
         selectedImage: '',
+        user_id: localStorage.getItem('user_id'),
         modal: null
       };
     },
@@ -139,7 +140,7 @@
       async fetchNewsDetail() {
         try {
           const response = await fetch('https://moproject.onrender.com/news/1');
-          // const response = await fetch('http://localhost:900/news/1');
+          // const response = await fetch(`http://localhost:900/news/${this.user_id}`);
           if (!response.ok) throw new Error('Network response was not ok');
           const data = await response.json();
           console.log(data)

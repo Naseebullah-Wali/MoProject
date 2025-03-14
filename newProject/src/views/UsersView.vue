@@ -19,7 +19,7 @@
             <label for="photo" class="form-label">Profile Photo</label>
             <div class="d-flex align-items-center">
               <img 
-                :src="photoPreview || user.Photo || '/default-avatar.png'" 
+                :src="imagePreview || user.Photo || '/default-avatar.png'" 
                 class="rounded-circle me-3" 
                 style="width: 100px; height: 100px; object-fit: cover;"
                 alt="Profile"
@@ -97,8 +97,7 @@
             <button 
               type="button" 
               class="btn btn-secondary" 
-              data-bs-toggle="modal" 
-              data-bs-target="#passwordModal"
+              @click="showPasswordModal = true"
             >
               Change Password
             </button>
@@ -133,11 +132,12 @@
 
     <!-- Password Change Modal -->
     <div 
-      class="modal fade" 
-      id="passwordModal" 
+      class="modal fade"
+      :class="{ show: showPasswordModal }"
       tabindex="-1" 
       aria-labelledby="passwordModalLabel"
       aria-hidden="true"
+      :style="{ display: showPasswordModal ? 'block' : 'none' }"
     >
       <div class="modal-dialog">
         <div class="modal-content">
@@ -146,8 +146,7 @@
             <button 
               type="button" 
               class="btn-close" 
-              data-bs-dismiss="modal" 
-              aria-label="Close"
+              @click="closePasswordModal"
             ></button>
           </div>
           <div class="modal-body">
@@ -191,7 +190,7 @@
                 <button 
                   type="button" 
                   class="btn btn-secondary" 
-                  data-bs-dismiss="modal"
+                  @click="closePasswordModal"
                 >
                   Close
                 </button>
@@ -214,6 +213,11 @@
         </div>
       </div>
     </div>
+    <div 
+      class="modal-backdrop fade" 
+      :class="{ show: showPasswordModal }"
+      v-if="showPasswordModal"
+    ></div>
   </div>
 </template>
 
@@ -226,9 +230,11 @@ const editedUser = ref({})
 const isLoading = ref(true)
 const isSubmitting = ref(false)
 const isPasswordSubmitting = ref(false)
-const error = ref(null)
+const error = ref('')
 const passwordError = ref(null)
-const photoPreview = ref(null)
+const showPasswordModal = ref(false)
+const photoFile = ref(null)
+const imagePreview = ref(null)
 
 // Password form state
 const passwordForm = reactive({
@@ -240,8 +246,7 @@ const passwordForm = reactive({
 // Fetch user data
 const fetchUserData = async () => {
   try {
-    // const userId = localStorage.getItem('user_ID')
-    const userId = 1;
+    const userId = localStorage.getItem('user_id')
     if (!userId) {
       throw new Error('User ID not found')
     }
@@ -267,50 +272,93 @@ onMounted(fetchUserData)
 
 // Photo upload handler
 const handlePhotoUpload = (event) => {
-  const file = event.target.files[0]
-  if (file) {
-    const reader = new FileReader()
+  const file = event.target.files[0];
+  if (file && file.type.startsWith('image/')) {
+    photoFile.value = file; // Store the file object
+    
+    // Create a preview of the image using FileReader
+    // since you mentioned not wanting to use FileReader for upload
+    // but we still need it for preview only
+    const reader = new FileReader();
     reader.onload = (e) => {
-      photoPreview.value = e.target.result
-      editedUser.value.Photo = e.target.result
-    }
-    reader.readAsDataURL(file)
+      imagePreview.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+    
+    error.value = ''; // Clear any previous error
+  } else {
+    error.value = 'Please upload a valid image file';
+    photoFile.value = null;
+    imagePreview.value = null;
   }
 }
 
 // Update profile method
 const updateProfile = async () => {
   try {
-    isSubmitting.value = true
-    const userId = localStorage.getItem('user_ID')
-    
-    // const response = await fetch(`http://localhost:900/users/${userId}`, {
-    const response = await fetch(`https://moproject.onrender.com/users/${userId}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        Name: editedUser.value.Name,
-        Phone: editedUser.value.Phone,
-        Telegram: editedUser.value.Telegram,
-        Photo: editedUser.value.Photo
-      })
-    })
+    isSubmitting.value = true;
+    const userId = localStorage.getItem('user_id');
+    const token = localStorage.getItem('token');
 
-    if (!response.ok) {
-      throw new Error('Failed to update profile')
+    // Create a new FormData instance for the file upload
+    const formData = new FormData();
+    
+    // Add all form fields to FormData
+    formData.append('Name', editedUser.value.Name || '');
+    formData.append('Phone', editedUser.value.Phone || '');
+    formData.append('Telegram', editedUser.value.Telegram || '');
+    
+    // If there's a new file, append it as 'Photo' which is what your backend expects
+    if (photoFile.value) {
+      formData.append('Photo', photoFile.value); // Match the field name in your backend
+    }
+    
+    // Include Notify_on_Updates if it exists
+    if (editedUser.value.Notify_on_Updates !== undefined) {
+      formData.append('Notify_on_Updates', editedUser.value.Notify_on_Updates.toString());
     }
 
-    // Update local user data
-    user.value = { ...user.value, ...editedUser.value }
+    // Log the formData keys for debugging
+    console.log("FormData keys:", [...formData.keys()]);
+
+    // const response = await fetch(`http://localhost:900/users/${userId}/profile`, {
+    const response = await fetch(`https://moproject.onrender.com/users/${userId}/profile`, {
+      method: 'PUT',
+      headers: {
+        'authorization': `Bearer ${token}`
+        // Don't set Content-Type header when using FormData, let the browser set it automatically
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to update profile');
+    }
+
+    const updatedData = await response.json();
     
+    // Update local user data with the response from server
+    if (updatedData.user && updatedData.user.length > 0) {
+      user.value = { ...user.value, ...updatedData.user[0] };
+      
+      // Update the edited user data too
+      editedUser.value = { ...editedUser.value, ...updatedData.user[0] };
+      
+      // Clear the image preview
+      imagePreview.value = null;
+    }
+    
+    // Reset photo file after successful update
+    photoFile.value = null;
+
     // Show success toast or alert
-    showToast('Profile updated successfully!')
+    showToast('Profile updated successfully!');
   } catch (err) {
-    error.value = err.message
+    error.value = typeof err === 'string' ? err : err.message || 'An error occurred';
+    console.error('Profile update error:', err);
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
   }
 }
 
@@ -327,13 +375,15 @@ const changePassword = async () => {
 
   try {
     isPasswordSubmitting.value = true
-    const userId = localStorage.getItem('user_ID')
+    const userId = localStorage.getItem('user_id')
+    const token = localStorage.getItem('token')
     
     // const response = await fetch(`http://localhost:900/users/${userId}/password`, {
     const response = await fetch(`https://moproject.onrender.com/users/${userId}/password`, {
-      method: 'PATCH',
+      method: 'PUT',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'authorization': `Bearer ${token}`
       },
       body: JSON.stringify({
         currentPassword: passwordForm.currentPassword,
@@ -342,14 +392,13 @@ const changePassword = async () => {
     })
 
     if (!response.ok) {
-      throw new Error('Failed to change password')
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to change password');
     }
 
-    // Close modal (you might need to use Bootstrap's modal method)
-    const modalElement = document.getElementById('passwordModal')
-    const modalInstance = bootstrap.Modal.getInstance(modalElement)
-    modalInstance.hide()
-
+    // Close the modal properly
+    closePasswordModal()
+    
     // Reset form and show success
     resetPasswordForm()
     showToast('Password changed successfully!')
@@ -360,10 +409,17 @@ const changePassword = async () => {
   }
 }
 
+// Close password modal
+const closePasswordModal = () => {
+  showPasswordModal.value = false
+}
+
 // Reset form to original data
 const resetForm = () => {
   editedUser.value = { ...user.value }
-  photoPreview.value = null
+  photoFile.value = null
+  imagePreview.value = null
+  history.back()
 }
 
 // Reset password form
@@ -385,5 +441,14 @@ const showToast = (message) => {
 .form-control:read-only {
   background-color: #e9ecef;
   opacity: 1;
+}
+
+.modal.show {
+  background-color: rgba(0, 0, 0, 0.5);
+  display: block;
+}
+
+.modal-backdrop.show {
+  opacity: 0;
 }
 </style>

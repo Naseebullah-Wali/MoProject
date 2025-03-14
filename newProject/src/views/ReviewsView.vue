@@ -121,6 +121,7 @@ export default {
     return {
       review: {},
       images: [],
+      user_id: localStorage.getItem('user_id') ,
       selectedImage: '',
       modal: null
     }
@@ -134,8 +135,8 @@ export default {
   methods: {
     async fetchReviewDetail() {
       try {
-          const response = await fetch(`https://moproject.onrender.com/scientific-reviews/user/1`);
-      //  const response = await fetch(`http://localhost:900/scientific-reviews/user/1`);
+          const response = await fetch(`https://moproject.onrender.com/scientific-reviews/user/${this.user_id}`);
+      //  const response = await fetch(`http://localhost:900/scientific-reviews/user/${this.user_id}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

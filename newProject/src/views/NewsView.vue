@@ -83,8 +83,9 @@ export default {
       news: [],
       filteredNews: [],
       visibleNews: [],
-      newsToShow: 5,
+      newsToShow: 15,
       searchQuery: "",
+      user_id: localStorage.getItem('user_id'),
       sortBy: "created_at",
       filters: {
         topic: "",
@@ -110,7 +111,7 @@ export default {
     async fetchNews() {
       try {
          const response = await fetch("https://moproject.onrender.com/news/1");
-      //  const response = await fetch("http://localhost:900/news/1");
+      //  const response = await fetch(`http://localhost:900/news/${this.user_id}`);
         const data = await response.json();
         this.news = data; // Assuming data is an array with a single item
         this.applyFilters();

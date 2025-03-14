@@ -88,7 +88,8 @@ export default {
       reviews: [],
       filteredReviews: [],
       visibleReviews: [],
-      reviewsToShow: 5,
+      reviewsToShow: 15,
+      user_id:localStorage.getItem('user_id'),
       searchQuery: "",
       sortBy: "CreatedAt",
       filters: {
@@ -117,8 +118,8 @@ export default {
   methods: {
     async fetchReviews() {
       try {
-        // const response = await fetch("http://localhost:900/scientific-reviews/user/1");
-        const response = await fetch("https://moproject.onrender.com/scientific-reviews/user/1");
+        // const response = await fetch(`http://localhost:900/scientific-reviews/user/${this.user_id}`);
+        const response = await fetch(`https://moproject.onrender.com/scientific-reviews/user/${this.user_id}`);
         this.reviews = await response.json();
         this.applyFilters();
       } catch (error) {
@@ -153,7 +154,7 @@ export default {
       this.visibleReviews = this.filteredReviews.slice(0, this.reviewsToShow);
     },
     loadMoreReviews() {
-      this.reviewsToShow += 5;
+      this.reviewsToShow += 15;
       this.updateVisibleReviews();
     },
     formatDate(date) {
