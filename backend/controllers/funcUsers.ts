@@ -4,16 +4,16 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
-
+import { v4 as uuidv4 } from 'uuid';
 // Configure environment variables
 const JWT_SECRET = process.env.JWT_SECRET || 'jwtsecret';
 const EMAIL_USER = process.env.EMAIL_USER || 'walinaseebullah@gmail.com';
 const EMAIL_PASS = process.env.EMAIL_PASS || 'ljss jrnm oqyt ldaw'; //google app password
 const FRONTEND_URL = process.env.FRONTEND_URL || 'https://mo-project-jet.vercel.app/';
+// const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:8080';
 
-// Configure email transporter
 const transporter = nodemailer.createTransport({
-  service: 'gmail', // or your email service provider
+  service: 'gmail', 
   auth: {
     user: EMAIL_USER,
     pass: EMAIL_PASS,
@@ -21,7 +21,6 @@ const transporter = nodemailer.createTransport({
 });
 
 export class UsersController {
-  // Get all users (excluding soft-deleted) with User_Type and Company_Name
   public static async getAllUsers(req: express.Request, res: express.Response) {
     try {
       const { companyId } = req.query;
@@ -281,84 +280,81 @@ export class UsersController {
     }
   }
 
-  // Update user details
-  public static async updateUser(req: express.Request, res: express.Response) {
-    try {
-      const userId = req.params.id;
-      const { Name, email, User_Type, Phone, Company_ID, Telegram, Photo, Notify_on_Updates } = req.body;
 
-      if (!userId) {
-        return res.status(400).json({ message: "User ID is required" });
-      }
-      
-      const updateData: any = { updatedAt: new Date() };
-      
-      // Only include fields that are provided
-      if (Name !== undefined) updateData.Name = Name;
-      if (email !== undefined) updateData.email = email;
-      if (User_Type !== undefined) updateData.User_Type = User_Type;
-      if (Phone !== undefined) updateData.Phone = Phone;
-      if (Company_ID !== undefined) updateData.Company_ID = Company_ID;
-      if (Telegram !== undefined) updateData.Telegram = Telegram;
-      if (Photo !== undefined) updateData.Photo = Photo;
-      if (Notify_on_Updates !== undefined) updateData.Notify_on_Updates = Notify_on_Updates;
-
-      let { data, error } = await supabase
-        .from("Users")
-        .update(updateData)
-        .eq("id", userId)
-        .eq("Is_Deleted", false)
-        .select();
-
-      if (error) {
-        console.error("Error updating user:", error);
-        return res.status(500).json({ message: "Failed to update user", error });
-      }
-
-      res.json(data);
-    } catch (error) {
-      console.error("Server Error:", error);
-      res.status(500).json({ message: "Server error", error });
-    }
-  }
-  
-  // Update user profile (for users to update their own profile)
   public static async updateProfile(req: express.Request, res: express.Response) {
     try {
       const userId = req.params.id;
       const { Name, Phone, Telegram, Photo, Notify_on_Updates } = req.body;
+      const file = req.file;
       
       // Verify that the user is updating their own profile
-      // This assumes an auth middleware that adds userId to the request
       if ((req as any).userId !== parseInt(userId)) {
         return res.status(403).json({ message: 'Not authorized to update this profile' });
       }
-
+  
       if (!userId) {
         return res.status(400).json({ message: "User ID is required" });
       }
       
-      const updateData: any = { updatedAt: new Date() };
+      // Always include these fields in the update
+      let updateData: any = { 
+        updatedAt: new Date() 
+      };
       
       // Only include fields that are provided
       if (Name !== undefined) updateData.Name = Name;
       if (Phone !== undefined) updateData.Phone = Phone;
       if (Telegram !== undefined) updateData.Telegram = Telegram;
-      if (Photo !== undefined) updateData.Photo = Photo;
-      if (Notify_on_Updates !== undefined) updateData.Notify_on_Updates = Notify_on_Updates;
-
+      if (Notify_on_Updates !== undefined) updateData.Notify_on_Updates = Notify_on_Updates === "true";
+      
+      // Initialize Photo with existingPhoto
+      updateData.Photo = Photo;
+  
+      // Handle the profile photo upload
+      if (file) {
+        // Upload file to Supabase Storage
+        const filePath = `profile_photos/${uuidv4()}-${file.originalname}`;
+        const { error: uploadError } = await supabase.storage.from('FilesFromFrontEnd').upload(filePath, file.buffer, {
+          cacheControl: '3600',
+          upsert: false
+        });
+  
+        if (uploadError) {
+          console.error("Error uploading file:", uploadError);
+          return res.status(500).json({ message: "Failed to upload profile photo", error: uploadError });
+        }
+  
+        // Get the public URL of the uploaded file
+        const { data: urlData } = supabase.storage.from('FilesFromFrontEnd').getPublicUrl(filePath);
+  
+        if (!urlData) {
+          console.error("Error getting public URL");
+          return res.status(500).json({ message: "Failed to get public URL for profile photo" });
+        }
+  
+        // Set the photo URL in the update data
+        updateData.Photo = urlData.publicUrl;
+      }
+  
+      // Log update data for debugging
+      // console.log("Update data being sent to database:", updateData);
+  
       let { data, error } = await supabase
         .from("Users")
         .update(updateData)
         .eq("id", userId)
         .eq("Is_Deleted", false)
         .select();
-
+  
       if (error) {
         console.error("Error updating profile:", error);
         return res.status(500).json({ message: "Failed to update profile", error });
       }
-
+  
+      if (!data || data.length === 0) {
+        return res.status(404).json({ message: "User not found or no changes made" });
+      }
+  
       res.json({ message: "Profile updated successfully", user: data });
     } catch (error) {
       console.error("Server Error:", error);
@@ -397,7 +393,7 @@ export class UsersController {
   public static async login(req: express.Request, res: express.Response) {
     try {
       const { email, password } = req.body;
-      
+      // console.log(req.body)
       // Find user by email
       let { data: user, error: userError } = await supabase
         .from("Users")
@@ -463,12 +459,11 @@ export class UsersController {
     try {
       const userId = req.params.id;
       const { currentPassword, newPassword } = req.body;
-      
-      // Verify that the user is changing their own password
-      // This assumes an auth middleware that adds userId to the request
-      if ((req as any).userId !== parseInt(userId)) {
+      if (Number((req as any).userId) !== Number(userId)) {
+        console.log("Not equal after Number conversion!");
         return res.status(403).json({ message: 'Not authorized to change this password' });
       }
+      
       
       // Fetch user
       let { data: user, error: userError } = await supabase
@@ -546,7 +541,7 @@ export class UsersController {
       let { error: updateError } = await supabase
         .from("Users")
         .update({ 
-          reset_token: resetToken,
+          token: resetToken,
           reset_token_expires: resetTokenExpires.toISOString(),
           updatedAt: new Date()
         })
@@ -576,7 +571,8 @@ export class UsersController {
   public static async resetPassword(req: express.Request, res: express.Response) {
     try {
       const { token, newPassword } = req.body;
-      
+      // console.log(token, "token")
+      // console.log(newPassword, "pass")
       if (!token || !newPassword) {
         return res.status(400).json({ message: "Token and new password are required" });
       }
@@ -585,7 +581,7 @@ export class UsersController {
       let { data: user, error: userError } = await supabase
         .from("Users")
         .select("id, reset_token_expires")
-        .eq("reset_token", token)
+        .eq("token", token)
         .eq("Is_Deleted", false)
         .single();
         
@@ -606,7 +602,7 @@ export class UsersController {
         .from("Users")
         .update({ 
           password: hashedPassword,
-          reset_token: null,
+          token: null,
           reset_token_expires: null,
           updatedAt: new Date()
         })
@@ -673,7 +669,7 @@ export class UsersController {
     try {
       const { token } = req.body;
       if (!token) return res.status(400).json({ message: "Token is required" });
-
+      // console.log(req.body)
       const { data: user, error } = await supabase
         .from("Users")
         .select("id, email, Name, Phone, Telegram, Notify_on_Updates")

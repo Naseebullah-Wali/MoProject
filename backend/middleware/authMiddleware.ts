@@ -20,7 +20,6 @@ const authenticate = (req: AuthenticatedRequest, res: Response, next: NextFuncti
 
     const token: string = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: string; email: string; role: string };
-
     req.userId = decoded.userId;
     req.userEmail = decoded.email;
     req.userRole = decoded.role;

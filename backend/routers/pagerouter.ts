@@ -24,21 +24,6 @@ import  authenticate from "../middleware/authMiddleware";
 
 const rout: express.Router = express.Router();
 
-// // User Routes
-// rout.post('/users', userControllers.UserPost);
-// rout.get('/users', userControllers.ShowUsers);
-// rout.get('/users/:id', userControllers.FindById);
-// rout.put('/users/:id', userControllers.UpdateUser);
-// rout.delete('/users/:id', userControllers.DeleteUser);
-// rout.post('/login', [
-//     body('email').not().isEmpty().withMessage('Email is required'),
-//     body('password').not().isEmpty().withMessage('Password is required')
-// ], userControllers.Login);
-// rout.get('/jwt', jwtout, (req, res) => {
-//     console.log('JWT check successful');
-// });
-
-
 
 // Topics
 rout.post('/topics', TopicsController.addTopic);
@@ -66,10 +51,6 @@ rout.delete('/projects/:id', ProjectsController.deleteProject);
 //   ]), ProjectsController.updateProject);
 
 
-
-
-
-//function get project by user id
 
 
 
@@ -185,7 +166,7 @@ rout.delete("/users/:id", UsersController.deleteUser);
 
 // User profile routes (protected by auth)
 // rout.put("/users/:id/profile", authenticate, upload.single('Photo'), UsersController.updateProfile);
-rout.put("/users/:id/password", authenticate, UsersController.changePassword);
+rout.put("/users/:id/password", authenticate, UsersController.changePassword);  //working
 
 // Authentication routes
 rout.post("/auth/login", UsersController.login);
