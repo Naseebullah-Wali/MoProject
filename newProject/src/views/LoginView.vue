@@ -184,7 +184,7 @@ export default {
         // console.log(this.email,"email")
         // console.log(this.password,"password")
         // const response = await fetch('http://localhost:900/auth/login', {
-        const response = await fetch('https://moproject.onrender.com/login', {
+        const response = await fetch('https://moproject.onrender.com/auth/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -237,7 +237,7 @@ export default {
       try {
         // Make API call to password reset endpoint
         // const response = await fetch('http://localhost:900/auth/forgot-password', {
-        const response = await fetch('https://moproject.onrender.com/forgot-password', {
+        const response = await fetch('https://moproject.onrender.com/auth/forgot-password', {
 
           method: 'POST',
           headers: {
