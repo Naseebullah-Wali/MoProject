@@ -19,7 +19,10 @@ const transporter = nodemailer.createTransport({
     pass: EMAIL_PASS,
   },
 });
-
+interface UserEmailData {
+  email: string;
+  name?: string; // Optional if some users might not have names
+}
 export class UsersController {
   public static async getAllUsers(req: express.Request, res: express.Response) {
     try {
@@ -771,7 +774,144 @@ export class UsersController {
       res.status(500).json({ message: "Server error", error });
     }
   }
+    
+  public static async notifyNewProject(req: express.Request, res: express.Response) {
+    // console.log('Received notification request:', req.body);
+    try {
+      const { countryId, projectName, projectId } = req.body;
 
+      if (!countryId || !projectName || !projectId) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      // Get emails of users to notify
+      const { data, error } = await supabase
+        .rpc('get_useremails_by_countryid_creatingnewproject', {
+          p_country_id: countryId
+        });
+
+      if (error) {
+        console.error('Error fetching user emails:', error);
+        return res.status(500).json({ error: 'Failed to fetch user emails' });
+      }
+
+      if (!data || data.length === 0) {
+        return res.status(200).json({ message: 'No users to notify' });
+      }
+
+      // Send emails to all users
+      const projectLink = `${FRONTEND_URL}/projects/${projectId}`;
+      
+      // Process emails in parallel with Promise.all
+      await Promise.all(data.map(async (user:UserEmailData) => {
+        await UsersController.sendNewProjectEmail(
+          user.email,
+          projectName,
+          projectLink
+        );
+      }));
+
+      return res.status(200).json({ 
+        message: `Successfully notified ${data.length} users about the new project` 
+      });
+    } catch (error) {
+      console.error('Error in notifyNewProject:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  /**
+   * Notify users about a project update
+   */
+  public static async notifyProjectUpdate(req: express.Request, res: express.Response) {
+    // console.log(req.body)
+    try {
+      const { countryId, projectId, projectName } = req.body;
+
+      if (!countryId || !projectId || !projectName) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      // Get emails of users to notify about the update
+      const { data, error } = await supabase
+        .rpc('get_useremails_by_countryid_creatingnewprojectupdate', {
+          p_country_id: countryId
+        });
+
+      if (error) {
+        console.error('Error fetching user emails for update:', error);
+        return res.status(500).json({ error: 'Failed to fetch user emails' });
+      }
+
+      if (!data || data.length === 0) {
+        return res.status(200).json({ message: 'No users to notify about the update' });
+      }
+
+      // Send emails to all users
+      const projectLink = `${FRONTEND_URL}/projects/${projectId}`;
+      
+      await Promise.all(data.map(async (user:UserEmailData) => {
+        await UsersController.sendProjectUpdateEmail(
+          user.email,
+          projectName || 'Project Update',
+          projectLink
+        );
+      }));
+
+      return res.status(200).json({ 
+        message: `Successfully notified ${data.length} users about the project update` 
+      });
+    } catch (error) {
+      console.error('Error in notifyProjectUpdate:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  /**
+   * Send email about a new project
+   */
+  private static async sendNewProjectEmail(
+    email: string, 
+    projectName: string,
+    projectLink: string
+  ) {
+    const mailOptions = {
+      from: EMAIL_USER,
+      to: email,
+      subject: `New Project: ${projectName}`,
+      html: `
+        <h2>New Project Announcement</h2>
+        <p>A new project "${projectName}" has been created.</p>
+        <p>To view the project details, please click the link below:</p>
+        <a href="${projectLink}">View Project</a>
+      `
+    };
+    
+    await transporter.sendMail(mailOptions);
+  }
+
+  /**
+   * Send email about a project update
+   */
+  private static async sendProjectUpdateEmail(
+    email: string,
+    projectName: string,
+    projectLink: string
+  ) {
+    const mailOptions = {
+      from: EMAIL_USER,
+      to: email,
+      subject: `Project Update: ${projectName}`,
+      html: `
+        <h2>Project Update Notification</h2>
+        <p>Project "${projectName}" has been updated. </p>
+        <p>To view the project, please click the link below:</p>
+        <a href="${projectLink}">View Project</a>
+      `
+    };
+    
+    await transporter.sendMail(mailOptions);
+  }
   
 
 }

@@ -54,48 +54,6 @@ export class ProjectUpdatesController {
     }
   }
 
-  // public static async getProjectUpdateById(req: express.Request, res: express.Response) {
-  //   try {
-  //     const updateId = req.params.id;
-
-  //     if (!updateId) {
-  //       return res.status(400).json({ message: "Project Update ID is required" });
-  //     }
-
-  //     let { data: update, error: updateError } = await supabase
-  //       .from("ProjectUpdates")
-  //       .select("id, Project_ID, update_date, update_content, file1, file2, file3, file4, file5, file6, created_at")
-  //       .eq("id", updateId)
-  //       .single();
-
-  //     if (updateError) {
-  //       console.error("Error fetching project update:", updateError);
-  //       return res.status(500).json({ message: "Failed to fetch project update", error: updateError });
-  //     }
-
-  //     if (!update) {
-  //       return res.status(404).json({ message: "Project update not found" });
-  //     }
-
-  //     // Fetch project title
-  //     let { data: project, error: projectError } = await supabase
-  //       .from("Projects")
-  //       .select("Post_Title")
-  //       .eq("ID", update.Project_ID)
-  //       .single();
-
-  //     if (projectError) {
-  //       console.error("Error fetching project:", projectError);
-  //       return res.status(500).json({ message: "Failed to fetch project", error: projectError });
-  //     }
-
-  //     res.json({ ...update, Post_Title: project ? project.Post_Title : "Unknown Project" });
-  //   } catch (error) {
-  //     console.error("Server Error:", error);
-  //     res.status(500).json({ message: "Server error", error });
-  //   }
-  // }
-
   public static async addProjectUpdate(req: express.Request, res: express.Response) {
     try {
       const { Project_ID, update_date, update_content } = req.body;

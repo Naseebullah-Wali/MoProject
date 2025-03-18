@@ -2,13 +2,12 @@ import express from "express";
 import { supabase } from "../dbConfig/dbConfig";
 
 export class DocumentTypeController {
-  // Get all document types (excluding soft-deleted)
   public static async getAllDocumentTypes(req: express.Request, res: express.Response) {
     try {
       let { data, error } = await supabase
         .from("Document_Types")
         .select("*")
-        .eq("Is_Deleted", false); // Exclude deleted document types
+        .eq("Is_Deleted", false); 
 
       if (error) {
         console.error("Error fetching document types:", error);
@@ -26,7 +25,6 @@ export class DocumentTypeController {
     }
   }
 
-  // Get document type by ID (only if not deleted)
   public static async getDocumentTypeById(req: express.Request, res: express.Response) {
     try {
       const docTypeId = req.params.id;
@@ -58,7 +56,6 @@ export class DocumentTypeController {
     }
   }
 
-  // Add a new document type
   public static async addDocumentType(req: express.Request, res: express.Response) {
     try {
       const { Doc_Type } = req.body;
@@ -87,7 +84,6 @@ export class DocumentTypeController {
     }
   }
 
-  // Update document type details
   public static async updateDocumentType(req: express.Request, res: express.Response) {
     try {
       const docTypeId = req.params.id;
@@ -118,7 +114,6 @@ export class DocumentTypeController {
     }
   }
 
-  // Soft delete document type
   public static async deleteDocumentType(req: express.Request, res: express.Response) {
     try {
       const docTypeId = req.params.id;

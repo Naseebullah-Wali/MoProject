@@ -1,7 +1,7 @@
 import express from "express";
 // import { userControllers } from "../controllers/pageControllers";
 import { body } from "express-validator";
-import jwtout from "../middleware/jwtout";
+// import jwtout from "../middleware/jwtout";
 import { ProjectUpdatesController } from "../controllers/funcProjectUpdates";
 import { TopicsController } from "../controllers/funcTopics";
 import { ProjectsController } from "../controllers/funcProject";
@@ -37,23 +37,16 @@ rout.get('/project-topics/:id', ProjectTopicController.getProjectTopicsByProject
 rout.get('/projects', ProjectsController.getAllProjects);
 rout.delete('/projects/:id', ProjectsController.deleteProject);
 // rout.post('/projects', upload.fields([
-//     { name: 'Image', maxCount: 1 },
 //     { name: 'File1', maxCount: 1 },
 //     { name: 'File2', maxCount: 1 },
 //     { name: 'File3', maxCount: 1 }
 //   ]), ProjectsController.addProject);
   
 //   rout.put('/projects/:id', upload.fields([
-//     { name: 'Image', maxCount: 1 },
 //     { name: 'File1', maxCount: 1 },
 //     { name: 'File2', maxCount: 1 },
 //     { name: 'File3', maxCount: 1 }
 //   ]), ProjectsController.updateProject);
-
-
-
-
-
 
 
 //Sciencetific Reviews
@@ -87,7 +80,6 @@ rout.delete("/countries/:id", CountriesController.deleteCountry);
 // rout.put('/countries/:id', upload.single('Flag'), CountriesController.updateCountry);
 
 
-
 //Companies
 // rout.post('/companies', upload.single('Company_Logo'), CompaniesController.addCompany);
 // rout.put('/companies/:id', upload.single('Company_Logo'), CompaniesController.updateCompany);
@@ -104,15 +96,12 @@ rout.put("/characters/:id", CharactersController.updateCharacter);
 rout.delete("/characters/:id", CharactersController.deleteCharacter);
 
 
-
 //Statuses
 rout.get("/statuses", StatusController.getAllStatuses);
 rout.get("/statuses/:id", StatusController.getStatusById);
 rout.post("/statuses", StatusController.addStatus);
 rout.put("/statuses/:id", StatusController.updateStatus);
 rout.delete("/statuses/:id", StatusController.deleteStatus);
-
-
 
 
 //ProjectUpdates
@@ -138,16 +127,12 @@ rout.get("/project-updates/:id", projectUpdateFunctionCall.getProjectUpdatesByPr
 rout.delete('/project-updates/:id', ProjectUpdatesController.deleteProjectUpdate);
 
 
-
-
 //Document-Type
 rout.get('/document-types', DocumentTypeController.getAllDocumentTypes);
 rout.get('/document-types/:id', DocumentTypeController.getDocumentTypeById);
 rout.post('/document-types', DocumentTypeController.addDocumentType);
 rout.put('/document-types/:id', DocumentTypeController.updateDocumentType);
 rout.delete('/document-types/:id', DocumentTypeController.deleteDocumentType);
-
-
 
 
 //Project Topic Assiostion table
@@ -161,11 +146,10 @@ rout.delete('/project-topicsRelation/:id', ProjectTopicsController.deleteProject
 rout.get("/users", UsersController.getAllUsers);
 rout.get("/users/:id", UsersController.getUserById);
 rout.post("/users", UsersController.addUser);
-// rout.put("/users/:id", upload.single('Photo'), UsersController.updateUser);
 rout.delete("/users/:id", UsersController.deleteUser);
 
 // User profile routes (protected by auth)
-// rout.put("/users/:id/profile", authenticate, upload.single('Photo'), UsersController.updateProfile);
+// rout.put("/users/:id/profile", authenticate, upload.single('Photo'), UsersController.updateProfile); //needed 
 rout.put("/users/:id/password", authenticate, UsersController.changePassword);  //working
 
 // Authentication routes
@@ -180,14 +164,16 @@ rout.post("/auth/activate-account", UsersController.activateAccount);
 rout.post("/auth/resend-activation-email", UsersController.resendActivationEmail);
 
 
-
-
 //users types
 rout.get('/user-types', UserTypesController.getAllUserTypes);
 rout.get('/user-types/:id', UserTypesController.getUserTypeById);
 rout.post('/user-types', UserTypesController.addUserType);
 rout.put('/user-types/:id', UserTypesController.updateUserType);
 rout.delete('/user-types/:id', UserTypesController.deleteUserType);
+
+
+rout.post('/notify/new-project', UsersController.notifyNewProject);
+rout.post('/notify/project-update', UsersController.notifyProjectUpdate);
 
 
 export default rout;

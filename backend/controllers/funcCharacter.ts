@@ -2,7 +2,6 @@ import express from "express";
 import { supabase } from "../dbConfig/dbConfig";
 
 export class CharactersController {
-  // Get all characters (excluding soft-deleted)
   public static async getAllCharacters(req: express.Request, res: express.Response) {
     try {
       let { data, error } = await supabase
@@ -26,7 +25,6 @@ export class CharactersController {
     }
   }
 
-  // Get character by ID (only if not deleted)
   public static async getCharacterById(req: express.Request, res: express.Response) {
     try {
       const characterId = req.params.id;
@@ -58,7 +56,6 @@ export class CharactersController {
     }
   }
 
-  // Add a new character
   public static async addCharacter(req: express.Request, res: express.Response) {
     try {
       const { Character_name } = req.body;
@@ -89,7 +86,6 @@ export class CharactersController {
     }
   }
 
-  // Update character details
   public static async updateCharacter(req: express.Request, res: express.Response) {
     try {
       const characterId = req.params.id;
@@ -121,7 +117,6 @@ export class CharactersController {
     }
   }
 
-  // Soft delete character
   public static async deleteCharacter(req: express.Request, res: express.Response) {
     try {
       const characterId = req.params.id;

@@ -2,7 +2,6 @@ import express from "express";
 import { supabase } from "../dbConfig/dbConfig";
 
 export class TopicsController {
-  // Get all topics (excluding soft-deleted)
   public static async getAllTopics(req: express.Request, res: express.Response) {
     try {
       let { data, error } = await supabase

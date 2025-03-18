@@ -1,6 +1,3 @@
-  /**
-   * Get project topics by project ID using Supabase function
-   */
 import express from "express";
 import { supabase } from "../dbConfig/dbConfig";
 

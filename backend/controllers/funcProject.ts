@@ -3,7 +3,6 @@ import { supabase } from "../dbConfig/dbConfig";
 import { v4 as uuidv4 } from 'uuid';
 
 export class ProjectsController {
-  // Get all projects with their associated relations
   public static async getAllProjects(req: express.Request, res: express.Response) {
     try {
       let { data: projects, error: projectsError } = await supabase
@@ -70,14 +69,16 @@ export class ProjectsController {
         // Get status name
         const status = statuses.find(s => s.id === project.Status_ID);
         const statusName = status ? status.Status_Name : null;
-  
-        return {
-          ...project,
-          Country_Name: countryName,
-          Document_Type_Name: documentTypeName,
-          Character_name: characterName,
-          Status_Name: statusName,
-        };
+        
+        const { id, ...rest } = project;
+            return {
+                id,
+                ...rest,
+                Country_Name: countryName,
+                Document_Type_Name: documentTypeName,
+                Character_name: characterName,
+                Status_Name: statusName,
+            };
       });
   
       res.json(enrichedProjects);
@@ -87,7 +88,6 @@ export class ProjectsController {
     }
   }
 
-  // Add a new project with its associated relations
   public static async addProject(req: express.Request, res: express.Response) {
     try {
       const {
@@ -107,42 +107,21 @@ export class ProjectsController {
       } = req.body;
   
       const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-    //   console.log(req.body)
+  
       // Validate required fields
-      if (!Country_ID || !Post_Title || !Post_Content || !Project_Date || 
-          !Project_Number || !Developer_Organization || !Document_Type || 
+      if (!Country_ID || !Post_Title || !Post_Content || !Project_Date ||
+          !Project_Number || !Developer_Organization || !Document_Type ||
           !Character_ID || !Status_ID) {
-        return res.status(400).json({ 
+        return res.status(400).json({
           message: "Required fields missing",
           required: "Country_ID, Priority, Post_Title, Post_Content, Project_Date, Project_Number, Developer_Organization, Document_Type, Character_ID, Status_ID are required"
         });
       }
   
       // File paths and URLs
-      let imageUrl = null;
       let file1Url = null;
       let file2Url = null;
       let file3Url = null;
-  
-      // Upload image if provided
-      if (files.Image && files.Image.length > 0) {
-        const image = files.Image[0];
-        const imagePath = `project_images/${uuidv4()}-${image.originalname}`;
-        let { error: uploadError } = await supabase.storage
-          .from('FilesFromFrontEnd')
-          .upload(imagePath, image.buffer, {
-            cacheControl: '3600',
-            upsert: false
-          });
-  
-        if (uploadError) {
-          console.error("Error uploading image:", uploadError);
-          return res.status(500).json({ message: "Failed to upload project image", error: uploadError });
-        }
-  
-        const { data: urlData } = supabase.storage.from('FilesFromFrontEnd').getPublicUrl(imagePath);
-        imageUrl = urlData?.publicUrl || null;
-      }
   
       // Upload File1 if provided
       if (files.File1 && files.File1.length > 0) {
@@ -208,7 +187,6 @@ export class ProjectsController {
       const newProject = {
         Country_ID,
         Priority,
-        Image: imageUrl,
         CreatedAt: new Date(),
         UpdatedAt: new Date(),
         Post_Title,
@@ -245,11 +223,12 @@ export class ProjectsController {
       res.status(500).json({ message: "Server error", error });
     }
   }
-
+  
   // Update project with its associated relations
   public static async updateProject(req: express.Request, res: express.Response) {
     try {
       const projectId = req.params.id;
+      console.log(projectId)
   
       if (!projectId) {
         return res.status(400).json({ message: "Project ID is required" });
@@ -275,7 +254,7 @@ export class ProjectsController {
   
       // Build update object with only provided fields
       let projectUpdate: any = { UpdatedAt: new Date() };
-      
+  
       // Update basic fields if provided
       if (Country_ID !== undefined) projectUpdate.Country_ID = Country_ID;
       if (Priority !== undefined) projectUpdate.Priority = Priority;
@@ -290,7 +269,12 @@ export class ProjectsController {
       if (Original_Document !== undefined) projectUpdate.Original_Document = Original_Document;
       if (Took_Affect_Date !== undefined) projectUpdate.Took_Affect_Date = Took_Affect_Date;
       if (No_Longer_Valid_Date !== undefined) projectUpdate.No_Longer_Valid_Date = No_Longer_Valid_Date;
-    //   console.log(projectUpdate)
+  
+      // Explicitly set Image to null if not provided
+      if (!files.Image || files.Image.length === 0) {
+        projectUpdate.Image = null;
+      }
+  
       // Upload and update Image if provided
       if (files.Image && files.Image.length > 0) {
         const image = files.Image[0];
@@ -371,11 +355,14 @@ export class ProjectsController {
         projectUpdate.File3 = urlData?.publicUrl || null;
       }
   
+      // Log the projectUpdate object to debug
+      console.log("Project Update Object:", projectUpdate);
+  
       // Update project in database
       let { data: updatedProject, error: updateError } = await supabase
         .from("Projects")
         .update(projectUpdate)
-        .eq("ID", projectId)
+        .eq("id", projectId) // Ensure the correct field name is used
         .select();
   
       if (updateError) {
@@ -389,8 +376,8 @@ export class ProjectsController {
       res.status(500).json({ message: "Server error", error });
     }
   }
+  
 
-  // Delete project (soft delete)
   public static async deleteProject(req: express.Request, res: express.Response) {
     try {
       const projectId = req.params.id;

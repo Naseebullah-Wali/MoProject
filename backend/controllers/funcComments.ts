@@ -32,11 +32,10 @@ export class ProjectCommentsController {
 
   public static async getAllComments(req: express.Request, res: express.Response) {
     try {
-      // Fetch all comments
       let { data: comments, error: commentsError } = await supabase
         .from("Project_Comments")
         .select("*")
-        .eq("Is_Deleted", false); // Assuming you want to exclude deleted comments
+        .eq("Is_Deleted", false); 
 
       if (commentsError) {
         console.error("Error fetching comments:", commentsError);
@@ -47,11 +46,9 @@ export class ProjectCommentsController {
         return res.status(404).json({ message: "No comments found" });
       }
 
-      // Get user IDs and project IDs from comments
       const userIds = [...new Set(comments.map(comment => comment.User_ID))];
       const projectIds = [...new Set(comments.map(comment => comment.Project_ID))];
 
-      // Fetch user names
       let { data: users, error: usersError } = await supabase
         .from("Users")
         .select("id, Name")
@@ -62,7 +59,6 @@ export class ProjectCommentsController {
         return res.status(500).json({ message: "Failed to fetch user names", error: usersError });
       }
 
-      // Fetch project titles
       let { data: projects, error: projectsError } = await supabase
         .from("Projects")
         .select("id, Post_Title")

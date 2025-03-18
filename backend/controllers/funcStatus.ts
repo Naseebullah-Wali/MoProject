@@ -96,7 +96,7 @@ export class StatusController {
 
       let { data, error } = await supabase
         .from("Statuses")
-        .update({ Status_Name, updatedAt: new Date() }) // Fix typo: updateAt → updatedAt
+        .update({ Status_Name, updatedAt: new Date() }) 
         .eq("id", statusId)
         .eq("Is_Deleted", false)
         .select();

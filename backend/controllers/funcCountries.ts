@@ -3,7 +3,6 @@ import { supabase } from "../dbConfig/dbConfig";
 import { v4 as uuidv4 } from 'uuid';
 
 export class CountriesController {
-  // Get all countries
   public static async getAllCountries(req: express.Request, res: express.Response) {
     try {
       let { data, error } = await supabase.from("Countries").select("*");
@@ -24,7 +23,6 @@ export class CountriesController {
     }
   }
 
-  // Get country by ID
   public static async getCountryById(req: express.Request, res: express.Response) {
     try {
       const countryId = req.params.id;
@@ -51,7 +49,6 @@ export class CountriesController {
     }
   }
 
-  // Add a new country
   public static async addCountry(req: express.Request, res: express.Response) {
     try {
       const { Country_Name } = req.body;
@@ -61,7 +58,6 @@ export class CountriesController {
         return res.status(400).json({ message: "Country Name and Flag are required" });
       }
 
-      // Upload file to Supabase Storage
       const filePath = `country_flags/${uuidv4()}-${file.originalname}`;
       const { error: uploadError } = await supabase.storage.from('FilesFromFrontEnd').upload(filePath, file.buffer, {
         cacheControl: '3600',
@@ -73,7 +69,6 @@ export class CountriesController {
         return res.status(500).json({ message: "Failed to upload country flag", error: uploadError });
       }
 
-      // Get the public URL of the uploaded file
       const { data: urlData } = supabase.storage.from('FilesFromFrontEnd').getPublicUrl(filePath);
 
       if (!urlData) {
@@ -81,7 +76,6 @@ export class CountriesController {
         return res.status(500).json({ message: "Failed to get public URL for country flag" });
       }
 
-      // Save country data with the flag URL
       let { data, error } = await supabase.from("Countries").insert([
         { Country_Name, Flag: urlData.publicUrl, createdAt: new Date(), updatedAt: new Date() }
       ]).select();
@@ -98,7 +92,6 @@ export class CountriesController {
     }
   }
 
-  // Update country details
   public static async updateCountry(req: express.Request, res: express.Response) {
     try {
       const countryId = req.params.id;
@@ -112,7 +105,6 @@ export class CountriesController {
 
       let countryData = { Country_Name, Flag, updatedAt: new Date() };
 
-      // If a new file is uploaded, update the flag
       if (file) {
         const filePath = `country_flags/${uuidv4()}-${file.originalname}`;
         const { error: uploadError } = await supabase.storage.from('FilesFromFrontEnd').upload(filePath, file.buffer, {
@@ -149,7 +141,6 @@ export class CountriesController {
     }
   }
 
-  // Delete country (soft delete)
   public static async deleteCountry(req: express.Request, res: express.Response) {
     try {
       const countryId = req.params.id;

@@ -14,7 +14,7 @@ class App {
     private server: Server;
     private sequelize: Sequelize;
 
-    constructor(port = 900, host = '127.0.0.1') {
+    constructor(port = 9000, host = '127.0.0.1') {
         this.port = port;
         this.host = host;
         this.sequelize = sequelize;

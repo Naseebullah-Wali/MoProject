@@ -2,7 +2,6 @@ import express from "express";
 import { supabase } from "../dbConfig/dbConfig";
 
 export class NewsController {
-  // Get all news (excluding soft-deleted ones)
   public static async getAllNews(req: express.Request, res: express.Response) {
     try {
       let { data, error } = await supabase
@@ -26,7 +25,6 @@ export class NewsController {
     }
   }
 
-  // Get news by user ID
   public static async getNewsByUserId(req: express.Request, res: express.Response) {
     try {
       const userId = req.params.userId;
@@ -55,7 +53,6 @@ export class NewsController {
     }
   }
 
-  // Add a new news article
   public static async addNews(req: express.Request, res: express.Response) {
     try {
       const { Title, Content_Text, Image, Source, Link_to_source } = req.body;
@@ -83,7 +80,6 @@ export class NewsController {
     }
   }
 
-  // Update news article
   public static async updateNews(req: express.Request, res: express.Response) {
     try {
       const newsId = req.params.newsId;
@@ -102,7 +98,7 @@ export class NewsController {
           Source,
           Link_to_source,
           Is_Deleted,
-          updatedAt: new Date(), // Fixed timestamp
+          updatedAt: new Date(), 
         })
         .eq("id", newsId)
         .select();
@@ -119,7 +115,6 @@ export class NewsController {
     }
   }
 
-  // Soft delete a news article
   public static async deleteNews(req: express.Request, res: express.Response) {
     try {
       const newsId = req.params.newsId;
@@ -130,7 +125,7 @@ export class NewsController {
 
       let { data, error } = await supabase
         .from("News")
-        .update({ Is_Deleted: true, updatedAt: new Date() }) // Fixed soft delete
+        .update({ Is_Deleted: true, updatedAt: new Date() }) 
         .eq("id", newsId)
         .select();
 

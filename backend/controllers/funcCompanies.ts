@@ -2,7 +2,6 @@ import express from "express";
 import { supabase } from "../dbConfig/dbConfig";
 import { v4 as uuidv4 } from 'uuid';
 
-// Define types for better type safety
 interface Country {
   id: number;
   name: string;
@@ -23,10 +22,8 @@ interface CompanyCountryRelation {
 }
 
 export class CompaniesController {
-  // Get all companies with their associated countries
   public static async getAllCompanies(req: express.Request, res: express.Response) {
     try {
-      // Fetch all companies
       let { data: companies, error: companiesError } = await supabase
         .from("Companies")
         .select("*")
@@ -51,7 +48,6 @@ export class CompaniesController {
         return res.status(500).json({ message: "Failed to fetch company-country relations", error: relationsError });
       }
 
-      // Fetch all countries
       let { data: countries, error: countriesError } = await supabase
         .from("Countries")
         .select("id, Country_Name");
@@ -61,7 +57,6 @@ export class CompaniesController {
         return res.status(500).json({ message: "Failed to fetch countries", error: countriesError });
       }
 
-      // Map country names to companies
       const companiesWithCountries = companies.map(company => {
         const relations = companyCountryRelations.filter(rel => rel.Company_ID === company.id);
         const countryNames = relations.map(rel => {
@@ -82,7 +77,6 @@ export class CompaniesController {
     }
   }
 
-  // Get company by ID with its associated countries
   public static async getCompanyById(req: express.Request, res: express.Response) {
     try {
       const companyId = req.params.id;
@@ -90,8 +84,6 @@ export class CompaniesController {
       if (!companyId) {
         return res.status(400).json({ message: "Company ID is required" });
       }
-
-      // Fetch the company
       let { data: company, error: companyError } = await supabase
         .from("Companies")
         .select("*")
@@ -118,7 +110,6 @@ export class CompaniesController {
         return res.status(500).json({ message: "Failed to fetch company-country relations", error: relationError });
       }
 
-      // Fetch the countries
       let { data: countries, error: countriesError } = await supabase
         .from("Countries")
         .select("name")
@@ -138,7 +129,6 @@ export class CompaniesController {
     }
   }
 
-  // Add a new company with its associated countries
   public static async addCompany(req: express.Request, res: express.Response) {
     try {
       const { Company_Name, About, Country_Ids }: { Company_Name: string, About: string, Country_Ids: number[] } = req.body;
@@ -178,7 +168,6 @@ export class CompaniesController {
         return res.status(500).json({ message: "Failed to add company", error: insertError });
       }
 
-      // Insert into Companies_Countries table
       const companyCountryData: CompanyCountryRelation[] = Country_Ids.map(Country_Id => ({
         Company_ID: companyData[0].id,
         Country_ID: Country_Id
@@ -198,7 +187,6 @@ export class CompaniesController {
     }
   }
 
-  // Update company details with its associated countries
   public static async updateCompany(req: express.Request, res: express.Response) {
     try {
       const companyId = req.params.id;
@@ -268,7 +256,6 @@ export class CompaniesController {
     }
   }
 
-  // Delete company (soft delete)
   public static async deleteCompany(req: express.Request, res: express.Response) {
     try {
       const companyId = req.params.id;
