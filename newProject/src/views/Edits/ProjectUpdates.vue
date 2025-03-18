@@ -139,7 +139,7 @@ import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import TableComponent from '../../components/TableComponent.vue';
 
-// const API_URL = 'http://localhost:900/project-updates';
+// const API_URL = 'http://uvn-235-41.ams01.zonevs.eu:9000/project-updates';
 const API_URL = 'https://moproject.onrender.com/project-updates';
 
 const projectUpdates = ref([]);
@@ -290,6 +290,33 @@ async function handleCreate() {
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to create project update');
+    }
+
+    const createdUpdate = await response.json();
+    try {
+      const projectId = route.query.projectId;
+      const countryId = localStorage.getItem('company_id');
+      const projectName = formData.value.update_content.substring(0,50)+ '...' || 'Project Update';
+      
+      // Extract a brief update title from the content (first 50 chars or so)
+      // const updateTitle = formData.value.update_content.length > 50 
+        // ? formData.value.update_content.substring(0, 50) + '...' 
+        // : formData.value.update_content;
+
+      await fetch('https://moproject.onrender.com/notify/project-update', { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          countryId: countryId,
+          projectId: projectId,
+          projectName: projectName,
+        }),
+      });
+    } catch (notificationError) {
+      // Log but don't block the flow if notification fails
+      console.error('Error sending update notifications:', notificationError);
     }
 
     await fetchProjectUpdates();

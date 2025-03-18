@@ -24,7 +24,6 @@ import UserTypesEditVue from '../views/Edits/UserTypesEdit.vue';
 import activationView from '../views/activationView.vue';
 import resetPasswordVue from '../views/resetPassword.vue';
 
-
 const routes: Array<RouteRecordRaw> = [
   { 
     path: '/', 
@@ -206,7 +205,7 @@ router.beforeEach((to, from, next) => {
   }
   
   const role = localStorage.getItem('role');
-  if (to.name === 'users' && role !== 'admin') {
+  if (to.name === 'Owner' && role !== 'Admin') {
     next('/');
     return;
   }

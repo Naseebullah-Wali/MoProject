@@ -1,6 +1,5 @@
 <template>
   <div class="container mt-5">
-    <!-- Search Bar -->
     <div class="row mb-3">
       <div class="col">
         <input
@@ -50,7 +49,7 @@
     <div class="row mb-3">
       <div class="col-md-4">
         <label class="form-label">Sort By</label>
-        <select class="form-select" v-model="sortBy" @change="sortProjects">
+        <select class="form-select" v-model="sortBy" @change="sortItems">
           <option value="CreatedAt">Date</option>
           <option value="Country_Name">Country</option>
           <option value="all_topics">Topic</option>
@@ -68,7 +67,7 @@
 
     <!-- Projects Cards -->
     <div class="row">
-      <div class="col-12 mb-4" v-for="project in visibleProjects" :key="project.ID">
+      <div class="col-12 mb-4" v-for="project in visibleItems" :key="project.ID">
         <div class="card" @click="goToDetailPage(project.ID)" style="cursor: pointer;">
           <div class="card-header d-flex justify-content-between align-items-center">
             <div>
@@ -85,7 +84,6 @@
             </span>
           </div>
           <div class="card-body">
-            <!-- Render Post_Content as HTML -->
             <p class="card-text" v-html="truncateText(project.Post_Content,200)"></p>
           </div>
           <div class="card-footer">
@@ -101,66 +99,49 @@
 
     <!-- Load More Button -->
     <div class="text-center mt-4" v-if="canLoadMore">
-      <button class="btn btn-primary" @click="loadMoreProjects">
+      <button class="btn btn-primary" @click="loadMoreItems">
         Show More <i class="fas fa-chevron-down ms-2"></i>
       </button>
     </div>
 
     <!-- No Projects Found -->
-    <div v-if="filteredProjects.length === 0" class="text-center mt-4">
+    <div v-if="filteredItems.length === 0" class="text-center mt-4">
       <p>No projects found</p>
     </div>
   </div>
 </template>
 
 <script>
+import listingMixin from '../mixins/listingMixin';
+import { getUniqueValues, getUniqueCSVValues, filterItems } from '@/utils/utils';
+
 export default {
   name: "Projects",
+  mixins: [listingMixin],
   data() {
     return {
-      projects: [],
-      filteredProjects: [],
-      visibleProjects: [],
-      projectsToShow: 15,
-      searchQuery: "",
       sortBy: "CreatedAt",
-      user_id: localStorage.getItem('user_id'),
       filters: {
         country: "",
         topic: "",
         status: "",
         character: "",
-      },
+      }
     };
   },
   computed: {
     uniqueCountries() {
-      return [...new Set(this.projects.map((p) => p.Country_Name))];
+      return getUniqueValues(this.items, 'Country_Name');
     },
-    // uniqueTopics() {
-    //   return [...new Set(this.projects.map((p) => p.all_topics))];
-    // },
     uniqueTopics() {
-      const topics = this.projects
-        .flatMap((p) => (p.all_topics ? p.all_topics.split(",") : [])) // Split by comma
-        .map((topic) => topic.trim()) // Trim spaces
-        .filter((topic) => topic !== ""); // Remove empty values
-      return [...new Set(topics)]; // Ensure uniqueness
+      return getUniqueCSVValues(this.items, 'all_topics');
     },
-
-
     uniqueStatuses() {
-      return [...new Set(this.projects.map((p) => p.Status_Name))];
+      return getUniqueValues(this.items, 'Status_Name');
     },
     uniqueCharacters() {
-      return [...new Set(this.projects.map((p) => p.Character_name))];
-    },
-    isFilterApplied() {
-      return this.filters.country || this.filters.topic || this.filters.status || this.filters.character || this.searchQuery;
-    },
-    canLoadMore() {
-      return this.visibleProjects.length < this.filteredProjects.length;
-    },
+      return getUniqueValues(this.items, 'Character_name');
+    }
   },
   created() {
     this.fetchProjects();
@@ -168,20 +149,18 @@ export default {
   methods: {
     async fetchProjects() {
       try {
-          const response = await fetch(`https://moproject.onrender.com/project-topics/${this.user_id}`);
-      //  const response = await fetch(`http://localhost:900/project-topics/${this.user_id}`);
-        console.log(response)
-        this.projects = await response.json();
+        const response = await fetch(`https://moproject.onrender.com/project-topics/${this.user_id}`);
+        this.items = await response.json();
         this.applyFilters();
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
     },
+    
     applyFilters() {
-      this.filteredProjects = this.projects.filter((project) => {
+      this.filteredItems = this.items.filter((project) => {
         return (
           (!this.filters.country || project.Country_Name === this.filters.country) &&
-          // (!this.filters.topic || project.all_topics.includes(this.filters.topic)) &&
           (!this.filters.topic || (project.all_topics &&
             project.all_topics.split(",").map(t => t.trim()).some(t => t === this.filters.topic))) &&
           (!this.filters.status || project.Status_Name === this.filters.status) &&
@@ -191,50 +170,18 @@ export default {
             project.Post_Content.toLowerCase().includes(this.searchQuery.toLowerCase()))
         );
       });
-      this.sortProjects();
+      this.sortItems();
     },
-    sortProjects() {
-      this.filteredProjects.sort((a, b) => {
-        if (this.sortBy === "CreatedAt") return new Date(b.Project_Date) - new Date(a.Project_Date);
-        return a[this.sortBy].localeCompare(b[this.sortBy]);
-      });
-      this.updateVisibleProjects();
-    },
+    
     clearSorting() {
       this.sortBy = "CreatedAt";
-      this.sortProjects();
+      this.sortItems();
     },
-    resetFilters() {
-      this.filters = { country: "", topic: "", status: "", character: "" };
-      this.searchQuery = "";
-      this.applyFilters();
-    },
-    updateVisibleProjects() {
-      this.visibleProjects = this.filteredProjects.slice(0, this.projectsToShow);
-    },
-    loadMoreProjects() {
-      this.projectsToShow += 15;
-      this.updateVisibleProjects();
-    },
-    formatDate(date) {
-      if (!date) return "N/A";
-      return new Date(date).toLocaleDateString();
-    },
-    getCountryFlag(country) {
-      // return `https://flagcdn.com/32x24/${country.toLowerCase()}.png`;
-      return `https://flagcdn.com/32x24/kz.png`
-    },
+    
     goToDetailPage(id) {
       this.$router.push({ name: "ProjectDetails", params: { id } });
-    },
-    truncateText(text, maxLength) {
-      if (!text) return "";
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = text; 
-      const plainText = tempDiv.textContent || tempDiv.innerText;
-      return plainText.length > maxLength ? plainText.substring(0, maxLength) + "..." : plainText;
-    },
-  },
+    }
+  }
 };
 </script>
 

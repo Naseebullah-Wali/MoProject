@@ -9,10 +9,10 @@
           </button>
         </div>
 
-        <!-- Table Component --> 
+        <!-- Table Component -->
         <TableComponent
           :data="projects"
-          :exclude-columns="['Post_Content','Project_Number','Developer_Organization','File1','File2','File3','Original_Document','Took_Affect_Date', 'createdAt', 'updatedAt', 'Is_deleted', 'Old_ID', 'wplink', 'Topics', 'Companies', 'Priority', 'CreatedAt','Country_ID','Document_Type','Character_ID','Status_ID','UpdatedAt','Topic']"
+          :exclude-columns="['Post_Content','Project_Number','Developer_Organization','File1','File2','File3','Original_Document','Took_Affect_Date', 'createdAt', 'updatedAt', 'Is_deleted', 'Old_ID', 'wplink', 'Topics', 'Companies', 'Priority', 'CreatedAt','Country_ID','Document_Type','Character_ID','Status_ID','UpdatedAt','Topic', 'No_Longer_Valid_Date','Image']"
           @edit="handleEdit"
           @delete="handleDelete"
         >
@@ -22,9 +22,9 @@
             </button>
           </template>
           <template #customActions="{ item }">
-            <router-link 
-              :to="{ path: '/projectUpdates_edit', query: { projectId: item.id } }" 
-              class="btn btn-outline-info btn-sm" 
+            <router-link
+              :to="{ path: '/projectUpdates_edit', query: { projectId: item.id } }"
+              class="btn btn-outline-info btn-sm"
               title="Project Updates"
             >
               <i class="bi bi-arrow-up-circle"></i>
@@ -270,25 +270,6 @@
                 <div class="invalid-feedback">{{ errors.File3 }}</div>
               </div>
 
-              <!-- Image upload -->
-              <div class="mb-3">
-                <label class="form-label">Image</label>
-                <input
-                  type="file"
-                  @change="handleImageChange"
-                  class="form-control"
-                  :class="{ 'is-invalid': errors.Image }"
-                  accept="image/*"
-                />
-                <div v-if="imagePreview" class="mt-2">
-                  <img :src="imagePreview" alt="Image Preview" class="img-fluid" style="max-height: 200px;" />
-                </div>
-                <div v-else-if="formData.Image" class="mt-2">
-                  <img :src="formData.Image" alt="Current Image" class="img-fluid" style="max-height: 200px;" />
-                </div>
-                <div class="invalid-feedback">{{ errors.Image }}</div>
-              </div>
-
               <div class="modal-footer px-0 pb-0">
                 <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
                 <button type="submit" class="btn btn-primary" :disabled="loading">
@@ -314,15 +295,6 @@
 import { ref, onMounted, computed } from 'vue';
 import TableComponent from '../../components/TableComponent.vue';
 
-
-// const API_URL = 'http://localhost:900/projects';
-// const COUNTRIES_URL = 'http://localhost:900/countries';
-// const COMPANIES_URL = 'http://localhost:900/companies';
-// const TOPICS_URL = 'http://localhost:900/topics';
-// const DOCUMENT_TYPES_URL = 'http://localhost:900/document-types';
-// const CHARACTERS_URL = 'http://localhost:900/characters';
-// const STATUSES_URL = 'http://localhost:900/statuses';
-// const PROJECT_TOPICS_URL = 'http://localhost:900/project-topicsRelation';
 const API_URL = 'https://moproject.onrender.com/projects';
 const COUNTRIES_URL = 'https://moproject.onrender.com/countries';
 const COMPANIES_URL = 'https://moproject.onrender.com/companies';
@@ -345,7 +317,6 @@ const showCreateModal = ref(false);
 const isEditing = ref(false);
 const loading = ref(false);
 const errors = ref({});
-const imagePreview = ref(null);
 const currentProjectTopics = ref([]);
 
 const formData = ref({
@@ -366,8 +337,6 @@ const formData = ref({
   File1: '',
   File2: '',
   File3: '',
-  Image: null,
-  ImageFile: null,
   File1Object: null,
   File2Object: null,
   File3Object: null,
@@ -391,8 +360,6 @@ const initialFormState = {
   File1: '',
   File2: '',
   File3: '',
-  Image: null,
-  ImageFile: null,
   File1Object: null,
   File2Object: null,
   File3Object: null,
@@ -544,16 +511,6 @@ function validateForm() {
   return Object.keys(errors.value).length === 0;
 }
 
-function handleImageChange(event) {
-  const file = event.target.files[0];
-  if (file && file.type.startsWith('image/')) {
-    formData.value.ImageFile = file;
-    previewImage(file);
-  } else if (file) {
-    errors.value.Image = 'Please upload a valid image file';
-  }
-}
-
 function handleFile1Change(event) {
   const file = event.target.files[0];
   if (file) {
@@ -575,17 +532,7 @@ function handleFile3Change(event) {
   }
 }
 
-function previewImage(file) {
-  const reader = new FileReader();
-  reader.onload = (event) => {
-    imagePreview.value = event.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
 async function handleEdit(project) {
-  // console.log("Editing project:", project);
-
   // Fetch related topics from the Project_topics table
   const topicIds = await fetchProjectTopics(project.id);
 
@@ -599,25 +546,23 @@ async function handleEdit(project) {
     Project_Date: projectDate,
     Took_Affect_Date: tookAffectDate,
     No_Longer_Valid_Date: noLongerValidDate,
-    selectedTopics: topicIds, // Set the selected topics using the fetched IDs
-    ImageFile: null,
+    selectedTopics: topicIds,
     File1Object: null,
     File2Object: null,
     File3Object: null
   };
 
   isEditing.value = true;
-  imagePreview.value = null;
 }
 
 function formatDateForInput(dateString) {
   if (!dateString) return '';
-  
+
   // Check if it's already in YYYY-MM-DD format
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
     return dateString;
   }
-  
+
   try {
     const date = new Date(dateString);
     return date.toISOString().split('T')[0];
@@ -634,38 +579,33 @@ async function handleCreate() {
   try {
     // Keep the original Topic field for backward compatibility if needed
     formData.value.Topic = formData.value.selectedTopics.join(',');
-    
+
     const form = new FormData();
-    
+
     // Add all text fields
     Object.keys(formData.value).forEach(key => {
       // Skip file objects and arrays as they're handled separately
       if (
-        key !== 'ImageFile' && 
-        key !== 'File1Object' && 
-        key !== 'File2Object' && 
-        key !== 'File3Object' && 
+        key !== 'File1Object' &&
+        key !== 'File2Object' &&
+        key !== 'File3Object' &&
         key !== 'selectedTopics' &&
-        formData.value[key] !== null && 
+        formData.value[key] !== null &&
         formData.value[key] !== undefined
       ) {
         form.append(key, formData.value[key]);
       }
     });
-    
+
     // Add files if they exist
-    if (formData.value.ImageFile) {
-      form.append('Image', formData.value.ImageFile);
-    }
-    
     if (formData.value.File1Object) {
       form.append('File1', formData.value.File1Object);
     }
-    
+
     if (formData.value.File2Object) {
       form.append('File2', formData.value.File2Object);
     }
-    
+
     if (formData.value.File3Object) {
       form.append('File3', formData.value.File3Object);
     }
@@ -695,6 +635,27 @@ async function handleCreate() {
       await createProjectTopicRelations(projectId, formData.value.selectedTopics);
     }
 
+    // Send notification about the new project
+    try {
+      const companyId = localStorage.getItem('companyId');
+      const countryId = formData.value.Country_ID || formData.value.countryId;
+      
+      await fetch('https://moproject.onrender.com/notify/new-project', {
+        method: 'POST', 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          countryId: countryId,
+          projectName: formData.value.Post_Title,
+          projectId: projectId
+        }),
+      });
+    } catch (notificationError) {
+      // Log but don't block the flow if notification fails
+      console.error('Error sending project notifications:', notificationError);
+    }
+
     await fetchProjects();
     closeModal();
   } catch (error) {
@@ -721,7 +682,7 @@ async function createProjectTopicRelations(projectId, topicIds) {
 
   try {
     const results = await Promise.allSettled(createPromises);
-    
+
     // Log any failures for debugging
     results.forEach((result, index) => {
       if (result.status === 'rejected') {
@@ -739,21 +700,21 @@ async function deleteProjectTopicRelations(projectId, exceptTopicIds = []) {
     // Get current topic relations
     const response = await fetch(`${PROJECT_TOPICS_URL}/project/${projectId}`);
     if (!response.ok) throw new Error('Failed to fetch project topics for deletion');
-    
+
     const currentRelations = await response.json();
-    
+
     // Filter out relations that should be kept
-    const relationsToDelete = currentRelations.filter(relation => 
+    const relationsToDelete = currentRelations.filter(relation =>
       !exceptTopicIds.includes(relation.Topic_ID)
     );
-    
+
     // Delete each relation that's no longer needed
     const deletePromises = relationsToDelete.map(relation => {
       return fetch(`${PROJECT_TOPICS_URL}/${relation.id}`, {
         method: 'DELETE'
       });
     });
-    
+
     await Promise.allSettled(deletePromises);
   } catch (error) {
     console.error('Error deleting project topic relations:', error);
@@ -768,44 +729,39 @@ async function handleUpdate() {
   try {
     // Keep the original Topic field for backward compatibility if needed
     formData.value.Topic = formData.value.selectedTopics.join(',');
-    
+
     const form = new FormData();
-    
+
     // Add all text fields
     Object.keys(formData.value).forEach(key => {
       // Skip file objects and arrays as they're handled separately
       if (
-        key !== 'ImageFile' && 
-        key !== 'File1Object' && 
-        key !== 'File2Object' && 
-        key !== 'File3Object' && 
+        key !== 'File1Object' &&
+        key !== 'File2Object' &&
+        key !== 'File3Object' &&
         key !== 'selectedTopics' &&
-        formData.value[key] !== null && 
+        formData.value[key] !== null &&
         formData.value[key] !== undefined
       ) {
         form.append(key, formData.value[key]);
       }
     });
-    
+
     // Add files if they exist
-    if (formData.value.ImageFile) {
-      form.append('Image', formData.value.ImageFile);
-    }
-    
     if (formData.value.File1Object) {
       form.append('File1', formData.value.File1Object);
     }
-    
+
     if (formData.value.File2Object) {
       form.append('File2', formData.value.File2Object);
     }
-    
+
     if (formData.value.File3Object) {
       form.append('File3', formData.value.File3Object);
     }
 
     // Update the project
-    const response = await fetch(`${API_URL}/${formData.value.ID}`, {
+    const response = await fetch(`${API_URL}/${formData.value.id}`, {
       method: 'PUT',
       body: form,
     });
@@ -816,21 +772,21 @@ async function handleUpdate() {
     }
 
     // Update topic relationships - efficient approach
-    const projectId = formData.value.ID;
+    const projectId = formData.value.id;
     const selectedTopics = formData.value.selectedTopics || [];
-    
+
     // Find current topics from when we edited the project
     const currentTopicIds = currentProjectTopics.value.map(item => item.Topic_ID);
-    
+
     // Find topics to add (in selected but not in current)
     const topicsToAdd = selectedTopics.filter(id => !currentTopicIds.includes(id));
-    
+
     // Find topics to keep (in both selected and current)
     const topicsToKeep = selectedTopics.filter(id => currentTopicIds.includes(id));
-    
+
     // Delete relations that are no longer needed
     await deleteProjectTopicRelations(projectId, topicsToKeep);
-    
+
     // Create new relations for new topics
     if (topicsToAdd.length > 0) {
       await createProjectTopicRelations(projectId, topicsToAdd);
@@ -847,15 +803,12 @@ async function handleUpdate() {
 }
 
 async function handleDelete(id) {
-  
-
-  
   if (!confirm('Are you sure you want to delete this project?')) return;
-  // alert(id)
+
   try {
     // Delete the project topic relations first
     await deleteProjectTopicRelations(id, []);
-    
+
     // Then delete the project
     const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
     if (!response.ok) throw new Error('Failed to delete project');
@@ -871,7 +824,6 @@ function closeModal() {
   isEditing.value = false;
   formData.value = { ...initialFormState };
   errors.value = {};
-  imagePreview.value = null;
   currentProjectTopics.value = [];
 }
 
@@ -882,17 +834,17 @@ function showError(message, error) {
 
 function exportToCSV() {
   const headers = [
-    'Project Title', 
-    'Topic', 
-    'Project Date', 
-    'Project Number', 
+    'Project Title',
+    'Topic',
+    'Project Date',
+    'Project Number',
     'Developer Organization',
     'Country',
     'Document Type',
     'Character',
     'Status'
   ];
-  
+
   const csvContent = [
     headers.join(','),
     ...projects.value.map(project =>

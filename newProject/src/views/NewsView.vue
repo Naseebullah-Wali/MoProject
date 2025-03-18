@@ -31,7 +31,7 @@
       </div>
       <div class="col-md-4">
         <label class="form-label">Sort By</label>
-        <select class="form-select" v-model="sortBy" @change="sortNews">
+        <select class="form-select" v-model="sortBy" @change="sortItems">
           <option value="created_at">Date</option>
           <option value="Title">Title</option>
         </select>
@@ -45,13 +45,13 @@
 
     <!-- News Cards -->
     <div class="row">
-      <div class="col-12 col-md-6 col-lg-4 mb-4" v-for="news in visibleNews" :key="news.id">
+      <div class="col-12 col-md-6 col-lg-4 mb-4" v-for="news in visibleItems" :key="news.id">
         <div class="card h-100" @click="goToDetailPage(news.id)" style="cursor: pointer;">
           <div class="card-img-container">
-            <img 
-              v-if="news.image" 
-              :src="news.image" 
-              class="card-img-top" 
+            <img
+              v-if="news.image"
+              :src="news.image"
+              class="card-img-top"
               alt="News Image"
             />
           </div>
@@ -69,39 +69,35 @@
     </div>
 
     <!-- No News Found -->
-    <div v-if="filteredNews.length === 0" class="text-center mt-4">
+    <div v-if="filteredItems.length === 0" class="text-center mt-4">
       <p>No news found</p>
     </div>
   </div>
 </template>
 
 <script>
+import listingMixin from '@/mixins/listingMixin';
+import { getUniqueCSVValues, filterItems } from '@/utils/utils';
+
 export default {
   name: "News",
+  mixins: [listingMixin],
   data() {
     return {
       news: [],
-      filteredNews: [],
-      visibleNews: [],
-      newsToShow: 15,
-      searchQuery: "",
-      user_id: localStorage.getItem('user_id'),
-      sortBy: "created_at",
       filters: {
         topic: "",
         source: "",
       },
+      sortBy: "created_at",
     };
   },
   computed: {
     uniqueTopics() {
-      return [...new Set(this.news.map((n) => n.all_topics))];
+      return getUniqueCSVValues(this.news, 'all_topics');
     },
     uniqueSources() {
-      return [...new Set(this.news.map((n) => n.source))];
-    },
-    isFilterApplied() {
-      return this.filters.topic || this.filters.source || this.searchQuery;
+      return getUniqueCSVValues(this.news, 'source');
     },
   },
   created() {
@@ -110,55 +106,21 @@ export default {
   methods: {
     async fetchNews() {
       try {
-         const response = await fetch("https://moproject.onrender.com/news/1");
-      //  const response = await fetch(`http://localhost:900/news/${this.user_id}`);
+        const response = await fetch("https://moproject.onrender.com/news/1");
         const data = await response.json();
-        this.news = data; // Assuming data is an array with a single item
+        this.news = data;
+        this.items = data; // Set items for the mixin
         this.applyFilters();
       } catch (error) {
         console.error("Error fetching news:", error);
       }
     },
     applyFilters() {
-      this.filteredNews = this.news.filter((newsItem) => {
-        return (
-          (!this.filters.topic || newsItem.all_topics.includes(this.filters.topic)) &&
-          (!this.filters.source || newsItem.Source === this.filters.source) &&
-          (!this.searchQuery ||
-            newsItem.Title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-            newsItem.Content_Text.toLowerCase().includes(this.searchQuery.toLowerCase()))
-        );
-      });
-      this.sortNews();
-    },
-    sortNews() {
-      this.filteredNews.sort((a, b) => {
-        if (this.sortBy === "created_at") return new Date(b.created_at) - new Date(a.created_at);
-        return a[this.sortBy].localeCompare(b[this.sortBy]);
-      });
-      this.updateVisibleNews();
-    },
-    resetFilters() {
-      this.filters = { topic: "", source: "" };
-      this.searchQuery = "";
-      this.applyFilters();
-    },
-    updateVisibleNews() {
-      this.visibleNews = this.filteredNews.slice(0, this.newsToShow);
-    },
-    formatDate(date) {
-      if (!date) return "N/A";
-      return new Date(date).toLocaleDateString();
+      this.filteredItems = filterItems(this.news, this.filters, this.searchQuery, ['title', 'content_text']);
+      this.sortItems();
     },
     goToDetailPage(newsId) {
       this.$router.push(`/news_details/${newsId}`);
-    },
-    truncateText(text, maxLength) {
-      if (!text) return "";
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = text;
-      const plainText = tempDiv.textContent || tempDiv.innerText;
-      return plainText.length > maxLength ? plainText.substring(0, maxLength) + "..." : plainText;
     },
   },
 };

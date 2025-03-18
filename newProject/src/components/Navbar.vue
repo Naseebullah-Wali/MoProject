@@ -149,10 +149,10 @@ export default {
     const currentPath = this.$route.path;
 
     // Basic paths for all authenticated users
-    const basicPaths = ['/projects', '/scientific_review', '/news', '/users'];
+    const basicPaths = ['/projects', '/scientific_review', '/news'];
 
     // Additional paths accessible to all roles
-    const additionalPaths = ['/news_details/:id', '/reviews/:id'];
+    const additionalPaths = ['/news_details/:id', '/reviews/:id','/projectUpdates_edit','/users'];
 
     if (this.userRole === 'Employee') {
         hasAccess = basicPaths.includes(currentPath) ||
